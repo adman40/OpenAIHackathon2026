@@ -29,3 +29,10 @@
 - `[T+4:30] [C] [docs/demo-script.md] Added optional demo beat for the new saved shortlist workflow and export action.`
 - `[T+4:40] [A] [app/scholarships/page.tsx, app/research/page.tsx, app/internships/page.tsx, app/saved/page.tsx] Rewired the opportunity surfaces to read the shared session-backed profile context instead of local page-level demo profiles, with a hydrated DEMO_PROFILE fallback so rankings stay consistent before A4 chat and A5 integration.`
 - `[T+5:05] [A] [data/resources/campus-resources.md, data/resources/sports-snapshot.json, pages/api/chat/respond.ts, components/chat/*, app/dashboard/page.tsx, docs/demo-script.md, docs/openai-story.md] Added the profile-aware chat layer with GPT-4o + local resource context, demo-safe local fallbacks, dashboard chat UI, and updated the demo/OpenAI story docs. Screenshot: codex-log-06-chat.png.`
+- `[T+5:28] [A] [app/dashboard/page.tsx, lib/demo-fallbacks.ts, docs/demo-script.md, CODEX-LOG.md] Integrated the dashboard with all five engines, added static response-shaped fallback payloads, surfaced fallback badges and retry behavior, and documented the demo fallback plan. Screenshot: codex-log-01d-dashboard-integration.png.`
+- `[T+5:40] [A] [README.md, docs/openai-story.md, docs/demo-script.md, docs/judge-qa.md, CODEX-LOG.md] Finalized the demo-ready README, OpenAI build story, 90-second demo script, judge prep, screenshot checklist, and final totals. Screenshot: codex-log-07-three-worktrees.png.`
+
+## Final Totals
+
+- Total major Codex tasks: 23
+- Total screenshots: 16

@@ -1,49 +1,77 @@
 # Judge Q&A
 
-## Product Questions
+## Product
 
-### How is Hook different from students using existing websites?
+### What problem does Hook solve?
 
-Hook is the prioritization layer across fragmented student systems. It turns one profile into next steps instead of forcing the student to search each surface manually.
+Students usually manage academics, money, opportunities, communities, and campus support in separate systems. Hook reduces that fragmentation by turning one profile into prioritized next steps across all of them.
 
-### Is the data live?
+### What is actually live in the MVP?
 
-For the MVP, the data is curated locally so the team can prove the product flow quickly and reliably. The production version would connect to real sources.
+The product flow is live. The ranking engines, dashboard integration, onboarding, saved opportunities, and chat UI are all functional. The datasets are curated local files so the demo stays deterministic and reliable.
 
-### Why include clubs?
+### Why not just use existing university portals?
 
-Student success is not only academics and jobs. Community fit also affects stress, belonging, and long-term outcomes.
+Existing portals are usually system-of-record tools, not prioritization tools. Hook sits above them and answers, "What matters most for this specific student right now?"
 
-### Why should we trust the academic recommendations?
+### Why include clubs in the same product?
 
-The academic output is based on local degree requirements, course metadata, and prerequisite rules that the team can inspect directly. Hook is not guessing from a black-box model here; it is turning structured degree data into a clearer next-step view.
+The point is reducing admin stress, not only optimizing classes and jobs. Clubs help with belonging, momentum, and network effects, so they belong in the same student-support layer.
 
-### How transparent is the fit score for clubs?
+### How should we think about the fit scores?
 
-The club score is intentionally simple. It is driven by visible inputs like interests, major alignment, career goal, and time commitment, and the UI shows short match reasons so students can understand why a club ranked well.
+They are deterministic ranking signals, not opaque predictions. Each surface exposes short match reasons so the student can understand why an item ranked highly.
 
-### Why do club recommendations matter in a student-success product?
+## Technical
 
-Belonging and community reduce confusion and isolation in the same way academic clarity reduces planning stress. Hook includes clubs because student success is not only about classes and jobs; it is also about finding the right communities early.
+### How are the dashboard cards powered?
 
-## OpenAI Questions
+[`app/dashboard/page.tsx`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/app/dashboard/page.tsx) calls `/api/academic/analyze`, `/api/scholarships/match`, `/api/research/match`, `/api/internships/match`, and `/api/clubs/match` in parallel, then turns the responses into five top-line summaries.
 
-### How did you use Codex?
+### What happens if one API fails?
 
-Codex is the build engine for the repo: scaffolding, structured data generation, UI implementation, API implementation, and documentation.
+The dashboard falls back to static payloads from [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts) for the failed surface and shows a small badge so the fallback is visible.
 
-### Why use multiple worktrees?
+### What happens if everything is unstable before the demo?
 
-Separate worktrees let three teammates build in parallel with low merge conflict risk and a clear ownership model.
+Set `NEXT_PUBLIC_DEMO_STATIC=true` and the dashboard will run entirely from static demo payloads shaped exactly like the live responses.
 
-### Why should students trust the fit score?
+### Why use local datasets?
 
-The score is transparent and explainable: each card includes explicit match reasons (major, coursework, skills, interests, location/term fit), so users can see why an item ranked high instead of relying on a black-box score.
+For a hackathon MVP, local curated data is the right scope decision. It keeps the ranking logic explainable, the demo reliable, and the architecture ready for future connectors without spending the event on scraping or auth.
 
-### How reliable is curated opportunity data?
+### How hard would it be to go live later?
 
-For MVP reliability, opportunities are intentionally curated and versioned in local JSON so demos are deterministic and quality-controlled. The architecture already isolates data ingestion from matching, so live connectors can replace curated feeds without rewriting ranking logic.
+The ranking logic is already separated from ingestion. Replacing local JSON with SIS, scholarship, or opportunity feeds is mostly a data integration task, not a full product rewrite.
 
-### Why is ranking better than manual search portals?
+## OpenAI
 
-Manual search requires students to repeatedly filter and compare listings with no profile context. Hook starts from one profile, pre-ranks opportunities by likely fit, and surfaces deadline-relevant details quickly, which reduces missed opportunities and decision friction.
+### Where does OpenAI actually matter here?
+
+OpenAI matters in two places: Codex accelerated the build process itself, and GPT-4o powers the chat assistant where freeform drafting and routing are useful.
+
+### What did Codex generate versus what humans did?
+
+Codex generated major implementation drafts across scaffold, profile flow, APIs, dashboard integration, chat, and docs. Humans reviewed ownership boundaries, dataset quality, merges, product wording, and final demo realism.
+
+### Why use worktrees instead of one branch?
+
+Three worktrees let the team build academic/clubs, opportunities, and platform/docs in parallel with much lower conflict risk. That was important because the product only works if all five surfaces merge cleanly into one profile-driven app.
+
+### Why use GPT-4o only for chat?
+
+Academic and opportunity ranking need deterministic outputs and clear explanations. Chat is where language generation actually helps: drafting outreach, routing to resources, and turning messy questions into next actions.
+
+### What if the OpenAI call fails during the demo?
+
+The chat route is built with a local fallback path. If GPT-4o is unavailable or `OPENAI_API_KEY` is missing, Hook still returns grounded deterministic guidance instead of breaking.
+
+## Credibility
+
+### Are you pretending the fallback data is live?
+
+No. The dashboard shows a badge when fallback mode is active. The goal is a resilient MVP, not a fake production integration.
+
+### Why is this believable beyond the hackathon?
+
+Because the hard product question is not "Can we scrape another portal?" It is "Can one profile coordinate the main areas where students lose time and momentum?" This MVP already proves that product shape.

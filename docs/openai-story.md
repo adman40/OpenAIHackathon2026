@@ -1,133 +1,91 @@
 # OpenAI Story
 
-## Goal
+## What Hook Shows
 
-Explain how OpenAI tools were central to building Hook, not just embedded as a feature.
+Hook is a profile-first student support product. A student enters one profile once, and Hook turns it into academic guidance, scholarship matches, research and internship opportunities, club recommendations, and support chat.
 
-## Team Ownership
+The product demo is intentionally practical: deterministic local datasets for ranking surfaces, plus GPT-4o only where a generative assistant actually adds value.
 
-- Person A: platform, onboarding, dashboard, chat, docs, integration
-- Person B: academic engine, degree data, clubs
-- Person C: scholarships, research, internships, opportunity data
+## Exact Ownership Split
+
+- Person A: platform shell, onboarding, dashboard, chat, docs, final integration
+- Person B: academic engine, degree data, course metadata, clubs
+- Person C: scholarships, research, internships, opportunity data, saved opportunities
 
 ## Three-Worktree Setup
 
-- `main`: Person A
-- `feat/academic-clubs`: Person B
-- `feat/opportunities`: Person C
+- `main`: Person A working branch for platform, docs, and merges
+- `feat/academic-clubs`: Person B worktree for academic and clubs
+- `feat/opportunities`: Person C worktree for scholarships, research, internships, and saved opportunities
+
+This mattered because each person could build against the shared type contract without waiting on the others, and Person A could merge the finished surfaces back into one demo-ready product.
+
+## Where Codex Helped Most
+
+- Bootstrapped the shared repo structure and type contract.
+- Built the profile state layer and onboarding flow.
+- Restored the missing Next.js 14 and Tailwind scaffold after the app shell went missing.
+- Generated deterministic API routes and matching logic around local datasets.
+- Implemented the dashboard integration layer and static fallback system.
+- Built the chat route and UI around GPT-4o plus local campus grounding.
+- Rewrote the demo, judge, and OpenAI story documentation once implementation stabilized.
+
+## What Codex Generated
+
+- Shared contracts in `lib/types.ts`
+- Session-backed profile state in `lib/profile-context.tsx`
+- Onboarding UI in `components/profile/ProfileForm.tsx` and `app/onboarding/page.tsx`
+- Platform UI pieces such as `components/shared/NavBar.tsx` and `components/shared/SummaryCard.tsx`
+- Dashboard integration in [`app/dashboard/page.tsx`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/app/dashboard/page.tsx)
+- Static demo payloads in [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts)
+- Academic, scholarship, club, research, and internship API support
+- Chat route in `pages/api/chat/respond.ts` and chat UI in `components/chat/*`
+- Final docs in `README.md`, `docs/demo-script.md`, `docs/judge-qa.md`, and `CODEX-LOG.md`
+
+## What Humans Reviewed
+
+- The ownership split and scope cuts in the build plan
+- Dataset realism and whether curated examples were demo-worthy
+- Merge order across the three worktrees
+- UI and copy edits for the final demo flow
+- Whether fallback behavior stayed believable instead of hiding failures
+- Final pitch wording and which screenshots to save
+
+The practical split was: Codex generated most of the implementation draft, then humans checked product realism, merge safety, and the narrative quality of the demo.
+
+## Why GPT-4o Was Used Narrowly
+
+- Chat is the only surface that benefits from freeform generation.
+- The answer is grounded with `StudentProfile`, [`data/resources/campus-resources.md`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/data/resources/campus-resources.md), and [`data/resources/sports-snapshot.json`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/data/resources/sports-snapshot.json).
+- If the model call fails, Hook returns local deterministic guidance instead of a broken chat experience.
+
+That design kept the product believable: deterministic ranking engines where explainability matters, generative help where drafting and routing matter.
+
+## Demo Reliability Story
+
+- All ranking surfaces run on local curated datasets.
+- The dashboard calls five APIs in parallel so the product feels unified.
+- [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts) mirrors the live response shapes exactly.
+- `NEXT_PUBLIC_DEMO_STATIC=true` forces static mode for a judge-safe demo if network or route behavior gets unstable.
+- The dashboard shows a badge when fallback data is active so the behavior stays honest.
 
 ## Screenshot Checklist
 
 - `codex-log-01-types.png`
-- `codex-log-02-academic-engine.png`
+- `codex-log-01b-profile.png`
+- `codex-log-01c-dashboard-shell.png`
+- `codex-log-01d-dashboard-integration.png`
 - `codex-log-02-academic-data.png`
+- `codex-log-02-academic-engine.png`
 - `codex-log-02b-academic-ui.png`
 - `codex-log-03-scholarships.png`
+- `codex-log-03b-scholarships-ui.png`
 - `codex-log-04-clubs.png`
+- `codex-log-04b-academic-clubs-docs.png`
 - `codex-log-05-opportunities.png`
+- `codex-log-05b-opportunities-ui.png`
+- `codex-log-05c-opportunities-docs.png`
 - `codex-log-06-chat.png`
 - `codex-log-07-three-worktrees.png`
 
-## Major Files Codex Should Generate
-
-- shared types and onboarding flow
-- academic engine and academic UI
-- scholarship and opportunity matchers
-- clubs matcher and UI
-- chat route and chat UI
-- demo and pitch documentation
-
-## Notes To Fill In During Build
-
-- Which files Codex created directly
-- Which files humans edited after review
-- Where Codex saved time in parallel worktrees
-- Structured academic data generation made it easy to demo degree progress, prereq alerts, and course recommendations with consistent JSON inputs.
-
-## Academic UI Note
-
-The academic UI translated the engine output into a scan-friendly story for judges: one page shows progress at a glance, surfaces the biggest prereq blocker, separates core and major next steps, and keeps the eligible course list easy to narrate during the live demo.
-
-## Clubs Note
-
-The clubs feature stayed intentionally lightweight so it could answer one useful question fast: "Which organizations fit this student right now?" A single ranked list with short reasons, meeting cadence, and join links keeps community fit visible without turning the demo into a second full planner.
-
-## Academic And Clubs Technical Summary
-
-The academic engine reads local degree requirements and course catalogs, computes percent complete, ranks eligible courses, and surfaces prereq alerts when one missing course can delay a larger sequence. Those alerts are deterministic and explainable because they come directly from the prerequisite graph in the curated course metadata. The club matcher uses the same profile-first approach: it scores organizations with a simple deterministic formula based on interests, major fit, career goal, and weekly time availability, then returns short reasons that make each recommendation easy to justify in front of judges.
-
-## Build Notes
-
-### A2 - Profile System and Demo Mode
-
-- Codex generated the shared profile state layer in `lib/profile-context.tsx`.
-- Codex generated the multi-step onboarding UI in `components/profile/ProfileForm.tsx`.
-- Codex generated the onboarding route in `app/onboarding/page.tsx`.
-- Codex mounted the profile provider in `app/layout.tsx` so the onboarding flow and dashboard can share one session-backed profile at runtime.
-- This phase matters because the same student profile now powers every Hook surface instead of each page inventing its own data.
-- Screenshot to save: `codex-log-01b-profile.png`
-
-### A4 - Chat Layer
-
-- Codex generated the local campus resource knowledge file in `data/resources/campus-resources.md`.
-- Codex generated the demo sports context file in `data/resources/sports-snapshot.json`.
-- Codex generated `pages/api/chat/respond.ts`, which builds a system prompt from `StudentProfile` plus local files and uses GPT-4o when an API key is available.
-- The chat route is intentionally demo-safe: if the OpenAI call fails or no API key is set, Hook falls back to local deterministic guidance instead of breaking.
-- Codex generated the chat UI in `components/chat/MessageBubble.tsx`, `components/chat/ChatInput.tsx`, and `components/chat/ChatWindow.tsx`.
-- Core chat use cases:
-  - campus resources
-  - study strategy
-  - mental-health and crisis routing
-  - sports snapshot questions
-  - cold outreach drafting
-- Screenshot to save: `codex-log-06-chat.png`
-
-## Scholarship Matcher (Person C)
-
-- Dataset file: `data/scholarships/scholarships.json` (16 scholarships, UT + external mix).
-- Matching engine: `lib/matchers/scholarship-matcher.ts`.
-- API route: `pages/api/scholarships/match.ts`.
-- Fit scoring dimensions:
-  - residency
-  - major
-  - year (inferred from resume summary or completed-course count)
-  - GPA band
-  - financial need
-  - career goal
-  - resume/skills overlap
-  - specificity of fit (how many scholarship-specific constraints the student satisfies)
-- Output contract: `ScholarshipMatch[]` with `fitScore`, `matchReasons`, `deadline`, `isUrgent`, and full `scholarship`.
-- Evidence screenshot: `codex-log-03-scholarships.png`.
-
-## Shared Opportunity Matcher (Person C)
-
-- Dataset files:
-  - `data/opportunities/research.json`
-  - `data/opportunities/internships.json`
-- Shared matching engine: `lib/matchers/opportunity-matcher.ts`.
-- API routes:
-  - `pages/api/research/match.ts`
-  - `pages/api/internships/match.ts`
-- Fit scoring dimensions:
-  - major
-  - completed courses
-  - resume summary
-  - skills
-  - interests
-  - preferred locations
-  - preferred terms
-- Output contract: `OpportunityMatch[]` with `fitScore`, `matchReasons`, and full `opportunity`.
-- Evidence screenshot: `codex-log-05-opportunities.png`.
-
-## Technical Summary (Opportunity Stack)
-
-- Scholarship matcher (`lib/matchers/scholarship-matcher.ts`): Parses scholarship eligibility signals and computes weighted fit across residency, major, inferred year, GPA band, financial need, career goal, and resume/skills overlap; also adds specificity bonuses and deadline urgency.
-- Research matcher (`lib/matchers/opportunity-matcher.ts` via `pages/api/research/match.ts`): Uses shared opportunity scoring with research dataset inputs, emphasizing major fit, relevant completed coursework, skills/resume alignment, interests, and preferred location/term compatibility.
-- Internship matcher (`lib/matchers/opportunity-matcher.ts` via `pages/api/internships/match.ts`): Reuses the same scoring pipeline on internship data so ranking behavior is consistent across opportunity surfaces while allowing UI-layer filters for location, pay band, and term.
-
-## Technical Summary (Chat Stack)
-
-- Model usage: GPT-4o via the OpenAI Node SDK in `pages/api/chat/respond.ts`.
-- Grounding strategy: a system prompt built from the active `StudentProfile`, `data/resources/campus-resources.md`, and `data/resources/sports-snapshot.json`.
-- Safety and demo reliability: no vector database, no live scraping, and a local fallback path if the model call is unavailable.
-- Explainability: the route returns `ChatResponse` with `answer`, `suggestedActions`, and `citations` so the UI can show why a response was generated.
+Total screenshots planned: 16

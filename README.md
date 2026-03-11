@@ -1,103 +1,84 @@
 # Hook
 
-Hook is a college admin co-pilot for reducing student stress outside the classroom.
-This repository is the shared collaboration scaffold for the three-person MVP build in [`hook-mvp-build-plan.html`](./hook-mvp-build-plan.html).
+Hook is a college admin co-pilot for academics, scholarships, research, internships, clubs, and campus support chat. The MVP shows one profile flowing into ranked next steps across every major student-admin surface.
 
-## Current Status
+## Demo Summary
 
-This repo is initialized with:
+- Onboarding captures one shared student profile.
+- Dashboard calls all five matching engines in parallel and summarizes the best next move in each area.
+- Academic planning surfaces degree progress, prerequisite blockers, and recommended courses.
+- Scholarships, research, internships, and clubs are ranked from the same profile.
+- Chat uses GPT-4o plus local campus resources and a local fallback path for demo safety.
 
-- the agreed folder structure
-- shared TypeScript interfaces in `lib/types.ts`
-- starter docs for the pitch and OpenAI story
-- a `CODEX-LOG.md` file for tracking major Codex tasks
-- collaborator onboarding notes in `docs/collaboration-setup.md`
+## Team Split
 
-The repo now includes the core Next.js 14 + Tailwind app scaffold that Person A's platform work builds on.
-
-## Team Ownership
-
-- Person A: platform, onboarding, dashboard, chat, docs, integration
+- Person A: platform shell, onboarding, dashboard, chat, docs, integration
 - Person B: academic engine, degree data, clubs
 - Person C: scholarships, research, internships, opportunity data
 
-Rule: do not edit another person's folders before merge windows.
+## Stack
 
-## Repo Structure
+- Next.js 14 App Router
+- React 18
+- TypeScript
+- Tailwind CSS
+- Local JSON and markdown datasets for deterministic demo data
+- OpenAI Node SDK for chat
 
-```text
-app/
-  onboarding/
-  dashboard/
-  academic/
-  scholarships/
-  research/
-  internships/
-  clubs/
-components/
-  profile/
-  shared/
-  chat/
-  clubs/
-  academic/
-  scholarships/
-  opportunities/
-pages/api/
-  chat/
-  clubs/
-  academic/
-  scholarships/
-  research/
-  internships/
-data/
-  degrees/
-  courses/
-  scholarships/
-  opportunities/
-  clubs/
-  resources/
-lib/
-  academic/
-  matchers/
-  profile-context.tsx
-  types.ts
-docs/
-README.md
-CODEX-LOG.md
-```
-
-## Recommended Branch / Worktree Setup
-
-```bash
-git branch feat/academic-clubs
-git branch feat/opportunities
-git worktree add ../hook-academic-clubs feat/academic-clubs
-git worktree add ../hook-opportunities feat/opportunities
-```
-
-## First Build Order
-
-1. Person A completes the foundation and profile tasks on `main`.
-2. Person B pulls `main` and starts academic + clubs work in `feat/academic-clubs`.
-3. Person C pulls `main` and starts scholarships + opportunities work in `feat/opportunities`.
-4. Person A owns merges back into `main`.
-
-## Important Files
-
-- Build guide: [`hook-mvp-build-plan.html`](./hook-mvp-build-plan.html)
-- Earlier reference guide: [`hook-build-plan.html`](./hook-build-plan.html)
-- Collaboration setup: [`docs/collaboration-setup.md`](./docs/collaboration-setup.md)
-- Shared types: [`lib/types.ts`](./lib/types.ts)
-- OpenAI story: [`docs/openai-story.md`](./docs/openai-story.md)
-- Demo script: [`docs/demo-script.md`](./docs/demo-script.md)
-- Judge Q&A: [`docs/judge-qa.md`](./docs/judge-qa.md)
-- Codex log: [`CODEX-LOG.md`](./CODEX-LOG.md)
-
-## Local Development
+## Run Locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. The root route redirects to onboarding, and the `ProfileProvider` is mounted in the app layout for the shared profile flow.
+Open `http://localhost:3000`.
+
+## Environment
+
+- `OPENAI_API_KEY`: optional; enables live GPT-4o responses in chat
+- `NEXT_PUBLIC_DEMO_STATIC=true`: optional; forces the dashboard to use static fallback payloads instead of live API calls
+
+## Demo Flow
+
+1. Start on `/onboarding` and enter or load the demo profile.
+2. Open `/dashboard` to show five parallel engine summaries plus chat.
+3. Drill into `/academic`, `/scholarships`, `/research`, `/internships`, and `/clubs`.
+4. Use chat for campus support, study strategy, outreach drafting, or sports snapshot questions.
+
+## Demo Safety
+
+- The dashboard has a static fallback layer in [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts).
+- If one or more engines fail live, the dashboard swaps that card to fallback data and shows a badge.
+- If `NEXT_PUBLIC_DEMO_STATIC=true`, the dashboard runs entirely from demo-safe payloads.
+- Chat also falls back to local deterministic guidance if GPT-4o is unavailable.
+
+## Important Files
+
+- Build plan: [`hook-mvp-build-plan.html`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/hook-mvp-build-plan.html)
+- Dashboard integration: [`app/dashboard/page.tsx`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/app/dashboard/page.tsx)
+- Static fallback payloads: [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts)
+- Shared profile state: [`lib/profile-context.tsx`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/profile-context.tsx)
+- OpenAI build story: [`docs/openai-story.md`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/docs/openai-story.md)
+- Demo script: [`docs/demo-script.md`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/docs/demo-script.md)
+- Judge prep: [`docs/judge-qa.md`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/docs/judge-qa.md)
+- Codex log: [`CODEX-LOG.md`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/CODEX-LOG.md)
+
+## Screenshot Checklist
+
+- `codex-log-01-types.png`
+- `codex-log-01b-profile.png`
+- `codex-log-01c-dashboard-shell.png`
+- `codex-log-01d-dashboard-integration.png`
+- `codex-log-02-academic-data.png`
+- `codex-log-02-academic-engine.png`
+- `codex-log-02b-academic-ui.png`
+- `codex-log-03-scholarships.png`
+- `codex-log-03b-scholarships-ui.png`
+- `codex-log-04-clubs.png`
+- `codex-log-04b-academic-clubs-docs.png`
+- `codex-log-05-opportunities.png`
+- `codex-log-05b-opportunities-ui.png`
+- `codex-log-05c-opportunities-docs.png`
+- `codex-log-06-chat.png`
+- `codex-log-07-three-worktrees.png`

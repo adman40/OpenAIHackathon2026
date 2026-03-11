@@ -1,67 +1,65 @@
 # Demo Script
 
-## Goal
+## 90-Second Version
 
-Deliver a clear 90-second story:
+### 0:00-0:12
 
-1. one profile
-2. many next steps
-3. less admin stress
+"College stress is not just classes. Students are juggling degree planning, scholarships, research, internships, clubs, and figuring out where to go for help. Hook is one profile that turns all of that into next steps."
 
-## Placeholder Flow
+### 0:12-0:28
 
-### 0:00-0:10 - Problem
+Open `/dashboard`.
 
-Explain that college stress is not just coursework. It is planning, money, opportunities, communities, and figuring out where to go for help.
+"This dashboard calls all five Hook engines in parallel. From one student profile, it summarizes academic risk, funding, research, internships, and community fit in one place. The chat panel is using that same profile, so the student does not need to restate context."
 
-### 0:10-0:20 - Dashboard
+If the fallback badge is visible:
 
-Show that one student profile powers every surface in Hook.
-Reveal the dashboard shell: greeting, five summary cards, chat action panel, and the floating Demo Mode button so judges immediately see the product breadth before diving into detail pages.
+"For demo safety, Hook can fall back to static payloads shaped exactly like the live APIs. That lets the product stay functional even if one engine fails during the demo."
 
-### 0:20-0:35 - Academic
+### 0:28-0:42
 
-Show degree progress, a prereq-chain warning, and next-semester recommendations.
-Call out the prereq warning explicitly: "Hook flags the one blocker course that can delay an entire chain, so the student knows what to fix first."
+Open `/academic`.
 
-### 0:35-0:48 - Scholarships
+"Here Hook is not just listing classes. It is reading degree requirements and prerequisite chains, showing percent complete, flagging the blocker course, and ranking the next classes to take."
 
-Open `/scholarships` and show:
+### 0:42-0:54
 
-- ranked scholarship cards with amount and fit score
-- one URGENT badge tied to a near deadline
-- top match reasons explaining competitiveness
-- the detail panel with full description and submission details
+Open `/scholarships`.
 
-Line to say:
-"Hook ranked real scholarships for this student, flagged deadline risk, and explains exactly why each one is competitive so the student can apply faster."
+"Here the same profile becomes ranked scholarships with fit score, amount, urgency, and concrete match reasons so the student can apply faster and miss fewer deadlines."
 
-### 0:48-1:02 - Research / Internships
+### 0:54-1:08
 
-Open `/research` and `/internships` and show:
+Open `/research` and `/internships`.
 
-- ranked opportunity cards with fit scores
-- filters changing visible opportunities in real time
-- detail panel with fit reasons and apply-by date
-- internship filters for location, pay band, and term
+"Hook uses one shared opportunity-matching system for research and internships, then lets the student filter by term, location, pay, and saved status. This is ranking, not just search."
 
-Line to say:
-"Hook ranks both research and internship opportunities from one profile, then lets students quickly filter by what they can actually do this term and where."
+Optional if there is time:
 
-Optional add-on if time:
-Open `/saved` to show a unified shortlist across research + internships, then export the saved list as JSON for follow-up planning.
+"The saved page turns research and internships into one shortlist for follow-up."
 
-### 1:02-1:10 - Clubs
+### 1:08-1:18
 
-Show that Hook also recommends communities, not just work.
+Open `/clubs`.
 
-### 1:10-1:30 - Chat
+"Hook also recommends communities, because belonging and support affect student success just as much as classes and jobs."
 
-Ask for a campus resource, study strategy, sports snapshot, or outreach draft and show:
+### 1:18-1:30
 
-- profile-aware answer from GPT-4o
-- suggested next actions
-- citations grounded in the local campus resource file or sports snapshot
+Return to `/dashboard` and use chat.
 
-Line to say:
-"Hook does not just answer questions. It uses one student profile plus local campus context to route support, draft outreach, and keep the response explainable."
+"The chat assistant uses GPT-4o plus local campus resources. It can draft outreach, route students to support, answer campus questions, and still fall back safely if the model is unavailable."
+
+## Fallback Plan
+
+- Preferred path: run live local APIs and live chat with `OPENAI_API_KEY` set.
+- Dashboard backup path: set `NEXT_PUBLIC_DEMO_STATIC=true` before the demo to force all five dashboard cards to use [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts).
+- Partial failure path: if one or more dashboard engines fail, Hook shows a fallback badge and keeps the affected cards populated.
+- Chat backup path: if GPT-4o fails or no API key is set, the chat route returns local deterministic guidance grounded in campus resources.
+
+## Demo Operator Notes
+
+- Start from the onboarding flow unless time is already short.
+- Keep the dashboard visible long enough for judges to notice that all five engines are represented at once.
+- If a card is in fallback mode, mention it briefly and move on. The point is resilience, not pretending every dependency is live.
+- Do not spend time explaining local JSON datasets unless a judge asks.
