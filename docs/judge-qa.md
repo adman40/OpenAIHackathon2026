@@ -30,11 +30,11 @@ Yes. The dashboard, academic, clubs, scholarships, research, internships, saved 
 
 ### How are the dashboard cards powered?
 
-[`app/dashboard/page.tsx`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/app/dashboard/page.tsx) calls `/api/academic/analyze`, `/api/scholarships/match`, `/api/research/match`, `/api/internships/match`, and `/api/clubs/match` in parallel, then turns the responses into five top-line summaries.
+`app/dashboard/page.tsx` calls `/api/academic/analyze`, `/api/scholarships/match`, `/api/research/match`, `/api/internships/match`, and `/api/clubs/match` in parallel, then turns the responses into five top-line summaries.
 
 ### What happens if one API fails?
 
-The dashboard falls back to static payloads from [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts) for the failed surface and shows a small badge so the fallback is visible.
+The dashboard falls back to static payloads from `lib/demo-fallbacks.ts` for the failed surface and shows a small badge so the fallback is visible.
 
 ### What happens if everything is unstable before the demo?
 

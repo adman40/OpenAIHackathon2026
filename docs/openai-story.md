@@ -59,8 +59,8 @@ That workflow mattered because it turned Codex into a fast engineering partner w
 - Session-backed profile state in `lib/profile-context.tsx`
 - Onboarding UI in `components/profile/ProfileForm.tsx` and `app/onboarding/page.tsx`
 - Platform UI pieces such as `components/shared/NavBar.tsx` and `components/shared/SummaryCard.tsx`
-- Dashboard integration in [`app/dashboard/page.tsx`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/app/dashboard/page.tsx)
-- Static demo payloads in [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts)
+- Dashboard integration in `app/dashboard/page.tsx`
+- Static demo payloads in `lib/demo-fallbacks.ts`
 - Academic, scholarship, club, research, and internship API support
 - Chat route in `pages/api/chat/respond.ts` and chat UI in `components/chat/*`
 - Final docs in `README.md`, `docs/demo-script.md`, `docs/judge-qa.md`, and `CODEX-LOG.md`
@@ -79,7 +79,7 @@ The practical split was: Codex generated most of the implementation draft, then 
 ## Why GPT-4o Was Used Narrowly
 
 - Chat is the only surface that benefits from freeform generation.
-- The answer is grounded with `StudentProfile`, [`data/resources/campus-resources.md`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/data/resources/campus-resources.md), and [`data/resources/sports-snapshot.json`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/data/resources/sports-snapshot.json).
+- The answer is grounded with `StudentProfile`, `data/resources/campus-resources.md`, and `data/resources/sports-snapshot.json`.
 - If the model call fails, Hook returns local deterministic guidance instead of a broken chat experience.
 
 That design kept the product believable: deterministic ranking engines where explainability matters, generative help where drafting and routing matter.
@@ -88,7 +88,7 @@ That design kept the product believable: deterministic ranking engines where exp
 
 - All ranking surfaces run on local curated datasets.
 - The dashboard calls five APIs in parallel so the product feels unified.
-- [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts) mirrors the live response shapes exactly.
+- `lib/demo-fallbacks.ts` mirrors the live response shapes exactly.
 - `NEXT_PUBLIC_DEMO_STATIC=true` forces static mode for a judge-safe demo if network or route behavior gets unstable.
 - The dashboard shows a badge when fallback data is active so the behavior stays honest.
 

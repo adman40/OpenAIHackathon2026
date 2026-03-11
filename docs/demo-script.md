@@ -88,7 +88,7 @@ Return to `/dashboard` and use chat.
 ## Fallback Plan
 
 - Preferred path: run live local APIs and live chat with `OPENAI_API_KEY` set.
-- Dashboard backup path: set `NEXT_PUBLIC_DEMO_STATIC=true` before the demo to force all five dashboard cards to use [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts).
+- Dashboard backup path: set `NEXT_PUBLIC_DEMO_STATIC=true` before the demo to force all five dashboard cards to use `lib/demo-fallbacks.ts`.
 - Partial failure path: if one or more dashboard engines fail, Hook shows a fallback badge and keeps the affected cards populated.
 - Chat backup path: if GPT-4o fails or no API key is set, the chat route returns local deterministic guidance grounded in campus resources.
 

@@ -14,3 +14,5 @@ coverage/
 
 .playwright-cli/
 .vercel
+output/
+.next-stale-*/
