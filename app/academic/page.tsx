@@ -7,37 +7,17 @@ import { EligibleCoursesTable } from "../../components/academic/EligibleCoursesT
 import { PrereqAlertBanner } from "../../components/academic/PrereqAlertBanner";
 import { PublicAcademicSummaryCard } from "../../components/academic/PublicAcademicSummaryCard";
 import { RecommendationSection } from "../../components/academic/RecommendationSection";
+import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
 import { AcademicAnalysis, StudentProfile } from "../../lib/types";
 
-const DEMO_PROFILE: StudentProfile = {
-  name: "Alex Rivera",
-  major: "Computer Science",
-  currentSemester: "Spring 2026",
-  completedCourses: [
-    { courseId: "ENGL 101", grade: "A-" },
-    { courseId: "MATH 221", grade: "B+" },
-    { courseId: "ECON 101", grade: "A" },
-    { courseId: "CS 101", grade: "A-" },
-  ],
-  gpa: 3.74,
-  gpaPublic: false,
-  residency: "texas",
-  financialNeed: "medium",
-  resumeSummary: "CS student interested in AI, product engineering, and student tools.",
-  skills: ["python", "typescript"],
-  interests: ["ai", "education", "student tools"],
-  careerGoal: "research",
-  preferredLocations: ["Austin", "Remote"],
-  preferredTerms: ["summer", "fall"],
-  clubInterests: ["ai", "entrepreneurship"],
-};
-
 export default function AcademicPage() {
+  const { profile, isHydrated } = useProfile();
   const [analysis, setAnalysis] = useState<AcademicAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const activeProfile: StudentProfile = profile ?? DEMO_PROFILE;
 
-  const loadAnalysis = useCallback(async () => {
+  const loadAnalysis = useCallback(async (profileToAnalyze: StudentProfile) => {
     setIsLoading(true);
     setError(null);
 
@@ -47,7 +27,7 @@ export default function AcademicPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ profile: DEMO_PROFILE }),
+        body: JSON.stringify({ profile: profileToAnalyze }),
       });
 
       const body = (await response.json()) as AcademicAnalysis | { error: string };
@@ -70,22 +50,25 @@ export default function AcademicPage() {
   }, []);
 
   useEffect(() => {
-    // The page uses a local demo profile until the shared profile context lands.
-    void loadAnalysis();
-  }, [loadAnalysis]);
+    if (!isHydrated) {
+      return;
+    }
+
+    void loadAnalysis(activeProfile);
+  }, [activeProfile, isHydrated, loadAnalysis]);
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
         <div>
-          <p className="text-sm font-medium text-orange-700">Hook academic advisor</p>
-          <h1 className="mt-1 text-3xl font-semibold">Stay on track without guesswork</h1>
+          <p className="text-sm font-medium text-orange-700">Hook academic summary</p>
+          <h1 className="mt-1 text-3xl font-semibold">Plan the next semester with context</h1>
           <p className="mt-2 max-w-3xl text-sm text-slate-600">
             One academic snapshot highlights progress, blocker courses, and the best next-semester options.
           </p>
         </div>
 
-        {isLoading ? (
+        {!isHydrated || isLoading ? (
           <section className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
             <p className="text-sm font-medium text-slate-700">Loading academic analysis...</p>
             <p className="mt-2 text-sm text-slate-500">
@@ -100,7 +83,7 @@ export default function AcademicPage() {
             <p className="mt-2 text-sm text-red-700">{error}</p>
             <button
               className="mt-4 rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white"
-              onClick={() => void loadAnalysis()}
+              onClick={() => void loadAnalysis(activeProfile)}
               type="button"
             >
               Try again
@@ -111,7 +94,7 @@ export default function AcademicPage() {
         {!isLoading && analysis ? (
           <div className="space-y-6">
             <div className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
-              <PublicAcademicSummaryCard profile={DEMO_PROFILE} summary={analysis.summary} />
+              <PublicAcademicSummaryCard profile={activeProfile} summary={analysis.summary} />
               <DegreeProgressCard
                 percentComplete={analysis.percentComplete}
                 estimatedGraduationSemester={analysis.estimatedGraduationSemester}

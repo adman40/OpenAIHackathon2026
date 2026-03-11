@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { EligibleCourse } from "../../lib/types";
 
 interface EligibleCoursesTableProps {
@@ -29,18 +31,23 @@ export function EligibleCoursesTable({ courses }: EligibleCoursesTableProps) {
                 <th className="py-3 pr-4 font-medium">Course</th>
                 <th className="py-3 pr-4 font-medium">Bucket</th>
                 <th className="py-3 pr-4 font-medium">Credits</th>
-                <th className="py-3 pr-4 font-medium">Terms</th>
-                <th className="py-3 pr-4 font-medium">Professor</th>
-                <th className="py-3 pr-4 font-medium">Difficulty</th>
-                <th className="py-3 pr-4 font-medium">Grade tendency</th>
-                <th className="py-3 font-medium">Attendance</th>
+                <th className="py-3 font-medium">Details</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {courses.map((course) => (
                 <tr key={course.courseId} className="align-top text-slate-700">
                   <td className="py-3 pr-4">
-                    <div className="font-medium text-slate-900">{course.courseId}</div>
+                    {course.detailPagePath ? (
+                      <Link
+                        href={course.detailPagePath}
+                        className="font-medium text-slate-900 transition hover:text-orange-700"
+                      >
+                        {course.courseId}
+                      </Link>
+                    ) : (
+                      <div className="font-medium text-slate-900">{course.courseId}</div>
+                    )}
                     <div className="text-slate-600">{course.courseName}</div>
                     {course.eligibilityReason ? (
                       <div className="mt-1 max-w-md text-xs text-slate-500">
@@ -50,11 +57,18 @@ export function EligibleCoursesTable({ courses }: EligibleCoursesTableProps) {
                   </td>
                   <td className="py-3 pr-4 capitalize">{course.requirementBucket}</td>
                   <td className="py-3 pr-4">{course.credits}</td>
-                  <td className="py-3 pr-4">{course.termsOffered.join(", ")}</td>
-                  <td className="py-3 pr-4">{course.professorName}</td>
-                  <td className="py-3 pr-4">{course.professorDifficulty}</td>
-                  <td className="py-3 pr-4">{course.gradeTendency}</td>
-                  <td className="py-3">{course.attendancePolicy}</td>
+                  <td className="py-3">
+                    {course.detailPagePath ? (
+                      <Link
+                        href={course.detailPagePath}
+                        className="font-medium text-orange-700 transition hover:text-orange-800"
+                      >
+                        View details
+                      </Link>
+                    ) : (
+                      <span className="text-slate-400">Unavailable</span>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -161,7 +161,7 @@ export interface StudentProfile {
   hoursPerWeek?: number;
 }
 
-// Academic types drive course planning and on-track analysis.
+// Academic types drive course planning and explainable analysis.
 export interface Recommendation {
   courseId: string;
   courseName: string;
@@ -178,10 +178,32 @@ export interface EligibleCourse {
   prerequisites: string[];
   termsOffered: string[];
   eligibilityReason?: string;
+  detailPagePath?: string;
   professorName: string;
   professorDifficulty: string;
   gradeTendency: string;
   attendancePolicy: string;
+}
+
+export interface CourseProfessorAggregate {
+  professorName: string;
+  rateMyProfessorRating: number;
+  reviewCount: number;
+  difficultySummary: string;
+  gradeTendencySummary: string;
+}
+
+export interface CourseDetail {
+  courseId: string;
+  courseName: string;
+  requirementBucket: RequirementBucket;
+  credits: number;
+  prerequisites: string[];
+  nextTerm: string | null;
+  description: string;
+  officialCourseListingUrl: string;
+  gradeTendencySummary: string;
+  availableProfessors: CourseProfessorAggregate[];
 }
 
 export interface CourseCatalog {

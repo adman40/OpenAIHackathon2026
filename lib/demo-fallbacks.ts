@@ -70,7 +70,7 @@ export const academicDemoFallback: AcademicAnalysis = {
     "Take CS 331 soon. It is the main blocker for higher-level systems and AI electives in the current plan.",
   ],
   summary:
-    "You are on pace overall, but one prerequisite course now controls several stronger upper-division options.",
+    "One prerequisite course now controls several stronger upper-division options in this plan.",
 };
 
 export const scholarshipsDemoFallback: { matches: ScholarshipMatch[] } = {

@@ -322,7 +322,7 @@ export function analyzeDegree(
   const summary = prereqAlerts.length > 0
     ? `${profile.name} is ${percentComplete}% through the ${degree.degreeName}. The biggest watch-out is the prereq chain around ${(prereqAlerts[0].match(/[A-Z]+\s\d+/) ?? ["your next blocker"])[0]}.`
     : rankedEligibleCourses.length > 0
-      ? `${profile.name} is ${percentComplete}% through the ${degree.degreeName} and can stay on track by taking the highest-ranked eligible required courses in ${nextRegularTerm ?? "the next regular term"}.`
+      ? `${profile.name} is ${percentComplete}% through the ${degree.degreeName} and should focus next on the highest-ranked eligible required courses in ${nextRegularTerm ?? "the next regular term"}.`
       : `${profile.name} is ${percentComplete}% through the ${degree.degreeName}, and Hook does not see any remaining courses that are both next-term scheduled and fully unlocked yet.`;
 
   return {

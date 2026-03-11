@@ -198,6 +198,7 @@ export function rankEligibleCourses(
       return {
         course: {
           ...course,
+          detailPagePath: `/academic/courses/${encodeURIComponent(courseCatalogId)}/${encodeURIComponent(course.courseId)}?term=${encodeURIComponent(nextTerm)}`,
           termsOffered: [nextTerm],
           eligibilityReason,
         },
