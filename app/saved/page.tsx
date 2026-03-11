@@ -150,6 +150,36 @@ export default function SavedPage(): JSX.Element {
     [visible, selectedId],
   );
 
+  useEffect(() => {
+    if (visible.length === 0) {
+      return;
+    }
+
+    function onKeyDown(event: KeyboardEvent): void {
+      const activeTag = (event.target as HTMLElement | null)?.tagName?.toLowerCase();
+      if (activeTag === "input" || activeTag === "select" || activeTag === "textarea") {
+        return;
+      }
+
+      const index = visible.findIndex((item) => item.opportunity.id === selectedId);
+      if (event.key === "j" || event.key === "ArrowDown") {
+        event.preventDefault();
+        const nextIndex = index < visible.length - 1 ? index + 1 : 0;
+        setSelectedId(visible[nextIndex].opportunity.id);
+      } else if (event.key === "k" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const prevIndex = index > 0 ? index - 1 : visible.length - 1;
+        setSelectedId(visible[prevIndex].opportunity.id);
+      } else if ((event.key === "s" || event.key === "S") && selectedId) {
+        event.preventDefault();
+        setSavedIds(toggleSavedOpportunityId(selectedId));
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [visible, selectedId]);
+
   if (isLoading) {
     return (
       <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
@@ -191,6 +221,9 @@ export default function SavedPage(): JSX.Element {
       </p>
       <div style={{ marginTop: "8px", color: "#334155", fontSize: "13px" }}>
         {visible.length} visible | {savedIds.length} saved total
+      </div>
+      <div style={{ marginTop: "4px", color: "#64748b", fontSize: "12px" }}>
+        Keyboard: <strong>J/K</strong> or <strong>Arrow keys</strong> to move, <strong>S</strong> to un/save selected.
       </div>
 
       <div style={{ marginTop: "14px", display: "flex", gap: "8px", flexWrap: "wrap" }}>

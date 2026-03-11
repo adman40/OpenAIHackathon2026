@@ -18,3 +18,5 @@
 - `[T+4:14] [C] [scripts/validate-data-integrity.mjs] Added and ran data integrity checks for scholarships, research, and internships (schema, ids, kinds, dates).`
 - `[T+4:28] [C] [app/saved/page.tsx, app/research/page.tsx, app/internships/page.tsx, lib/opportunities/saved-opportunities.ts] Added a new Saved Opportunities hub with category tabs, export JSON, clear-saved controls, and cross-navigation from research/internships pages.`
 - `[T+4:30] [C] [docs/demo-script.md] Added optional demo beat for the new saved shortlist workflow and export action.`
+- `[T+4:42] [C] [app/research/page.tsx, app/internships/page.tsx, app/saved/page.tsx, components/opportunities/OpportunityCard.tsx, components/opportunities/OpportunityDetailPanel.tsx] Added keyboard-first navigation (J/K, arrows, S), stronger aria labels, and saved-toggle shortcuts across opportunity surfaces.`
+- `[T+4:46] [C] [scripts/smoke-test-apis.mjs] Added API smoke test runner that checks scholarship/research/internship match routes and validates baseline response shape.`

@@ -22,6 +22,8 @@ export function OpportunityCard({
 
   return (
     <div
+      role="group"
+      aria-label={`${opportunity.title} at ${opportunity.organization}`}
       style={{
         border: isSelected ? "2px solid #1d4ed8" : "1px solid #d1d5db",
         borderRadius: "12px",
@@ -33,6 +35,8 @@ export function OpportunityCard({
         <button
           type="button"
           onClick={onSelect}
+          aria-label={`Open details for ${opportunity.title}`}
+          aria-pressed={isSelected}
           style={{
             flex: 1,
             border: "none",
@@ -88,6 +92,8 @@ export function OpportunityCard({
         <button
           type="button"
           onClick={onToggleSaved}
+          aria-label={isSaved ? `Unsave ${opportunity.title}` : `Save ${opportunity.title}`}
+          aria-pressed={isSaved}
           style={{
             border: isSaved ? "1px solid #f59e0b" : "1px solid #cbd5e1",
             background: isSaved ? "#fffbeb" : "#f8fafc",

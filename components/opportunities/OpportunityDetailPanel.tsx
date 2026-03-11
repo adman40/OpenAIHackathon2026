@@ -34,6 +34,7 @@ export function OpportunityDetailPanel({
 
   return (
     <aside
+      aria-live="polite"
       style={{
         border: "1px solid #d1d5db",
         borderRadius: "12px",
@@ -48,6 +49,8 @@ export function OpportunityDetailPanel({
         <button
           type="button"
           onClick={onToggleSaved}
+          aria-label={isSaved ? `Unsave ${opportunity.title}` : `Save ${opportunity.title}`}
+          aria-pressed={isSaved}
           style={{
             marginTop: "10px",
             border: isSaved ? "1px solid #f59e0b" : "1px solid #cbd5e1",
