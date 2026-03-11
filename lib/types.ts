@@ -175,6 +175,8 @@ export interface Club {
   timeCommitment: string;
   meetingCadence: string;
   joinLink: string;
+  sourceUrl?: string;
+  importTimestamp?: string;
 }
 
 export interface ClubMatch {

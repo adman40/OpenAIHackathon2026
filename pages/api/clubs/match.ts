@@ -12,8 +12,15 @@ type ClubsResponse =
     };
 
 async function loadClubs(): Promise<Club[]> {
-  const filePath = path.join(process.cwd(), "data", "clubs", "clubs.json");
-  const fileContents = await readFile(filePath, "utf8");
+  const hornslinkPath = path.join(process.cwd(), "data", "clubs", "hornslink-clubs.json");
+  const defaultPath = path.join(process.cwd(), "data", "clubs", "clubs.json");
+  let fileContents: string;
+
+  try {
+    fileContents = await readFile(hornslinkPath, "utf8");
+  } catch {
+    fileContents = await readFile(defaultPath, "utf8");
+  }
 
   return JSON.parse(fileContents) as Club[];
 }
@@ -38,7 +45,6 @@ export default async function handler(
   }
 
   try {
-    // Clubs stay local and deterministic so the demo never depends on live campus data.
     const clubs = await loadClubs();
     return res.status(200).json(matchClubs(profile, clubs));
   } catch (error) {
