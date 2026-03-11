@@ -24,7 +24,15 @@ Show degree progress, a prereq-chain warning, and next-semester recommendations.
 
 ### 0:35-0:48 - Scholarships
 
-Show a high-fit urgent scholarship.
+Open `/scholarships` and show:
+
+- ranked scholarship cards with amount and fit score
+- one URGENT badge tied to a near deadline
+- top match reasons explaining competitiveness
+- the detail panel with full description and submission details
+
+Line to say:
+"Hook ranked real scholarships for this student, flagged deadline risk, and explains exactly why each one is competitive so the student can apply faster."
 
 ### 0:48-1:02 - Research / Internships
 
@@ -37,4 +45,3 @@ Show that Hook also recommends communities, not just work.
 ### 1:10-1:30 - Chat
 
 Ask for a campus resource or outreach draft and show suggested actions.
-
