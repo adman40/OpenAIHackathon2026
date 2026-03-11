@@ -1,4 +1,5 @@
 import { StudentProfile } from "../../lib/types";
+import { formatNumericGpa } from "../../lib/transcript/gpa";
 
 interface PublicAcademicSummaryCardProps {
   profile: StudentProfile;
@@ -33,7 +34,9 @@ export function PublicAcademicSummaryCard({
         <div className="rounded-lg bg-slate-50 p-3">
           <dt className="text-xs uppercase tracking-wide text-slate-500">GPA visibility</dt>
           <dd className="mt-1 font-medium text-slate-900">
-            {profile.gpaPublic ? `Public (${profile.gpaRange})` : "Hidden from public view"}
+            {profile.gpaPublic
+              ? `Public (${formatNumericGpa(profile.gpa)})`
+              : "Hidden from public view"}
           </dd>
         </div>
       </dl>

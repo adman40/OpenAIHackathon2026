@@ -13,7 +13,7 @@ const DEMO_PROFILE: StudentProfile = {
     { courseId: "CS 101", grade: "A-" },
     { courseId: "MATH 221", grade: "B+" },
   ],
-  gpaRange: "3.5-4.0",
+  gpa: 3.71,
   gpaPublic: false,
   residency: "texas",
   financialNeed: "medium",

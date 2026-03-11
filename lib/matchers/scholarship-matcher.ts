@@ -1,4 +1,5 @@
 import type { CareerGoal, Scholarship, ScholarshipMatch, StudentProfile } from "../types";
+import { formatNumericGpa } from "../transcript/gpa";
 
 type ParsedSignals = {
   residency: string[];
@@ -84,15 +85,6 @@ function parseSignals(scholarship: Scholarship): ParsedSignals {
   return parsed;
 }
 
-function parseProfileGpaHigh(gpaRange: string): number {
-  const numbers = gpaRange.match(/[0-4](?:\.\d+)?/g);
-  if (!numbers || numbers.length === 0) {
-    return 0;
-  }
-
-  return Math.max(...numbers.map((value) => Number(value)));
-}
-
 function inferYear(profile: StudentProfile): string {
   const summary = normalize(profile.resumeSummary);
   for (const yearLabel of YEAR_LABELS) {
@@ -153,7 +145,7 @@ export function matchScholarships(
   scholarships: Scholarship[],
 ): ScholarshipMatch[] {
   const year = inferYear(profile);
-  const gpaHigh = parseProfileGpaHigh(profile.gpaRange);
+  const gpa = profile.gpa ?? 0;
   const residency = normalize(profile.residency);
   const need = normalize(profile.financialNeed);
   const major = normalize(profile.major);
@@ -172,7 +164,7 @@ export function matchScholarships(
     if (!majorMatches(major, signals.majors)) {
       return;
     }
-    if (signals.minGpa !== null && gpaHigh + 0.2 < signals.minGpa) {
+    if (signals.minGpa !== null && gpa + 0.2 < signals.minGpa) {
       return;
     }
 
@@ -219,14 +211,14 @@ export function matchScholarships(
 
     if (signals.minGpa !== null) {
       availableSpecific += 1;
-      if (gpaHigh >= signals.minGpa + 0.2) {
+      if (gpa >= signals.minGpa + 0.2) {
         score += 15;
         matchedSpecific += 1;
-        reasons.push(`GPA range (${profile.gpaRange}) is above the minimum ${signals.minGpa.toFixed(1)}.`);
-      } else if (gpaHigh >= signals.minGpa) {
+        reasons.push(`GPA (${formatNumericGpa(profile.gpa)}) is above the minimum ${signals.minGpa.toFixed(1)}.`);
+      } else if (gpa >= signals.minGpa) {
         score += 11;
         matchedSpecific += 1;
-        reasons.push(`GPA range (${profile.gpaRange}) meets the minimum ${signals.minGpa.toFixed(1)}.`);
+        reasons.push(`GPA (${formatNumericGpa(profile.gpa)}) meets the minimum ${signals.minGpa.toFixed(1)}.`);
       } else {
         score += 5;
         reasons.push(`GPA is near the minimum ${signals.minGpa.toFixed(1)}.`);

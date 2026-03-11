@@ -19,7 +19,7 @@ const DEMO_PROFILE: StudentProfile = {
     { courseId: "ECON 101", grade: "A" },
     { courseId: "CS 101", grade: "A-" },
   ],
-  gpaRange: "3.5-4.0",
+  gpa: 3.74,
   gpaPublic: false,
   residency: "texas",
   financialNeed: "medium",

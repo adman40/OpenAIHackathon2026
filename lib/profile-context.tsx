@@ -12,6 +12,36 @@ import type { StudentProfile } from "./types";
 
 const STORAGE_KEY = "hook-profile";
 
+function migrateLegacyProfile(savedProfile: unknown): StudentProfile | null {
+  if (!savedProfile || typeof savedProfile !== "object") {
+    return null;
+  }
+
+  const candidate = savedProfile as StudentProfile & { gpaRange?: string };
+
+  if (typeof candidate.gpa === "number" || candidate.gpa === null) {
+    return candidate;
+  }
+
+  if (typeof candidate.gpaRange === "string") {
+    const numericParts = candidate.gpaRange.match(/[0-4](?:\.\d+)?/g);
+    const migratedGpa =
+      numericParts && numericParts.length > 0
+        ? Math.max(...numericParts.map((value) => Number(value)))
+        : null;
+
+    return {
+      ...candidate,
+      gpa: migratedGpa,
+    };
+  }
+
+  return {
+    ...candidate,
+    gpa: null,
+  };
+}
+
 export const DEMO_PROFILE: StudentProfile = {
   name: "Alex Rivera",
   major: "Computer Science",
@@ -23,7 +53,7 @@ export const DEMO_PROFILE: StudentProfile = {
     { courseId: "M 408C", grade: "A", semester: "Fall 2024" },
     { courseId: "M 408D", grade: "A-", semester: "Spring 2025" },
   ],
-  gpaRange: "3.5-4.0",
+  gpa: 3.78,
   gpaPublic: true,
   residency: "texas",
   financialNeed: "medium",
@@ -54,7 +84,7 @@ export function ProfileProvider({ children }: PropsWithChildren) {
     try {
       const savedProfile = window.sessionStorage.getItem(STORAGE_KEY);
       if (savedProfile) {
-        setProfileState(JSON.parse(savedProfile) as StudentProfile);
+        setProfileState(migrateLegacyProfile(JSON.parse(savedProfile)));
       }
     } catch {
       // Ignore malformed session data and allow the app to continue cleanly.

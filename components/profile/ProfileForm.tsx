@@ -18,7 +18,7 @@ interface FormState {
   major: string;
   currentSemester: string;
   completedCourses: CompletedCourse[];
-  gpaRange: string;
+  gpa: string;
   gpaPublic: boolean;
   residency: Residency;
   financialNeed: FinancialNeed;
@@ -42,7 +42,6 @@ const majors = [
   "Psychology",
 ];
 
-const gpaRanges = ["2.0-2.5", "2.5-3.0", "3.0-3.5", "3.5-4.0"];
 const residencyOptions: Residency[] = ["texas", "out-of-state", "international"];
 const financialNeedOptions: FinancialNeed[] = ["low", "medium", "high"];
 const careerGoals: CareerGoal[] = ["industry", "research", "grad_school", "undecided"];
@@ -54,7 +53,7 @@ const initialState: FormState = {
   major: "Computer Science",
   currentSemester: "Spring 2026",
   completedCourses: [],
-  gpaRange: "3.5-4.0",
+  gpa: "3.75",
   gpaPublic: true,
   residency: "texas",
   financialNeed: "medium",
@@ -180,7 +179,10 @@ export default function ProfileForm({ onComplete }: ProfileFormProps) {
       if (formState.completedCourses.length === 0) {
         nextErrors.push("Add at least one completed course for the demo.");
       }
-      if (!formState.gpaRange.trim()) nextErrors.push("Choose a GPA range.");
+      const parsedGpa = Number(formState.gpa);
+      if (!formState.gpa.trim() || Number.isNaN(parsedGpa) || parsedGpa < 0 || parsedGpa > 4) {
+        nextErrors.push("Enter a numeric GPA between 0.00 and 4.00.");
+      }
     }
 
     if (step === 3) {
@@ -213,7 +215,11 @@ export default function ProfileForm({ onComplete }: ProfileFormProps) {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!validateCurrentStep()) return;
-    onComplete(formState);
+    const { gpa, ...rest } = formState;
+    onComplete({
+      ...rest,
+      gpa: Number(gpa),
+    });
   };
 
   const renderStep = () => {
@@ -313,18 +319,21 @@ export default function ProfileForm({ onComplete }: ProfileFormProps) {
             </div>
             <div className="grid gap-5 md:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-stone-700">GPA Range</label>
-                <select
+                <label className="mb-2 block text-sm font-medium text-stone-700">Numeric GPA</label>
+                <input
                   className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-orange-600"
-                  value={formState.gpaRange}
-                  onChange={(event) => updateField("gpaRange", event.target.value)}
-                >
-                  {gpaRanges.map((range) => (
-                    <option key={range} value={range}>
-                      {range}
-                    </option>
-                  ))}
-                </select>
+                  value={formState.gpa}
+                  onChange={(event) => updateField("gpa", event.target.value)}
+                  type="number"
+                  min="0"
+                  max="4"
+                  step="0.01"
+                  inputMode="decimal"
+                  placeholder="3.75"
+                />
+                <p className="mt-2 text-xs text-stone-500">
+                  Use a numeric GPA now. Transcript parsing can populate this automatically later.
+                </p>
               </div>
               <div>
                 <span className="mb-2 block text-sm font-medium text-stone-700">GPA Visibility</span>

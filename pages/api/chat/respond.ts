@@ -4,6 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 
 import type { ChatCitation, ChatResponse, StudentProfile } from "../../../lib/types";
+import { formatNumericGpa } from "../../../lib/transcript/gpa";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -285,7 +286,7 @@ function profileSummary(profile: StudentProfile): string {
     `Major: ${profile.major}`,
     `Semester: ${profile.currentSemester}`,
     `Career goal: ${profile.careerGoal}`,
-    `GPA range: ${profile.gpaRange}`,
+    `GPA: ${formatNumericGpa(profile.gpa)}`,
     `Financial need: ${profile.financialNeed}`,
     `Residency: ${profile.residency}`,
     `Skills: ${profile.skills.join(", ")}`,

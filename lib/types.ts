@@ -99,6 +99,33 @@ export interface CompletedCourse {
   courseId: string;
   grade: string;
   semester?: string;
+  credits?: number;
+}
+
+export type TranscriptParseConfidence = "high" | "medium";
+
+export interface ParsedTranscriptCourse extends CompletedCourse {
+  rawLine: string;
+  lineNumber: number;
+  confidence: TranscriptParseConfidence;
+  parseWarnings: string[];
+}
+
+export interface TranscriptSkippedLine {
+  rawLine: string;
+  lineNumber: number;
+  reason: string;
+}
+
+export interface TranscriptParseResult {
+  parsedCourses: ParsedTranscriptCourse[];
+  skippedLines: TranscriptSkippedLine[];
+  reportedGpa: number | null;
+  computedGpa: number | null;
+  sourceMetadata: {
+    parserVersion: string;
+    parsedAt: string;
+  };
 }
 
 export interface StudentProfile {
@@ -106,7 +133,7 @@ export interface StudentProfile {
   major: string;
   currentSemester: string;
   completedCourses: CompletedCourse[];
-  gpaRange: string;
+  gpa: number | null;
   gpaPublic: boolean;
   residency: Residency;
   financialNeed: FinancialNeed;
