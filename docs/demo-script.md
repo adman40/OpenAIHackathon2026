@@ -21,6 +21,7 @@ Show that one student profile powers every surface in Hook.
 ### 0:20-0:35 - Academic
 
 Show degree progress, a prereq-chain warning, and next-semester recommendations.
+Call out the prereq warning explicitly: "Hook flags the one blocker course that can delay an entire chain, so the student knows what to fix first."
 
 ### 0:35-0:48 - Scholarships
 
