@@ -41,3 +41,12 @@ Explain how OpenAI tools were central to building Hook, not just embedded as a f
 - Which files humans edited after review
 - Where Codex saved time in parallel worktrees
 
+## Build Notes
+
+### A2 - Profile System and Demo Mode
+
+- Codex generated the shared profile state layer in `lib/profile-context.tsx`.
+- Codex generated the multi-step onboarding UI in `components/profile/ProfileForm.tsx`.
+- Codex generated the onboarding route in `app/onboarding/page.tsx`.
+- This phase matters because the same student profile now powers every Hook surface instead of each page inventing its own data.
+- Screenshot to save: `codex-log-01b-profile.png`
