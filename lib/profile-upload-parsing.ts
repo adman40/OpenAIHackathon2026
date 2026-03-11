@@ -319,34 +319,50 @@ function extractResumeSections(rawText: string) {
 
 function extractResumeSkills(rawText: string) {
   const lower = rawText.toLowerCase();
+  const compact = lower.replace(/[^a-z0-9+]/g, "");
   const skills = RESUME_SKILL_ALIASES.filter((skill) => {
     const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return new RegExp(`(^|[^a-z0-9+])${escaped}([^a-z0-9+]|$)`, "i").test(lower);
+    const compactSkill = skill.toLowerCase().replace(/[^a-z0-9+]/g, "");
+
+    return (
+      new RegExp(`(^|[^a-z0-9+])${escaped}([^a-z0-9+]|$)`, "i").test(lower) ||
+      compact.includes(compactSkill)
+    );
   });
 
-  return Array.from(new Set(skills)).slice(0, 12);
+  return Array.from(new Set(skills));
 }
 
-function buildResumeSummary(rawText: string, major: string) {
+function formatCollapsedCoursework(line: string | undefined) {
+  if (!line) {
+    return null;
+  }
+
+  const normalized = line
+    .replace(/^•\s*/, "")
+    .replace(/RelevantCoursework:/i, "")
+    .replace(/,/g, ", ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return normalized.length > 0 ? normalized : null;
+}
+
+function buildResumeSummary(rawText: string, major: string, skills: string[]) {
   const sections = extractResumeSections(rawText);
   const education = sections.get("EDUCATION") ?? [];
-  const skillsSection = sections.get("SKILLS") ?? [];
-  const projects = sections.get("TECHNICAL PROJECTS") ?? [];
-
-  const degreeLine =
-    education.find((line) => /Bachelor|Master|B\.S\.|Bachelors/i.test(line)) ??
-    `${major} student`;
+  const degreeLine = education.find((line) => /Bachelor|Master|B\.S\.|Bachelors/i.test(line));
   const courseworkLine = education.find((line) => /Relevant Coursework:/i.test(line));
-  const topProjectLine = projects.find(
-    (line) => !line.startsWith("•") && !/^(Spring|Summer|Fall|Winter)\s+\d{4}$/i.test(line),
-  );
-  const skillsLine = skillsSection.find((line) => /Languages|Tools|Technical Fundamentals/i.test(line));
+  const formattedCoursework = formatCollapsedCoursework(courseworkLine);
+  const hasReadableDegreeLine =
+    typeof degreeLine === "string" &&
+    /\s/.test(degreeLine) &&
+    !/Bachelorof|Universityof/i.test(degreeLine);
 
   return [
-    degreeLine.replace(/^•\s*/, ""),
-    courseworkLine?.replace(/^•\s*/, ""),
-    topProjectLine ? `Top project: ${topProjectLine.replace(/^•\s*/, "")}.` : null,
-    skillsLine?.replace(/^•\s*/, ""),
+    hasReadableDegreeLine ? degreeLine?.replace(/^•\s*/, "") : `${major} student at UT Austin.`,
+    formattedCoursework ? `Relevant coursework: ${formattedCoursework}.` : null,
+    skills.length > 0 ? `Skills: ${skills.join(", ")}.` : null,
   ]
     .filter(Boolean)
     .join(" ")
@@ -375,7 +391,7 @@ export function parseResumeText(rawText: string, major: string) {
   return {
     skills: skills.length > 0 ? skills : ["python", "typescript", "sql"],
     summary:
-      buildResumeSummary(text, major) ||
+      buildResumeSummary(text, major, skills) ||
       `${major} student resume parsed into an editable profile draft.`,
     usedFallback: false,
   };
