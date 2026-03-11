@@ -24,3 +24,14 @@ Codex is the build engine for the repo: scaffolding, structured data generation,
 
 Separate worktrees let three teammates build in parallel with low merge conflict risk and a clear ownership model.
 
+### Why should students trust the fit score?
+
+The score is transparent and explainable: each card includes explicit match reasons (major, coursework, skills, interests, location/term fit), so users can see why an item ranked high instead of relying on a black-box score.
+
+### How reliable is curated opportunity data?
+
+For MVP reliability, opportunities are intentionally curated and versioned in local JSON so demos are deterministic and quality-controlled. The architecture already isolates data ingestion from matching, so live connectors can replace curated feeds without rewriting ranking logic.
+
+### Why is ranking better than manual search portals?
+
+Manual search requires students to repeatedly filter and compare listings with no profile context. Hook starts from one profile, pre-ranks opportunities by likely fit, and surfaces deadline-relevant details quickly, which reduces missed opportunities and decision friction.

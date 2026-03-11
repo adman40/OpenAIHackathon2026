@@ -77,3 +77,9 @@ Explain how OpenAI tools were central to building Hook, not just embedded as a f
   - preferred terms
 - Output contract: `OpportunityMatch[]` with `fitScore`, `matchReasons`, and full `opportunity`.
 - Evidence screenshot: `codex-log-05-opportunities.png`.
+
+## Technical Summary (Opportunity Stack)
+
+- Scholarship matcher (`lib/matchers/scholarship-matcher.ts`): Parses scholarship eligibility signals and computes weighted fit across residency, major, inferred year, GPA band, financial need, career goal, and resume/skills overlap; also adds specificity bonuses and deadline urgency.
+- Research matcher (`lib/matchers/opportunity-matcher.ts` via `pages/api/research/match.ts`): Uses shared opportunity scoring with research dataset inputs, emphasizing major fit, relevant completed coursework, skills/resume alignment, interests, and preferred location/term compatibility.
+- Internship matcher (`lib/matchers/opportunity-matcher.ts` via `pages/api/internships/match.ts`): Reuses the same scoring pipeline on internship data so ranking behavior is consistent across opportunity surfaces while allowing UI-layer filters for location, pay band, and term.
