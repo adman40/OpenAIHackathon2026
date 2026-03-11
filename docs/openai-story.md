@@ -57,3 +57,23 @@ Explain how OpenAI tools were central to building Hook, not just embedded as a f
   - specificity of fit (how many scholarship-specific constraints the student satisfies)
 - Output contract: `ScholarshipMatch[]` with `fitScore`, `matchReasons`, `deadline`, `isUrgent`, and full `scholarship`.
 - Evidence screenshot: `codex-log-03-scholarships.png`.
+
+## Shared Opportunity Matcher (Person C)
+
+- Dataset files:
+  - `data/opportunities/research.json`
+  - `data/opportunities/internships.json`
+- Shared matching engine: `lib/matchers/opportunity-matcher.ts`.
+- API routes:
+  - `pages/api/research/match.ts`
+  - `pages/api/internships/match.ts`
+- Fit scoring dimensions:
+  - major
+  - completed courses
+  - resume summary
+  - skills
+  - interests
+  - preferred locations
+  - preferred terms
+- Output contract: `OpportunityMatch[]` with `fitScore`, `matchReasons`, and full `opportunity`.
+- Evidence screenshot: `codex-log-05-opportunities.png`.
