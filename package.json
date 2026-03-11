@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "import:ut-lasso-scholarships": "node scripts/scholarships/import-ut-lasso.mjs"
   },
   "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
     "next": "14.2.35",
     "openai": "6.27.0",
     "react": "18.3.1",

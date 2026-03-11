@@ -9,14 +9,29 @@ type MatchResponse =
   | { matches: ScholarshipMatch[] }
   | { error: string };
 
+const MAX_VISIBLE_MATCHES = 200;
+
 async function readScholarships(): Promise<Scholarship[]> {
-  const dataPath = path.join(
+  const lassoDataPath = path.join(
+    process.cwd(),
+    "data",
+    "scholarships",
+    "ut-lasso-scholarships.json",
+  );
+  const legacyDataPath = path.join(
     process.cwd(),
     "data",
     "scholarships",
     "scholarships.json",
   );
-  const raw = await fs.readFile(dataPath, "utf8");
+
+  let raw: string;
+  try {
+    raw = await fs.readFile(lassoDataPath, "utf8");
+  } catch {
+    raw = await fs.readFile(legacyDataPath, "utf8");
+  }
+
   return JSON.parse(raw) as Scholarship[];
 }
 
@@ -38,7 +53,7 @@ export default async function handler(
     }
 
     const scholarships = await readScholarships();
-    const matches = matchScholarships(profile, scholarships);
+    const matches = matchScholarships(profile, scholarships).slice(0, MAX_VISIBLE_MATCHES);
     res.status(200).json({ matches });
   } catch (error) {
     console.error("Scholarship match route failed:", error);

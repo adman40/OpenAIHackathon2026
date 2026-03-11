@@ -106,10 +106,24 @@ export interface Scholarship {
   amount: number;
   description: string;
   eligibilitySignals: string[];
+  eligibilityCriteria?: ScholarshipEligibilityCriteria;
   favoredQualities: string[];
   deadline: string;
   submissionDetails: string;
   link: string;
+  importTimestamp: string;
+}
+
+export interface ScholarshipEligibilityCriteria {
+  minGpa?: number;
+  residency?: Residency[];
+  majors?: string[];
+  years?: string[];
+  needBased?: boolean;
+  fullTimeRequired?: boolean;
+  minCreditHours?: number;
+  minWorkHoursPerWeek?: number;
+  keywords?: string[];
 }
 
 export interface ScholarshipMatch {
@@ -178,4 +192,3 @@ export interface ChatResponse {
   suggestedActions: string[];
   citations: ChatCitation[];
 }
-

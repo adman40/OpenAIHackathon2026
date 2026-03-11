@@ -11,8 +11,11 @@ type MatchApiResponse = {
   matches: ScholarshipMatch[];
 };
 
+const MAX_VISIBLE_MATCHES = 200;
+
 function rankMatches(matches: ScholarshipMatch[]): ScholarshipMatch[] {
-  return [...matches].sort((a, b) => {
+  return [...matches]
+    .sort((a, b) => {
     if (b.fitScore !== a.fitScore) {
       return b.fitScore - a.fitScore;
     }
@@ -20,7 +23,8 @@ function rankMatches(matches: ScholarshipMatch[]): ScholarshipMatch[] {
       return a.isUrgent ? -1 : 1;
     }
     return a.deadline.localeCompare(b.deadline);
-  });
+    })
+    .slice(0, MAX_VISIBLE_MATCHES);
 }
 
 export default function ScholarshipsPage(): JSX.Element {

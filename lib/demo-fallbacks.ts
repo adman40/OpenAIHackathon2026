@@ -94,6 +94,7 @@ export const scholarshipsDemoFallback: { matches: ScholarshipMatch[] } = {
         deadline: "2026-03-22",
         submissionDetails: "Submit a resume, transcript, and 500-word impact statement.",
         link: "https://example.edu/innovation-scholarship",
+        importTimestamp: "2026-03-10T00:00:00.000Z",
       },
     },
     {
@@ -115,6 +116,7 @@ export const scholarshipsDemoFallback: { matches: ScholarshipMatch[] } = {
         deadline: "2026-04-05",
         submissionDetails: "Upload one recommendation and a short portfolio summary.",
         link: "https://example.edu/student-success-award",
+        importTimestamp: "2026-03-10T00:00:00.000Z",
       },
     },
   ],
