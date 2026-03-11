@@ -49,21 +49,24 @@ export function matchClubs(profile: StudentProfile, clubs: Club[]): ClubMatch[] 
   const careerGoal = normalize(careerGoalLabel);
   const hoursPerWeek = profile.hoursPerWeek ?? 5;
 
-  // We keep scoring simple so every result stays explainable in the demo.
   return clubs
     .map((club) => {
       const interestTags = club.interestTags.map(normalize);
       const interestOverlap = interestTags.filter(
         (tag) => clubInterests.has(tag) || interests.has(tag),
       );
-      const majorMatch = club.majors.map(normalize).includes(major);
-      const careerMatch = club.careers.map(normalize).includes(careerGoal);
+      const majorOptions = club.majors.map(normalize);
+      const majorMatch =
+        majorOptions.length === 0 ||
+        majorOptions.some((candidate) => candidate === major || major.includes(candidate) || candidate.includes(major));
+      const careerOptions = club.careers.map(normalize);
+      const careerMatch = careerOptions.length === 0 || careerOptions.includes(careerGoal);
       const timeFitScore = getTimeFitScore(hoursPerWeek, club.timeCommitment);
 
       let fitScore = 35;
       fitScore += interestOverlap.length * 14;
-      fitScore += majorMatch ? 16 : 0;
-      fitScore += careerMatch ? 10 : 0;
+      fitScore += majorMatch ? 14 : 0;
+      fitScore += careerMatch ? 8 : 0;
       fitScore += timeFitScore;
 
       const reasons: string[] = [];
@@ -72,11 +75,11 @@ export function matchClubs(profile: StudentProfile, clubs: Club[]): ClubMatch[] 
         reasons.push(`Matches your interests in ${unique(interestOverlap).slice(0, 2).join(" and ")}.`);
       }
 
-      if (majorMatch) {
+      if (majorOptions.length > 0 && majorMatch) {
         reasons.push(`Common pick for ${profile.major} students.`);
       }
 
-      if (careerMatch) {
+      if (careerOptions.length > 0 && careerMatch) {
         reasons.push(`Fits your ${careerGoalLabel.replace("_", " ")} goals.`);
       }
 

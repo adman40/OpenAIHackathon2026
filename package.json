@@ -6,10 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "import:ut-lasso-scholarships": "node scripts/scholarships/import-ut-lasso.mjs",
+    "import:ut-lab-catalog": "node scripts/research/import-ut-labs.mjs",
+    "import:internships": "node scripts/internships/import-summer-2026.mjs",
+    "import:hornslink-clubs": "node scripts/clubs/import-hornslink-clubs.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.1",
+    "cheerio": "^1.0.0-rc.12",
     "next": "14.2.35",
     "openai": "6.27.0",
     "react": "18.3.1",

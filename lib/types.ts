@@ -250,10 +250,24 @@ export interface Scholarship {
   amount: number;
   description: string;
   eligibilitySignals: string[];
+  eligibilityCriteria?: ScholarshipEligibilityCriteria;
   favoredQualities: string[];
   deadline: string;
   submissionDetails: string;
   link: string;
+  importTimestamp: string;
+}
+
+export interface ScholarshipEligibilityCriteria {
+  minGpa?: number;
+  residency?: Residency[];
+  majors?: string[];
+  years?: string[];
+  needBased?: boolean;
+  fullTimeRequired?: boolean;
+  minCreditHours?: number;
+  minWorkHoursPerWeek?: number;
+  keywords?: string[];
 }
 
 export interface ScholarshipMatch {
@@ -280,6 +294,11 @@ export interface Opportunity {
   preferredCoursework: string[];
   description: string;
   details: string;
+  contactLeads?: string[];
+  sourceUrl?: string;
+  importTimestamp?: string;
+  applyUrl?: string;
+  freshnessTimestamp?: string;
 }
 
 export interface OpportunityMatch {
@@ -300,6 +319,8 @@ export interface Club {
   timeCommitment: string;
   meetingCadence: string;
   joinLink: string;
+  sourceUrl?: string;
+  importTimestamp?: string;
 }
 
 export interface ClubMatch {
@@ -322,4 +343,3 @@ export interface ChatResponse {
   suggestedActions: string[];
   citations: ChatCitation[];
 }
-

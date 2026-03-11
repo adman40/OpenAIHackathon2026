@@ -62,7 +62,6 @@ const financialNeedOptions: FinancialNeed[] = ["low", "medium", "high"];
 const careerGoalOptions: CareerGoal[] = ["industry", "research", "grad_school", "undecided"];
 const locationOptions = ["Austin", "Remote", "Dallas", "Houston", "San Francisco", "New York"];
 const termOptions = ["spring", "summer", "fall"];
-
 const initialState: FormState = {
   email: "",
   password: "",

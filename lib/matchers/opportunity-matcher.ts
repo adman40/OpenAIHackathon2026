@@ -1,5 +1,6 @@
 import type { Opportunity, OpportunityMatch, StudentProfile } from "../types";
 import {
+  getProfileCareerGoal,
   getProfilePreferredLocations,
   getProfilePreferredTerms,
   getProfileResumeSummary,
@@ -23,6 +24,7 @@ function majorMatch(profileMajor: string, preferredMajors: string[]): boolean {
   if (preferredMajors.length === 0) {
     return true;
   }
+
   const major = normalize(profileMajor);
   return preferredMajors.some((candidate) => {
     const preferred = normalize(candidate);
@@ -65,6 +67,7 @@ function locationMatches(profile: StudentProfile, opportunity: Opportunity): boo
   if (preferredLocations.length === 0) {
     return true;
   }
+
   const location = normalize(opportunity.location);
   return preferredLocations.some((preferred) => {
     const value = normalize(preferred);
@@ -77,11 +80,46 @@ function termMatches(profile: StudentProfile, opportunity: Opportunity): boolean
   if (preferredTerms.length === 0) {
     return true;
   }
+
   const term = normalize(opportunity.term);
   return preferredTerms.some((preferred) => {
     const value = normalize(preferred);
     return term.includes(value) || value.includes(term);
   });
+}
+
+function profileKeywordAffinity(profile: StudentProfile, opportunity: Opportunity): string[] {
+  const profileTerms = [
+    ...profile.skills,
+    ...profile.interests,
+    profile.major,
+    getProfileCareerGoal(profile).replace("_", " "),
+  ];
+  const opportunityText = `${opportunity.title} ${opportunity.organization} ${opportunity.description} ${opportunity.details}`;
+  return listOverlap(profileTerms, opportunityText);
+}
+
+function freshnessBonus(opportunity: Opportunity): number {
+  if (!opportunity.freshnessTimestamp) {
+    return 0;
+  }
+
+  const freshness = new Date(opportunity.freshnessTimestamp);
+  if (Number.isNaN(freshness.getTime())) {
+    return 0;
+  }
+
+  const ageDays = Math.floor((Date.now() - freshness.getTime()) / (1000 * 60 * 60 * 24));
+  if (ageDays <= 1) {
+    return 7;
+  }
+  if (ageDays <= 7) {
+    return 5;
+  }
+  if (ageDays <= 21) {
+    return 3;
+  }
+  return 1;
 }
 
 export function matchOpportunities(
@@ -90,6 +128,8 @@ export function matchOpportunities(
 ): OpportunityMatch[] {
   const combinedText = profileCombinedText(profile);
   const completedCourses = profile.completedCourses.map((course) => course.courseId);
+  const preferredLocations = getProfilePreferredLocations(profile);
+  const preferredTerms = getProfilePreferredTerms(profile);
 
   return opportunities
     .map((opportunity) => {
@@ -121,10 +161,15 @@ export function matchOpportunities(
       const resumeMatches = listOverlap(opportunity.skills, getProfileResumeSummary(profile));
       if (resumeMatches.length > 0) {
         score += Math.min(12, 4 + resumeMatches.length * 2);
-        reasons.push(`Resume summary connects to role skills (${resumeMatches.slice(0, 2).join(", ")}).`);
+        reasons.push(
+          `Resume summary connects to role skills (${resumeMatches.slice(0, 2).join(", ")}).`,
+        );
       }
 
-      const interestMatches = listOverlap(profile.interests, `${opportunity.description} ${opportunity.details}`);
+      const interestMatches = listOverlap(
+        profile.interests,
+        `${opportunity.description} ${opportunity.details}`,
+      );
       if (interestMatches.length > 0) {
         score += Math.min(12, 4 + interestMatches.length * 2);
         reasons.push(`Interest alignment: ${interestMatches.slice(0, 2).join(", ")}.`);
@@ -137,16 +182,31 @@ export function matchOpportunities(
       }
 
       if (locationMatches(profile, opportunity)) {
-        score += 8;
-        reasons.push(`Location fit: ${opportunity.location}.`);
+        score += preferredLocations.length > 0 ? 8 : 3;
+        if (preferredLocations.length > 0) {
+          reasons.push(`Location matches your preferences (${preferredLocations.slice(0, 2).join(", ")}).`);
+        }
       }
 
       if (termMatches(profile, opportunity)) {
-        score += 8;
-        reasons.push(`Term fit: ${opportunity.term}.`);
+        score += preferredTerms.length > 0 ? 6 : 2;
+        if (preferredTerms.length > 0) {
+          reasons.push(`Term fit: ${opportunity.term} matches your preferred timing.`);
+        }
       }
 
-      // Specificity bonus rewards matches with multiple concrete fit signals.
+      const affinityMatches = profileKeywordAffinity(profile, opportunity);
+      if (affinityMatches.length > 0) {
+        score += Math.min(10, 3 + affinityMatches.length * 2);
+        reasons.push(`Lab/program topic overlap: ${affinityMatches.slice(0, 2).join(", ")}.`);
+      }
+
+      const freshnessScore = freshnessBonus(opportunity);
+      if (freshnessScore > 0) {
+        score += freshnessScore;
+        reasons.push("Posting appears recently refreshed.");
+      }
+
       const specificity = reasons.length;
       if (specificity >= 4) {
         score += 8;

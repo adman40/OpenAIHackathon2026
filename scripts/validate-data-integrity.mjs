@@ -17,6 +17,7 @@ const scholarshipKeys = [
   "deadline",
   "submissionDetails",
   "link",
+  "importTimestamp",
 ];
 
 const opportunityKeys = [
@@ -50,6 +51,10 @@ function assert(condition, message) {
   }
 }
 
+function isIsoDateTime(value) {
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(value) && !Number.isNaN(new Date(value).getTime());
+}
+
 function validateRecords(records, keys, label) {
   assert(Array.isArray(records), `${label} must be an array`);
   assert(records.length > 0, `${label} must not be empty`);
@@ -71,6 +76,7 @@ function validateScholarships(data) {
     assert(Array.isArray(row.eligibilitySignals), `scholarships[${i}] eligibilitySignals must be array`);
     assert(Array.isArray(row.favoredQualities), `scholarships[${i}] favoredQualities must be array`);
     assert(isIsoDate(row.deadline), `scholarships[${i}] deadline must be ISO date`);
+    assert(isIsoDateTime(row.importTimestamp), `scholarships[${i}] importTimestamp must be ISO datetime`);
   });
 }
 
@@ -83,6 +89,14 @@ function validateOpportunities(data, expectedKind, label) {
     assert(Array.isArray(row.preferredCoursework), `${label}[${i}] preferredCoursework must be array`);
     assert(isIsoDate(row.datePosted), `${label}[${i}] datePosted must be ISO date`);
     assert(isIsoDate(row.applyBy), `${label}[${i}] applyBy must be ISO date`);
+    if (expectedKind === "research") {
+      assert(typeof row.sourceUrl === "string" && row.sourceUrl.length > 0, `${label}[${i}] sourceUrl must be non-empty string`);
+      assert(Array.isArray(row.contactLeads) && row.contactLeads.length > 0, `${label}[${i}] contactLeads must be non-empty array`);
+    }
+    if (expectedKind === "internship") {
+      assert(typeof row.applyUrl === "string" && row.applyUrl.startsWith("http"), `${label}[${i}] applyUrl must be a valid URL`);
+      assert(isIsoDateTime(row.freshnessTimestamp), `${label}[${i}] freshnessTimestamp must be ISO datetime`);
+    }
     const posted = new Date(row.datePosted).getTime();
     const applyBy = new Date(row.applyBy).getTime();
     assert(applyBy >= posted, `${label}[${i}] applyBy must be on/after datePosted`);

@@ -8,8 +8,13 @@ import { OpportunityFilters } from "../../components/opportunities/OpportunityFi
 import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
 import {
+  getOpportunityActionStateMap,
+  getPendingApplicationPromptIds,
   getSavedOpportunityIds,
+  markOpportunityOpened,
+  setOpportunityAppliedState,
   toggleSavedOpportunityId,
+  type AppliedState,
 } from "../../lib/opportunities/saved-opportunities";
 import { isUrgentDate } from "../../lib/opportunities/deadline";
 import type { OpportunityMatch } from "../../lib/types";
@@ -29,6 +34,7 @@ const SORT_OPTIONS = [
   { value: "fit_desc", label: "Best fit" },
   { value: "deadline_soon", label: "Deadline soonest" },
   { value: "pay_high", label: "Highest pay" },
+  { value: "freshness_new", label: "Most recent" },
 ];
 
 function extractHourlyPay(payText: string): number | null {
@@ -68,6 +74,13 @@ function rank(matches: OpportunityMatch[]): OpportunityMatch[] {
   });
 }
 
+function appliedStateForId(
+  id: string,
+  actionStateMap: ReturnType<typeof getOpportunityActionStateMap>,
+): AppliedState | null {
+  return actionStateMap[id]?.appliedState ?? null;
+}
+
 export default function InternshipsPage(): JSX.Element {
   const { profile, isHydrated } = useProfile();
   const [matches, setMatches] = useState<OpportunityMatch[]>([]);
@@ -77,7 +90,10 @@ export default function InternshipsPage(): JSX.Element {
   const [payFilter, setPayFilter] = useState("all");
   const [sortBy, setSortBy] = useState("fit_desc");
   const [savedOnly, setSavedOnly] = useState(false);
+  const [appliedFilter, setAppliedFilter] = useState<"all" | "applied" | "not_applied" | "pending">("all");
   const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [actionStateMap, setActionStateMap] = useState(getOpportunityActionStateMap());
+  const [promptOpportunityId, setPromptOpportunityId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -101,6 +117,8 @@ export default function InternshipsPage(): JSX.Element {
       const ranked = rank(payload.matches ?? []);
       setMatches(ranked);
       setSelectedId(ranked[0]?.opportunity.id ?? null);
+      setSavedIds(getSavedOpportunityIds());
+      setActionStateMap(getOpportunityActionStateMap());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load internship matches.");
     } finally {
@@ -115,10 +133,6 @@ export default function InternshipsPage(): JSX.Element {
 
     void load();
   }, [isHydrated, load]);
-
-  useEffect(() => {
-    setSavedIds(getSavedOpportunityIds());
-  }, []);
 
   const termOptions = useMemo(
     () => Array.from(new Set(matches.map((item) => item.opportunity.term))).sort(),
@@ -144,6 +158,12 @@ export default function InternshipsPage(): JSX.Element {
       if (savedOnly && !savedIds.includes(opportunity.id)) {
         return false;
       }
+
+      const appliedState = appliedStateForId(opportunity.id, actionStateMap);
+      if (appliedFilter !== "all" && appliedState !== appliedFilter) {
+        return false;
+      }
+
       return true;
     });
 
@@ -162,13 +182,31 @@ export default function InternshipsPage(): JSX.Element {
       });
     }
 
+    if (sortBy === "freshness_new") {
+      return [...base].sort((a, b) => {
+        const left = a.opportunity.freshnessTimestamp ?? "";
+        const right = b.opportunity.freshnessTimestamp ?? "";
+        return right.localeCompare(left);
+      });
+    }
+
     return [...base].sort((a, b) => {
       if (b.fitScore !== a.fitScore) {
         return b.fitScore - a.fitScore;
       }
       return a.opportunity.applyBy.localeCompare(b.opportunity.applyBy);
     });
-  }, [matches, termFilter, locationFilter, payFilter, savedOnly, savedIds, sortBy]);
+  }, [
+    matches,
+    termFilter,
+    locationFilter,
+    payFilter,
+    savedOnly,
+    savedIds,
+    sortBy,
+    appliedFilter,
+    actionStateMap,
+  ]);
 
   const urgentCount = useMemo(
     () => filtered.filter((match) => isUrgentDate(match.opportunity.applyBy)).length,
@@ -181,6 +219,11 @@ export default function InternshipsPage(): JSX.Element {
     const total = filtered.reduce((sum, match) => sum + match.fitScore, 0);
     return Math.round(total / filtered.length);
   }, [filtered]);
+
+  const appliedCount = useMemo(
+    () => matches.filter((match) => appliedStateForId(match.opportunity.id, actionStateMap) === "applied").length,
+    [matches, actionStateMap],
+  );
 
   useEffect(() => {
     if (filtered.length === 0) {
@@ -198,6 +241,37 @@ export default function InternshipsPage(): JSX.Element {
     () => filtered.find((item) => item.opportunity.id === selectedId) ?? null,
     [filtered, selectedId],
   );
+
+  const pendingPromptIds = useMemo(
+    () => getPendingApplicationPromptIds(matches.map((match) => match.opportunity.id)),
+    [matches, actionStateMap],
+  );
+
+  useEffect(() => {
+    if (promptOpportunityId) {
+      return;
+    }
+    if (pendingPromptIds.length > 0) {
+      setPromptOpportunityId(pendingPromptIds[0]);
+    }
+  }, [pendingPromptIds, promptOpportunityId]);
+
+  const promptMatch = useMemo(
+    () => matches.find((match) => match.opportunity.id === promptOpportunityId) ?? null,
+    [matches, promptOpportunityId],
+  );
+
+  const handleOpenListing = (opportunityId: string, url: string) => {
+    window.open(url, "_blank", "noopener,noreferrer");
+    setActionStateMap(markOpportunityOpened(opportunityId));
+  };
+
+  const handleSetAppliedState = (opportunityId: string, state: AppliedState) => {
+    setActionStateMap(setOpportunityAppliedState(opportunityId, state));
+    if (promptOpportunityId === opportunityId) {
+      setPromptOpportunityId(null);
+    }
+  };
 
   if (!isHydrated || isLoading) {
     return (
@@ -239,7 +313,7 @@ export default function InternshipsPage(): JSX.Element {
       <NavBar />
       <h1 style={{ margin: 0, color: "#111827", fontSize: "28px" }}>Internships</h1>
       <p style={{ color: "#4b5563", marginTop: "8px" }}>
-        Ranked internships with filters for location, pay, and term.
+        Imported internship postings with saved and applied workflow tracking.
       </p>
       <div style={{ marginTop: "6px", display: "flex", gap: "10px", fontSize: "13px" }}>
         <a href="/research" style={{ color: "#1d4ed8", textDecoration: "none" }}>
@@ -250,12 +324,80 @@ export default function InternshipsPage(): JSX.Element {
         </a>
       </div>
       <p style={{ color: "#4b5563", marginTop: "4px", fontSize: "14px" }}>
-        Saved opportunities: {savedIds.length}
+        Saved opportunities: {savedIds.length} | Applied tracked: {appliedCount}
       </p>
       <div style={{ marginTop: "6px", display: "flex", gap: "12px", color: "#334155", fontSize: "13px" }}>
         <span>{filtered.length} visible</span>
         <span>{urgentCount} urgent deadlines</span>
         <span>Avg fit {averageFit}</span>
+      </div>
+
+      {promptMatch ? (
+        <section
+          style={{
+            marginTop: "14px",
+            border: "1px solid #fed7aa",
+            background: "#fff7ed",
+            borderRadius: "10px",
+            padding: "12px",
+            display: "grid",
+            gap: "8px",
+          }}
+        >
+          <strong style={{ color: "#9a3412" }}>Quick follow-up</strong>
+          <span style={{ color: "#7c2d12", fontSize: "14px" }}>
+            Did you apply to <strong>{promptMatch.opportunity.title}</strong> at {promptMatch.opportunity.organization}?
+          </span>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <button
+              type="button"
+              onClick={() => handleSetAppliedState(promptMatch.opportunity.id, "applied")}
+              style={{ border: "1px solid #166534", background: "#dcfce7", color: "#166534", borderRadius: "8px", padding: "6px 10px", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}
+            >
+              Yes, applied
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetAppliedState(promptMatch.opportunity.id, "not_applied")}
+              style={{ border: "1px solid #9a3412", background: "#ffedd5", color: "#9a3412", borderRadius: "8px", padding: "6px 10px", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}
+            >
+              Not yet
+            </button>
+            <button
+              type="button"
+              onClick={() => setPromptOpportunityId(null)}
+              style={{ border: "1px solid #cbd5e1", background: "#ffffff", color: "#334155", borderRadius: "8px", padding: "6px 10px", fontSize: "12px", fontWeight: 700, cursor: "pointer" }}
+            >
+              Ask later
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      <div style={{ marginTop: "12px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {[
+          { value: "all", label: "All statuses" },
+          { value: "applied", label: "Applied" },
+          { value: "not_applied", label: "Not applied" },
+          { value: "pending", label: "Awaiting response" },
+        ].map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => setAppliedFilter(option.value as typeof appliedFilter)}
+            style={{
+              border: appliedFilter === option.value ? "1px solid #1d4ed8" : "1px solid #cbd5e1",
+              background: appliedFilter === option.value ? "#eff6ff" : "#ffffff",
+              color: appliedFilter === option.value ? "#1d4ed8" : "#334155",
+              borderRadius: "999px",
+              padding: "6px 10px",
+              fontSize: "13px",
+              cursor: "pointer",
+            }}
+          >
+            {option.label}
+          </button>
+        ))}
       </div>
 
       <div style={{ marginTop: "16px" }}>
@@ -281,6 +423,7 @@ export default function InternshipsPage(): JSX.Element {
             setPayFilter("all");
             setSortBy("fit_desc");
             setSavedOnly(false);
+            setAppliedFilter("all");
           }}
         />
       </div>
@@ -311,6 +454,8 @@ export default function InternshipsPage(): JSX.Element {
                 onSelect={() => setSelectedId(match.opportunity.id)}
                 isSaved={savedIds.includes(match.opportunity.id)}
                 onToggleSaved={() => setSavedIds(toggleSavedOpportunityId(match.opportunity.id))}
+                onOpenListing={handleOpenListing}
+                appliedState={appliedStateForId(match.opportunity.id, actionStateMap)}
               />
             ))}
           </div>
@@ -320,6 +465,12 @@ export default function InternshipsPage(): JSX.Element {
             onToggleSaved={
               selectedMatch
                 ? () => setSavedIds(toggleSavedOpportunityId(selectedMatch.opportunity.id))
+                : undefined
+            }
+            appliedState={selectedMatch ? appliedStateForId(selectedMatch.opportunity.id, actionStateMap) : null}
+            onSetAppliedState={
+              selectedMatch
+                ? (state) => handleSetAppliedState(selectedMatch.opportunity.id, state)
                 : undefined
             }
           />
