@@ -41,3 +41,19 @@ Explain how OpenAI tools were central to building Hook, not just embedded as a f
 - Which files humans edited after review
 - Where Codex saved time in parallel worktrees
 
+## Scholarship Matcher (Person C)
+
+- Dataset file: `data/scholarships/scholarships.json` (16 scholarships, UT + external mix).
+- Matching engine: `lib/matchers/scholarship-matcher.ts`.
+- API route: `pages/api/scholarships/match.ts`.
+- Fit scoring dimensions:
+  - residency
+  - major
+  - year (inferred from resume summary or completed-course count)
+  - GPA band
+  - financial need
+  - career goal
+  - resume/skills overlap
+  - specificity of fit (how many scholarship-specific constraints the student satisfies)
+- Output contract: `ScholarshipMatch[]` with `fitScore`, `matchReasons`, `deadline`, `isUrgent`, and full `scholarship`.
+- Evidence screenshot: `codex-log-03-scholarships.png`.

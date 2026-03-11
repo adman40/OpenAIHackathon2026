@@ -1,0 +1,364 @@
+[
+  {
+    "id": "ut-merit-horns-001",
+    "name": "Longhorn Merit Scholars Award",
+    "amount": 4000,
+    "description": "University-wide merit scholarship for high-performing undergraduates who show consistent academic growth and campus engagement.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: any",
+      "Years: freshman,sophomore,junior,senior",
+      "Min GPA: 3.3",
+      "Need: any",
+      "Career Goals: industry,research,grad_school,undecided",
+      "Skills: leadership,communication"
+    ],
+    "favoredQualities": [
+      "Academic consistency",
+      "Leadership in student organizations",
+      "Strong recommendation letters"
+    ],
+    "deadline": "2026-04-20",
+    "submissionDetails": "Submit the central scholarship form and a one-page personal statement through Texas One Stop.",
+    "link": "https://onestop.utexas.edu/scholarships/"
+  },
+  {
+    "id": "ut-first-gen-forward-002",
+    "name": "First-Gen Forward Scholarship",
+    "amount": 5500,
+    "description": "Supports first-generation undergraduates navigating college access and completion at UT Austin.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: any",
+      "Years: freshman,sophomore,junior,senior",
+      "Min GPA: 2.8",
+      "Need: medium,high",
+      "Career Goals: any"
+    ],
+    "favoredQualities": [
+      "First-generation college background",
+      "Persistence through barriers",
+      "Community impact"
+    ],
+    "deadline": "2026-03-25",
+    "submissionDetails": "Complete FAFSA/TASFA on file plus one short essay on educational journey.",
+    "link": "https://financialaid.utexas.edu/types-of-aid/scholarships/"
+  },
+  {
+    "id": "ut-stem-innovation-003",
+    "name": "UT STEM Innovation Grant",
+    "amount": 6000,
+    "description": "Award for STEM students building practical technical projects with measurable impact.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: computer science,electrical engineering,mechanical engineering,biomedical engineering,data science,mathematics",
+      "Years: sophomore,junior,senior",
+      "Min GPA: 3.2",
+      "Need: any",
+      "Career Goals: industry,research",
+      "Skills: python,matlab,cad,sql,software engineering"
+    ],
+    "favoredQualities": [
+      "Project portfolio strength",
+      "Cross-functional teamwork",
+      "Clear implementation plan"
+    ],
+    "deadline": "2026-04-05",
+    "submissionDetails": "Upload resume, unofficial transcript, and project portfolio link.",
+    "link": "https://cockrell.utexas.edu/students/financial-support/scholarships"
+  },
+  {
+    "id": "ut-public-service-004",
+    "name": "Texas Public Service Scholarship",
+    "amount": 5000,
+    "description": "Recognizes students committed to public-sector, nonprofit, or policy-driven careers.",
+    "eligibilitySignals": [
+      "Residency: texas",
+      "Majors: public policy,government,social work,economics,education,any",
+      "Years: sophomore,junior,senior",
+      "Min GPA: 3.0",
+      "Need: medium,high",
+      "Career Goals: grad_school,industry,undecided"
+    ],
+    "favoredQualities": [
+      "Volunteer service",
+      "Public-interest motivation",
+      "Compelling impact narrative"
+    ],
+    "deadline": "2026-04-12",
+    "submissionDetails": "Essay and service activity list required; one faculty reference optional.",
+    "link": "https://lbj.utexas.edu/financial-aid"
+  },
+  {
+    "id": "ut-transfer-rising-005",
+    "name": "Transfer Student Rising Award",
+    "amount": 3500,
+    "description": "Supports transfer students who quickly establish strong academic standing at UT.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: any",
+      "Years: junior,senior",
+      "Min GPA: 3.1",
+      "Need: any",
+      "Career Goals: any"
+    ],
+    "favoredQualities": [
+      "Strong first-term UT performance",
+      "Adaptability",
+      "Campus involvement"
+    ],
+    "deadline": "2026-05-01",
+    "submissionDetails": "Submit transfer statement and updated resume via departmental scholarship portal.",
+    "link": "https://studentsuccess.utexas.edu/scholarships/"
+  },
+  {
+    "id": "ut-ai-research-006",
+    "name": "AI Research Fellows Scholarship",
+    "amount": 8000,
+    "description": "Competitive award for students pursuing AI and machine learning research pathways.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: computer science,data science,electrical engineering,statistics",
+      "Years: sophomore,junior,senior",
+      "Min GPA: 3.4",
+      "Need: any",
+      "Career Goals: research,grad_school",
+      "Skills: python,machine learning,pytorch,tensorflow,statistics"
+    ],
+    "favoredQualities": [
+      "Research potential",
+      "Technical depth in ML",
+      "Faculty alignment"
+    ],
+    "deadline": "2026-03-28",
+    "submissionDetails": "Resume, transcript, and research statement required. Faculty recommender required.",
+    "link": "https://www.cs.utexas.edu/undergraduate/scholarships"
+  },
+  {
+    "id": "ut-women-stem-007",
+    "name": "Women in STEM Momentum Scholarship",
+    "amount": 4500,
+    "description": "Supports women and nonbinary students advancing representation in STEM fields.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: computer science,electrical engineering,mechanical engineering,chemical engineering,biology,chemistry",
+      "Years: freshman,sophomore,junior,senior",
+      "Min GPA: 3.0",
+      "Need: any",
+      "Career Goals: industry,research,grad_school",
+      "Skills: mentoring,leadership,technical communication"
+    ],
+    "favoredQualities": [
+      "Mentorship participation",
+      "Technical initiative",
+      "Inclusive leadership"
+    ],
+    "deadline": "2026-04-18",
+    "submissionDetails": "Short essay and one extracurricular impact example required.",
+    "link": "https://www.swe.org/scholarships/"
+  },
+  {
+    "id": "ut-entrepreneur-build-008",
+    "name": "Student Builder Entrepreneurship Scholarship",
+    "amount": 5000,
+    "description": "For students building products, ventures, or social startups while enrolled at UT.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: any",
+      "Years: sophomore,junior,senior",
+      "Min GPA: 2.9",
+      "Need: any",
+      "Career Goals: industry,undecided",
+      "Skills: product design,prototype,customer discovery,leadership"
+    ],
+    "favoredQualities": [
+      "Execution velocity",
+      "Customer focus",
+      "Resourcefulness"
+    ],
+    "deadline": "2026-05-10",
+    "submissionDetails": "Pitch deck or product brief required with optional demo video.",
+    "link": "https://liberalarts.utexas.edu/entrepreneurship/scholarships"
+  },
+  {
+    "id": "ut-global-leaders-009",
+    "name": "Global Leaders Study Support Scholarship",
+    "amount": 3000,
+    "description": "Provides support for students preparing for global internships and study programs.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: any",
+      "Years: freshman,sophomore,junior",
+      "Min GPA: 3.0",
+      "Need: medium,high",
+      "Career Goals: industry,research,grad_school,undecided",
+      "Skills: communication,cross-cultural teamwork"
+    ],
+    "favoredQualities": [
+      "Global engagement interests",
+      "Intercultural communication",
+      "Adaptability"
+    ],
+    "deadline": "2026-04-30",
+    "submissionDetails": "Statement of purpose plus intended program budget estimate.",
+    "link": "https://global.utexas.edu/abroad/funding"
+  },
+  {
+    "id": "ut-data-for-good-010",
+    "name": "Data for Good Scholarship",
+    "amount": 6500,
+    "description": "Award for students applying data analysis to education, health, civic, or social outcomes.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: data science,computer science,statistics,economics,public health",
+      "Years: sophomore,junior,senior",
+      "Min GPA: 3.3",
+      "Need: any",
+      "Career Goals: industry,research,grad_school",
+      "Skills: python,sql,data analysis,visualization"
+    ],
+    "favoredQualities": [
+      "Applied analytics portfolio",
+      "Mission-driven work",
+      "Ethical reasoning"
+    ],
+    "deadline": "2026-04-07",
+    "submissionDetails": "Resume and one project case study required.",
+    "link": "https://stat.utexas.edu/undergraduate/scholarships"
+  },
+  {
+    "id": "nsf-s-stem-011",
+    "name": "NSF S-STEM Scholars Grant",
+    "amount": 10000,
+    "description": "External NSF funding for high-achieving STEM students with documented financial need.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: computer science,electrical engineering,mechanical engineering,biology,chemistry,mathematics,data science",
+      "Years: freshman,sophomore,junior,senior",
+      "Min GPA: 3.2",
+      "Need: high,medium",
+      "Career Goals: research,grad_school,industry",
+      "Skills: research,problem solving"
+    ],
+    "favoredQualities": [
+      "STEM persistence",
+      "Academic rigor",
+      "Research curiosity"
+    ],
+    "deadline": "2026-04-01",
+    "submissionDetails": "FAFSA evidence, transcript, and faculty recommendation required.",
+    "link": "https://www.nsf.gov/funding/pgm_summ.jsp?pims_id=505509"
+  },
+  {
+    "id": "tx-hecb-grant-012",
+    "name": "Texas Higher Education Coordinating Board Grant",
+    "amount": 6000,
+    "description": "State-supported grant for Texas residents with demonstrated financial need and satisfactory academic progress.",
+    "eligibilitySignals": [
+      "Residency: texas",
+      "Majors: any",
+      "Years: freshman,sophomore,junior,senior",
+      "Min GPA: 2.5",
+      "Need: medium,high",
+      "Career Goals: any"
+    ],
+    "favoredQualities": [
+      "Demonstrated need",
+      "Consistent enrollment",
+      "On-time completion plan"
+    ],
+    "deadline": "2026-03-20",
+    "submissionDetails": "FAFSA/TASFA required. Submit enrollment plan through financial aid portal.",
+    "link": "https://www.highered.texas.gov/our-work/supporting-our-institutions/financial-aid/"
+  },
+  {
+    "id": "swe-scholarship-013",
+    "name": "Society of Women Engineers Scholarship",
+    "amount": 3000,
+    "description": "External SWE scholarship for engineering and computing students showing technical promise and community leadership.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: computer science,electrical engineering,mechanical engineering,civil engineering,biomedical engineering",
+      "Years: sophomore,junior,senior",
+      "Min GPA: 3.0",
+      "Need: any",
+      "Career Goals: industry,research",
+      "Skills: leadership,engineering design,teamwork"
+    ],
+    "favoredQualities": [
+      "Engineering identity",
+      "Professional engagement",
+      "Peer mentoring"
+    ],
+    "deadline": "2026-05-15",
+    "submissionDetails": "SWE application, transcript, and two short responses required.",
+    "link": "https://scholarships.swe.org/"
+  },
+  {
+    "id": "hsf-014",
+    "name": "Hispanic Scholarship Fund Award",
+    "amount": 5000,
+    "description": "National scholarship supporting Hispanic students in undergraduate and graduate pipelines.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: any",
+      "Years: freshman,sophomore,junior,senior",
+      "Min GPA: 3.0",
+      "Need: any",
+      "Career Goals: industry,research,grad_school,undecided"
+    ],
+    "favoredQualities": [
+      "Cultural impact",
+      "Academic resilience",
+      "Leadership potential"
+    ],
+    "deadline": "2026-03-30",
+    "submissionDetails": "HSF profile, transcript, and identity/eligibility verification required.",
+    "link": "https://www.hsf.net/scholarship"
+  },
+  {
+    "id": "utexas-senior-capstone-015",
+    "name": "Senior Capstone Completion Scholarship",
+    "amount": 2500,
+    "description": "Helps seniors finish capstone-heavy final year requirements without financial disruption.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: any",
+      "Years: senior",
+      "Min GPA: 2.8",
+      "Need: medium,high",
+      "Career Goals: industry,research,grad_school,undecided"
+    ],
+    "favoredQualities": [
+      "Graduation readiness",
+      "Capstone execution",
+      "Professional preparation"
+    ],
+    "deadline": "2026-04-25",
+    "submissionDetails": "Submit degree completion plan and faculty capstone verification.",
+    "link": "https://studentsuccess.utexas.edu/graduation-support/"
+  },
+  {
+    "id": "utexas-undergrad-research-016",
+    "name": "Undergraduate Research Start Scholarship",
+    "amount": 4200,
+    "description": "Supports students entering research for the first time with faculty-supervised projects.",
+    "eligibilitySignals": [
+      "Residency: any",
+      "Majors: biology,chemistry,physics,computer science,psychology,neuroscience,public health",
+      "Years: freshman,sophomore,junior",
+      "Min GPA: 3.1",
+      "Need: any",
+      "Career Goals: research,grad_school",
+      "Skills: literature review,data analysis,lab methods"
+    ],
+    "favoredQualities": [
+      "Curiosity",
+      "Research readiness",
+      "Faculty alignment"
+    ],
+    "deadline": "2026-04-14",
+    "submissionDetails": "Research interest statement and tentative faculty mentor required.",
+    "link": "https://undergradcollege.utexas.edu/our/research"
+  }
+]
