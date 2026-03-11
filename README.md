@@ -13,7 +13,7 @@ This repo is initialized with:
 - a `CODEX-LOG.md` file for tracking major Codex tasks
 - collaborator onboarding notes in `docs/collaboration-setup.md`
 
-Framework-specific app code has not been built yet. The next implementation steps should follow the guide.
+The repo now includes the core Next.js 14 + Tailwind app scaffold that Person A's platform work builds on.
 
 ## Team Ownership
 
@@ -92,3 +92,12 @@ git worktree add ../hook-opportunities feat/opportunities
 - Demo script: [`docs/demo-script.md`](./docs/demo-script.md)
 - Judge Q&A: [`docs/judge-qa.md`](./docs/judge-qa.md)
 - Codex log: [`CODEX-LOG.md`](./CODEX-LOG.md)
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`. The root route redirects to onboarding, and the `ProfileProvider` is mounted in the app layout for the shared profile flow.
