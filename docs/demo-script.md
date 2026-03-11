@@ -36,7 +36,15 @@ Line to say:
 
 ### 0:48-1:02 - Research / Internships
 
-Show one fit-scored opportunity and open the detail panel.
+Open `/research` and `/internships` and show:
+
+- ranked opportunity cards with fit scores
+- filters changing visible opportunities in real time
+- detail panel with fit reasons and apply-by date
+- internship filters for location, pay band, and term
+
+Line to say:
+"Hook ranks both research and internship opportunities from one profile, then lets students quickly filter by what they can actually do this term and where."
 
 ### 1:02-1:10 - Clubs
 
