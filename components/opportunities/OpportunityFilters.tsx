@@ -13,6 +13,9 @@ type OpportunityFiltersProps = {
   onSkillChange?: (value: string) => void;
   keyword?: string;
   onKeywordChange?: (value: string) => void;
+  savedOnly?: boolean;
+  onSavedOnlyChange?: (value: boolean) => void;
+  savedCount?: number;
   onReset: () => void;
 };
 
@@ -31,6 +34,9 @@ export function OpportunityFilters({
   onSkillChange,
   keyword = "",
   onKeywordChange,
+  savedOnly = false,
+  onSavedOnlyChange,
+  savedCount = 0,
   onReset,
 }: OpportunityFiltersProps): JSX.Element {
   return (
@@ -113,6 +119,25 @@ export function OpportunityFilters({
             placeholder="Search title, org, or description"
             onChange={(event) => onKeywordChange(event.target.value)}
           />
+        </label>
+      ) : null}
+
+      {onSavedOnlyChange ? (
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            color: "#374151",
+            fontSize: "14px",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={savedOnly}
+            onChange={(event) => onSavedOnlyChange(event.target.checked)}
+          />
+          Show saved only ({savedCount})
         </label>
       ) : null}
 

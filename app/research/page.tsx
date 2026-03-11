@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { OpportunityCard } from "../../components/opportunities/OpportunityCard";
 import { OpportunityDetailPanel } from "../../components/opportunities/OpportunityDetailPanel";
 import { OpportunityFilters } from "../../components/opportunities/OpportunityFilters";
+import {
+  getSavedOpportunityIds,
+  toggleSavedOpportunityId,
+} from "../../lib/opportunities/saved-opportunities";
 import type { OpportunityMatch, StudentProfile } from "../../lib/types";
 
 type MatchApiResponse = {
@@ -52,50 +56,42 @@ export default function ResearchPage(): JSX.Element {
   const [skillFilter, setSkillFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("all");
   const [keywordFilter, setKeywordFilter] = useState("");
+  const [savedOnly, setSavedOnly] = useState(false);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-
-    async function load(): Promise<void> {
+  const load = useCallback(async (): Promise<void> => {
+    try {
       setIsLoading(true);
       setError(null);
-      try {
-        const response = await fetch("/api/research/match", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profile: DEMO_PROFILE }),
-        });
+      const response = await fetch("/api/research/match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ profile: DEMO_PROFILE }),
+      });
 
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const payload = (await response.json()) as MatchApiResponse;
-        const ranked = rank(payload.matches ?? []);
-        if (!mounted) {
-          return;
-        }
-
-        setMatches(ranked);
-        setSelectedId(ranked[0]?.opportunity.id ?? null);
-      } catch (err) {
-        if (!mounted) {
-          return;
-        }
-        setError(err instanceof Error ? err.message : "Unable to load research matches.");
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
       }
-    }
 
+      const payload = (await response.json()) as MatchApiResponse;
+      const ranked = rank(payload.matches ?? []);
+      setMatches(ranked);
+      setSelectedId(ranked[0]?.opportunity.id ?? null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to load research matches.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
     void load();
-    return () => {
-      mounted = false;
-    };
+  }, [load]);
+
+  useEffect(() => {
+    setSavedIds(getSavedOpportunityIds());
   }, []);
 
   const termOptions = useMemo(
@@ -130,9 +126,12 @@ export default function ResearchPage(): JSX.Element {
           return false;
         }
       }
+      if (savedOnly && !savedIds.includes(opportunity.id)) {
+        return false;
+      }
       return true;
     });
-  }, [matches, termFilter, locationFilter, skillFilter, keywordFilter]);
+  }, [matches, termFilter, locationFilter, skillFilter, keywordFilter, savedOnly, savedIds]);
 
   useEffect(() => {
     if (filtered.length === 0) {
@@ -165,6 +164,21 @@ export default function ResearchPage(): JSX.Element {
       <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
         <h1 style={{ margin: 0, color: "#111827", fontSize: "28px" }}>Research Opportunities</h1>
         <p style={{ color: "#b91c1c", marginTop: "8px" }}>Could not load research matches: {error}</p>
+        <button
+          type="button"
+          onClick={() => void load()}
+          style={{
+            marginTop: "10px",
+            border: "1px solid #1d4ed8",
+            background: "#eff6ff",
+            color: "#1d4ed8",
+            borderRadius: "8px",
+            padding: "8px 10px",
+            cursor: "pointer",
+          }}
+        >
+          Retry
+        </button>
       </main>
     );
   }
@@ -174,6 +188,9 @@ export default function ResearchPage(): JSX.Element {
       <h1 style={{ margin: 0, color: "#111827", fontSize: "28px" }}>Research Opportunities</h1>
       <p style={{ color: "#4b5563", marginTop: "8px" }}>
         Ranked by fit score with filters for research planning.
+      </p>
+      <p style={{ color: "#4b5563", marginTop: "4px", fontSize: "14px" }}>
+        Saved opportunities: {savedIds.length}
       </p>
 
       <div style={{ marginTop: "16px" }}>
@@ -189,11 +206,15 @@ export default function ResearchPage(): JSX.Element {
           onSkillChange={setSkillFilter}
           keyword={keywordFilter}
           onKeywordChange={setKeywordFilter}
+          savedOnly={savedOnly}
+          onSavedOnlyChange={setSavedOnly}
+          savedCount={savedIds.length}
           onReset={() => {
             setTermFilter("all");
             setLocationFilter("all");
             setSkillFilter("all");
             setKeywordFilter("");
+            setSavedOnly(false);
           }}
         />
       </div>
@@ -222,10 +243,20 @@ export default function ResearchPage(): JSX.Element {
                 match={match}
                 isSelected={selectedId === match.opportunity.id}
                 onSelect={() => setSelectedId(match.opportunity.id)}
+                isSaved={savedIds.includes(match.opportunity.id)}
+                onToggleSaved={() => setSavedIds(toggleSavedOpportunityId(match.opportunity.id))}
               />
             ))}
           </div>
-          <OpportunityDetailPanel match={selectedMatch} />
+          <OpportunityDetailPanel
+            match={selectedMatch}
+            isSaved={selectedMatch ? savedIds.includes(selectedMatch.opportunity.id) : false}
+            onToggleSaved={
+              selectedMatch
+                ? () => setSavedIds(toggleSavedOpportunityId(selectedMatch.opportunity.id))
+                : undefined
+            }
+          />
         </section>
       )}
 

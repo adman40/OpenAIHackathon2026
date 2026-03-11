@@ -2,10 +2,14 @@ import type { OpportunityMatch } from "../../lib/types";
 
 type OpportunityDetailPanelProps = {
   match: OpportunityMatch | null;
+  isSaved?: boolean;
+  onToggleSaved?: () => void;
 };
 
 export function OpportunityDetailPanel({
   match,
+  isSaved = false,
+  onToggleSaved,
 }: OpportunityDetailPanelProps): JSX.Element {
   if (!match) {
     return (
@@ -36,6 +40,26 @@ export function OpportunityDetailPanel({
     >
       <div style={{ fontWeight: 800, fontSize: "20px", color: "#111827" }}>{opportunity.title}</div>
       <div style={{ marginTop: "5px", color: "#374151" }}>{opportunity.organization}</div>
+
+      {onToggleSaved ? (
+        <button
+          type="button"
+          onClick={onToggleSaved}
+          style={{
+            marginTop: "10px",
+            border: isSaved ? "1px solid #f59e0b" : "1px solid #cbd5e1",
+            background: isSaved ? "#fffbeb" : "#f8fafc",
+            color: isSaved ? "#b45309" : "#334155",
+            borderRadius: "8px",
+            padding: "6px 10px",
+            fontSize: "12px",
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
+        >
+          {isSaved ? "Saved Opportunity" : "Save Opportunity"}
+        </button>
+      ) : null}
 
       <div style={{ marginTop: "12px", display: "grid", gap: "6px", color: "#1f2937", fontSize: "14px" }}>
         <div>Fit Score: {match.fitScore}</div>
