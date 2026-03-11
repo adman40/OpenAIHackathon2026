@@ -1,0 +1,91 @@
+{
+  "degreeId": "cs-bscs",
+  "degreeName": "B.S. in Computer Science",
+  "college": "College of Engineering",
+  "totalCredits": 120,
+  "coreRequirements": {
+    "creditsRequired": 42,
+    "groups": [
+      {
+        "id": "core-writing-humanities",
+        "title": "Writing & Humanities Core",
+        "credits": 12,
+        "courses": [
+          "ENGL 101",
+          "ENGL 201",
+          "HIST 210",
+          "PHIL 110"
+        ],
+        "notes": "Choose approved sections that meet university core outcomes."
+      },
+      {
+        "id": "core-math-science",
+        "title": "Math & Science Core",
+        "credits": 18,
+        "courses": [
+          "MATH 221",
+          "MATH 231",
+          "STAT 241",
+          "PHYS 201",
+          "PHYS 202"
+        ],
+        "notes": "Physics sequence must include labs."
+      },
+      {
+        "id": "core-social-science",
+        "title": "Social Science & Ethics",
+        "credits": 12,
+        "courses": [
+          "ECON 101",
+          "PSYC 101",
+          "SOC 200",
+          "ETHS 220"
+        ],
+        "notes": "At least one course must be designated writing intensive."
+      }
+    ]
+  },
+  "majorRequirements": {
+    "creditsRequired": 60,
+    "groups": [
+      {
+        "id": "cs-foundations",
+        "title": "CS Foundations",
+        "credits": 24,
+        "courses": [
+          "CS 101",
+          "CS 111",
+          "CS 210",
+          "CS 220",
+          "CS 230",
+          "CS 310"
+        ],
+        "notes": "Programming sequence builds toward systems and algorithms."
+      },
+      {
+        "id": "cs-advanced",
+        "title": "CS Advanced Core",
+        "credits": 18,
+        "courses": [
+          "CS 320",
+          "CS 330",
+          "CS 410",
+          "CS 420",
+          "CS 450"
+        ],
+        "notes": "CS 450 is the capstone and must be taken after CS 410."
+      },
+      {
+        "id": "cs-electives",
+        "title": "CS Major Electives",
+        "credits": 18,
+        "courses": [
+          "CS 360",
+          "CS 370",
+          "CS 430"
+        ],
+        "notes": "Select at least two courses at the 300-level or above."
+      }
+    ]
+  }
+}

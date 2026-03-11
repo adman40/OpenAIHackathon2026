@@ -13,6 +13,28 @@ export type RecommendationUrgency = "critical" | "recommended" | "optional";
 
 export type RequirementBucket = "core" | "major" | "elective";
 
+export interface DegreeRequirementGroup {
+  id: string;
+  title: string;
+  credits: number;
+  courses: string[];
+  notes: string;
+}
+
+export interface RequirementSection {
+  creditsRequired: number;
+  groups: DegreeRequirementGroup[];
+}
+
+export interface DegreeRequirements {
+  degreeId: string;
+  degreeName: string;
+  college: string;
+  totalCredits: number;
+  coreRequirements: RequirementSection;
+  majorRequirements: RequirementSection;
+}
+
 // Student profile types power every Hook surface.
 export interface CompletedCourse {
   courseId: string;
@@ -36,6 +58,7 @@ export interface StudentProfile {
   preferredLocations: string[];
   preferredTerms: string[];
   clubInterests: string[];
+  hoursPerWeek?: number;
 }
 
 // Academic types drive course planning and on-track analysis.
@@ -58,6 +81,12 @@ export interface EligibleCourse {
   professorDifficulty: string;
   gradeTendency: string;
   attendancePolicy: string;
+}
+
+export interface CourseCatalog {
+  catalogId: string;
+  degreeId: string;
+  courses: EligibleCourse[];
 }
 
 export interface AcademicAnalysis {

@@ -1,0 +1,93 @@
+{
+  "degreeId": "ece-bsece",
+  "degreeName": "B.S. in Electrical and Computer Engineering",
+  "college": "College of Engineering",
+  "totalCredits": 120,
+  "coreRequirements": {
+    "creditsRequired": 42,
+    "groups": [
+      {
+        "id": "core-writing-humanities",
+        "title": "Writing & Humanities Core",
+        "credits": 12,
+        "courses": [
+          "ENGL 101",
+          "ENGL 201",
+          "HIST 210",
+          "PHIL 110"
+        ],
+        "notes": "Select humanities courses that satisfy university core outcomes."
+      },
+      {
+        "id": "core-math-science",
+        "title": "Math & Science Core",
+        "credits": 20,
+        "courses": [
+          "MATH 221",
+          "MATH 232",
+          "MATH 251",
+          "PHYS 201",
+          "PHYS 202",
+          "CHEM 101"
+        ],
+        "notes": "Calculus sequence must be completed before upper-division ECE labs."
+      },
+      {
+        "id": "core-social-science",
+        "title": "Social Science & Ethics",
+        "credits": 10,
+        "courses": [
+          "ECON 101",
+          "PSYC 101",
+          "ETHS 220"
+        ],
+        "notes": "At least one course must be designated writing intensive."
+      }
+    ]
+  },
+  "majorRequirements": {
+    "creditsRequired": 60,
+    "groups": [
+      {
+        "id": "ece-foundations",
+        "title": "ECE Foundations",
+        "credits": 24,
+        "courses": [
+          "ECE 101",
+          "ECE 120",
+          "ECE 210",
+          "ECE 220",
+          "ECE 230",
+          "ECE 240"
+        ],
+        "notes": "Core circuit and programming sequence prepares students for systems labs."
+      },
+      {
+        "id": "ece-systems",
+        "title": "ECE Systems Core",
+        "credits": 21,
+        "courses": [
+          "ECE 310",
+          "ECE 320",
+          "ECE 330",
+          "ECE 340",
+          "ECE 410",
+          "ECE 420",
+          "ECE 450"
+        ],
+        "notes": "ECE 450 capstone requires completion of ECE 410."
+      },
+      {
+        "id": "ece-electives",
+        "title": "ECE Major Electives",
+        "credits": 15,
+        "courses": [
+          "ECE 360",
+          "ECE 370",
+          "ECE 430"
+        ],
+        "notes": "Choose advanced electives aligned to power, embedded, or communications tracks."
+      }
+    ]
+  }
+}

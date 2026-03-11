@@ -1,0 +1,91 @@
+{
+  "degreeId": "biology-bsbi",
+  "degreeName": "B.S. in Biology",
+  "college": "College of Natural Sciences",
+  "totalCredits": 120,
+  "coreRequirements": {
+    "creditsRequired": 40,
+    "groups": [
+      {
+        "id": "core-writing-humanities",
+        "title": "Writing & Humanities Core",
+        "credits": 12,
+        "courses": [
+          "ENGL 101",
+          "ENGL 201",
+          "HIST 210",
+          "PHIL 110"
+        ],
+        "notes": "Complete the writing sequence before upper-division lab courses."
+      },
+      {
+        "id": "core-math-chemistry",
+        "title": "Math & Chemistry Core",
+        "credits": 20,
+        "courses": [
+          "MATH 121",
+          "STAT 201",
+          "CHEM 101",
+          "CHEM 102",
+          "CHEM 201",
+          "CHEM 202"
+        ],
+        "notes": "Organic chemistry must be completed before molecular biology."
+      },
+      {
+        "id": "core-social-ethics",
+        "title": "Social Science & Ethics",
+        "credits": 8,
+        "courses": [
+          "PSYC 101",
+          "SOC 200",
+          "ETHS 220"
+        ],
+        "notes": "Select one course that fulfills the civic engagement requirement."
+      }
+    ]
+  },
+  "majorRequirements": {
+    "creditsRequired": 60,
+    "groups": [
+      {
+        "id": "bio-foundations",
+        "title": "Biology Foundations",
+        "credits": 24,
+        "courses": [
+          "BIOL 110",
+          "BIOL 120",
+          "BIOL 210",
+          "BIOL 220",
+          "BIOL 230",
+          "BIOL 240"
+        ],
+        "notes": "Intro sequence includes lectures and core lab skills."
+      },
+      {
+        "id": "bio-advanced",
+        "title": "Advanced Biology Core",
+        "credits": 24,
+        "courses": [
+          "BIOL 310",
+          "BIOL 320",
+          "BIOL 330",
+          "BIOL 410",
+          "BIOL 420"
+        ],
+        "notes": "BIOL 410 capstone requires completion of genetics and cell biology."
+      },
+      {
+        "id": "bio-electives",
+        "title": "Biology Electives",
+        "credits": 12,
+        "courses": [
+          "BIOL 360",
+          "BIOL 370",
+          "BIOL 430"
+        ],
+        "notes": "Choose electives from ecology, microbiology, or neuroscience tracks."
+      }
+    ]
+  }
+}

@@ -14,6 +14,18 @@ For the MVP, the data is curated locally so the team can prove the product flow 
 
 Student success is not only academics and jobs. Community fit also affects stress, belonging, and long-term outcomes.
 
+### Why should we trust the academic recommendations?
+
+The academic output is based on local degree requirements, course metadata, and prerequisite rules that the team can inspect directly. Hook is not guessing from a black-box model here; it is turning structured degree data into a clearer next-step view.
+
+### How transparent is the fit score for clubs?
+
+The club score is intentionally simple. It is driven by visible inputs like interests, major alignment, career goal, and time commitment, and the UI shows short match reasons so students can understand why a club ranked well.
+
+### Why do club recommendations matter in a student-success product?
+
+Belonging and community reduce confusion and isolation in the same way academic clarity reduces planning stress. Hook includes clubs because student success is not only about classes and jobs; it is also about finding the right communities early.
+
 ## OpenAI Questions
 
 ### How did you use Codex?
