@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import type {
   CourseCatalog,
   CourseDetail,
@@ -9,6 +6,7 @@ import type {
   ImportedCourseScheduleCatalog,
 } from "../types";
 import { getScheduleSnapshotForTerm, getScheduledTermsForCourse } from "./course-schedule";
+import { getCourseCatalog, getImportedCourseScheduleCatalog } from "./static-data";
 
 function normalizeCourseId(courseId: string): string {
   return courseId.trim().toUpperCase();
@@ -49,19 +47,18 @@ const VERIFIED_PROFESSOR_SNAPSHOTS: Record<string, Set<string>> = {
   ]),
 };
 
-async function loadJsonFile<T>(segments: string[]): Promise<T> {
-  const filePath = path.join(process.cwd(), ...segments);
-  const fileContents = await readFile(filePath, "utf8");
-
-  return JSON.parse(fileContents) as T;
-}
-
 export async function loadCourseCatalog(courseCatalogId: string): Promise<CourseCatalog> {
-  return loadJsonFile<CourseCatalog>(["data", "courses", `${courseCatalogId}.json`]);
+  const catalog = getCourseCatalog(courseCatalogId);
+
+  if (!catalog) {
+    throw new Error(`Missing course catalog: ${courseCatalogId}`);
+  }
+
+  return catalog;
 }
 
 export async function loadImportedScheduleCatalog(): Promise<ImportedCourseScheduleCatalog> {
-  return loadJsonFile<ImportedCourseScheduleCatalog>(["data", "ut", "course-schedule.json"]);
+  return getImportedCourseScheduleCatalog();
 }
 
 function buildCourseDescription(course: EligibleCourse): string {

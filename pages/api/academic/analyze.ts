@@ -1,6 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 
 import { analyzeDegree } from "../../../lib/academic/degree-engine";
 import {
@@ -8,10 +6,12 @@ import {
   toDegreeRequirements,
 } from "../../../lib/academic/normalized-degree-plans";
 import {
+  getCourseCatalog,
+  getImportedCourseScheduleCatalog,
+  getUndergradDegreePlanCatalog,
+} from "../../../lib/academic/static-data";
+import {
   AcademicAnalysis,
-  CourseCatalog,
-  ImportedCourseScheduleCatalog,
-  NormalizedDegreePlanCatalog,
   StudentProfile,
 } from "../../../lib/types";
 
@@ -20,13 +20,6 @@ type AnalyzeResponse =
   | {
       error: string;
     };
-
-async function loadJsonFile<T>(segments: string[]): Promise<T> {
-  const filePath = path.join(process.cwd(), ...segments);
-  const fileContents = await readFile(filePath, "utf8");
-
-  return JSON.parse(fileContents) as T;
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -44,28 +37,20 @@ export default async function handler(
   }
 
   try {
-    // Normalized undergrad plans let us keep one UT-aligned source while reusing the existing engine.
-    const planCatalog = await loadJsonFile<NormalizedDegreePlanCatalog>([
-      "data",
-      "ut",
-      "undergrad-degree-plans.json",
-    ]);
+    const planCatalog = getUndergradDegreePlanCatalog();
     const plan = findNormalizedDegreePlanForMajor(profile.major, planCatalog);
 
     if (!plan) {
       return res.status(400).json({ error: `Unsupported major: ${profile.major}` });
     }
 
-    const catalog = await loadJsonFile<CourseCatalog>([
-      "data",
-      "courses",
-      `${plan.courseCatalogId}.json`,
-    ]);
-    const scheduleCatalog = await loadJsonFile<ImportedCourseScheduleCatalog>([
-      "data",
-      "ut",
-      "course-schedule.json",
-    ]);
+    const catalog = getCourseCatalog(plan.courseCatalogId);
+
+    if (!catalog) {
+      return res.status(500).json({ error: `Missing course catalog: ${plan.courseCatalogId}` });
+    }
+
+    const scheduleCatalog = getImportedCourseScheduleCatalog();
     const degree = toDegreeRequirements(plan);
 
     return res.status(200).json(
