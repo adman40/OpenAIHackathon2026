@@ -20,6 +20,7 @@ Explain how OpenAI tools were central to building Hook, not just embedded as a f
 
 - `codex-log-01-types.png`
 - `codex-log-02-academic-engine.png`
+- `codex-log-02-academic-data.png`
 - `codex-log-03-scholarships.png`
 - `codex-log-04-clubs.png`
 - `codex-log-05-opportunities.png`
@@ -40,4 +41,5 @@ Explain how OpenAI tools were central to building Hook, not just embedded as a f
 - Which files Codex created directly
 - Which files humans edited after review
 - Where Codex saved time in parallel worktrees
+- Structured academic data generation made it easy to demo degree progress, prereq alerts, and course recommendations with consistent JSON inputs.
 

@@ -1,0 +1,93 @@
+{
+  "degreeId": "business-bba",
+  "degreeName": "B.B.A. in Business Administration",
+  "college": "College of Business",
+  "totalCredits": 120,
+  "coreRequirements": {
+    "creditsRequired": 45,
+    "groups": [
+      {
+        "id": "core-writing-humanities",
+        "title": "Writing & Humanities Core",
+        "credits": 12,
+        "courses": [
+          "ENGL 101",
+          "ENGL 201",
+          "HIST 210",
+          "PHIL 110"
+        ],
+        "notes": "Writing sequence must be completed by the end of sophomore year."
+      },
+      {
+        "id": "core-quantitative",
+        "title": "Quantitative & Analytics Core",
+        "credits": 15,
+        "courses": [
+          "MATH 120",
+          "STAT 201",
+          "ECON 101",
+          "ECON 102"
+        ],
+        "notes": "Statistics and economics must be completed before upper-division finance."
+      },
+      {
+        "id": "core-social-ethics",
+        "title": "Social Science & Ethics",
+        "credits": 18,
+        "courses": [
+          "PSYC 101",
+          "SOC 200",
+          "ETHS 220",
+          "COMM 205"
+        ],
+        "notes": "COMM 205 satisfies the oral communication requirement."
+      }
+    ]
+  },
+  "majorRequirements": {
+    "creditsRequired": 60,
+    "groups": [
+      {
+        "id": "business-core",
+        "title": "Business Core",
+        "credits": 30,
+        "courses": [
+          "BUS 101",
+          "ACCT 201",
+          "ACCT 202",
+          "BUS 210",
+          "MIS 301",
+          "BUSL 305",
+          "FIN 310",
+          "MKT 320",
+          "MGMT 330",
+          "OPS 340"
+        ],
+        "notes": "Accounting sequence must be completed prior to finance and strategy."
+      },
+      {
+        "id": "business-advanced",
+        "title": "Strategy & Analytics",
+        "credits": 18,
+        "courses": [
+          "BUS 350",
+          "BUS 360",
+          "STRAT 450",
+          "ENTR 410"
+        ],
+        "notes": "STRAT 450 is the capstone and should be taken in the final year."
+      },
+      {
+        "id": "business-electives",
+        "title": "Business Electives",
+        "credits": 12,
+        "courses": [
+          "FIN 420",
+          "MKT 410",
+          "MGMT 410"
+        ],
+        "notes": "Select electives that align to finance, marketing, or operations pathways."
+      }
+    ]
+  }
+}
