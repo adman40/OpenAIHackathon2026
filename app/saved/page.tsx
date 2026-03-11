@@ -7,8 +7,12 @@ import { OpportunityDetailPanel } from "../../components/opportunities/Opportuni
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
 import {
   clearSavedOpportunityIds,
+  getOpportunityActionStateMap,
   getSavedOpportunityIds,
+  markOpportunityOpened,
+  setOpportunityAppliedState,
   toggleSavedOpportunityId,
+  type AppliedState,
 } from "../../lib/opportunities/saved-opportunities";
 import type { OpportunityMatch } from "../../lib/types";
 
@@ -46,12 +50,21 @@ function exportMatches(matches: OpportunityMatch[]): void {
   URL.revokeObjectURL(url);
 }
 
+function appliedStateForId(
+  id: string,
+  actionStateMap: ReturnType<typeof getOpportunityActionStateMap>,
+): AppliedState | null {
+  return actionStateMap[id]?.appliedState ?? null;
+}
+
 export default function SavedPage(): JSX.Element {
   const { profile, isHydrated } = useProfile();
   const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [actionStateMap, setActionStateMap] = useState(getOpportunityActionStateMap());
   const [allMatches, setAllMatches] = useState<OpportunityMatch[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [kindFilter, setKindFilter] = useState<"all" | "research" | "internship">("all");
+  const [appliedFilter, setAppliedFilter] = useState<"all" | "applied" | "not_applied" | "pending">("all");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,6 +76,7 @@ export default function SavedPage(): JSX.Element {
       setError(null);
       const currentSaved = getSavedOpportunityIds();
       setSavedIds(currentSaved);
+      setActionStateMap(getOpportunityActionStateMap());
 
       const [researchRes, internshipsRes] = await Promise.all([
         fetch("/api/research/match", {
@@ -111,12 +125,21 @@ export default function SavedPage(): JSX.Element {
       if (!savedIds.includes(match.opportunity.id)) {
         return false;
       }
-      if (kindFilter === "all") {
-        return true;
+      if (kindFilter !== "all" && match.opportunity.kind !== kindFilter) {
+        return false;
       }
-      return match.opportunity.kind === kindFilter;
+      const appliedState = appliedStateForId(match.opportunity.id, actionStateMap);
+      if (appliedFilter !== "all" && appliedState !== appliedFilter) {
+        return false;
+      }
+      return true;
     });
-  }, [allMatches, savedIds, kindFilter]);
+  }, [allMatches, savedIds, kindFilter, appliedFilter, actionStateMap]);
+
+  const appliedSavedCount = useMemo(
+    () => visible.filter((match) => appliedStateForId(match.opportunity.id, actionStateMap) === "applied").length,
+    [visible, actionStateMap],
+  );
 
   useEffect(() => {
     if (visible.length === 0) {
@@ -170,10 +193,10 @@ export default function SavedPage(): JSX.Element {
     <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
       <h1 style={{ margin: 0, fontSize: "28px", color: "#111827" }}>Saved Opportunities</h1>
       <p style={{ marginTop: "8px", color: "#4b5563" }}>
-        Your pinned opportunities from research and internships in one place.
+        Your bookmarked opportunities across research and internships, with applied-state tracking.
       </p>
       <div style={{ marginTop: "8px", color: "#334155", fontSize: "13px" }}>
-        {visible.length} visible | {savedIds.length} saved total
+        {visible.length} visible | {savedIds.length} saved total | {appliedSavedCount} marked applied
       </div>
 
       <div style={{ marginTop: "14px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -199,7 +222,35 @@ export default function SavedPage(): JSX.Element {
             {option.label}
           </button>
         ))}
+      </div>
 
+      <div style={{ marginTop: "10px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {[
+          { value: "all", label: "All statuses" },
+          { value: "applied", label: "Applied" },
+          { value: "not_applied", label: "Not applied" },
+          { value: "pending", label: "Awaiting response" },
+        ].map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => setAppliedFilter(option.value as typeof appliedFilter)}
+            style={{
+              border: appliedFilter === option.value ? "1px solid #1d4ed8" : "1px solid #cbd5e1",
+              background: appliedFilter === option.value ? "#eff6ff" : "#ffffff",
+              color: appliedFilter === option.value ? "#1d4ed8" : "#334155",
+              borderRadius: "999px",
+              padding: "6px 10px",
+              fontSize: "13px",
+              cursor: "pointer",
+            }}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ marginTop: "10px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
         <button
           type="button"
           onClick={() => exportMatches(visible)}
@@ -245,7 +296,7 @@ export default function SavedPage(): JSX.Element {
         </p>
       ) : visible.length === 0 ? (
         <p style={{ marginTop: "18px", color: "#4b5563" }}>
-          No saved opportunities in this category.
+          No saved opportunities in this filter view.
         </p>
       ) : (
         <section
@@ -265,6 +316,11 @@ export default function SavedPage(): JSX.Element {
                 onSelect={() => setSelectedId(match.opportunity.id)}
                 isSaved={savedIds.includes(match.opportunity.id)}
                 onToggleSaved={() => setSavedIds(toggleSavedOpportunityId(match.opportunity.id))}
+                onOpenListing={(opportunityId, url) => {
+                  window.open(url, "_blank", "noopener,noreferrer");
+                  setActionStateMap(markOpportunityOpened(opportunityId));
+                }}
+                appliedState={appliedStateForId(match.opportunity.id, actionStateMap)}
               />
             ))}
           </div>
@@ -274,6 +330,12 @@ export default function SavedPage(): JSX.Element {
             onToggleSaved={
               selectedMatch
                 ? () => setSavedIds(toggleSavedOpportunityId(selectedMatch.opportunity.id))
+                : undefined
+            }
+            appliedState={selectedMatch ? appliedStateForId(selectedMatch.opportunity.id, actionStateMap) : null}
+            onSetAppliedState={
+              selectedMatch
+                ? (state) => setActionStateMap(setOpportunityAppliedState(selectedMatch.opportunity.id, state))
                 : undefined
             }
           />

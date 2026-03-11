@@ -46,9 +46,6 @@ const gpaRanges = ["2.0-2.5", "2.5-3.0", "3.0-3.5", "3.5-4.0"];
 const residencyOptions: Residency[] = ["texas", "out-of-state", "international"];
 const financialNeedOptions: FinancialNeed[] = ["low", "medium", "high"];
 const careerGoals: CareerGoal[] = ["industry", "research", "grad_school", "undecided"];
-const locationOptions = ["Austin", "Remote", "Dallas", "Houston", "San Francisco", "New York"];
-const termOptions = ["spring", "summer", "fall"];
-
 const initialState: FormState = {
   name: "",
   major: "Computer Science",
@@ -62,8 +59,8 @@ const initialState: FormState = {
   skills: [],
   interests: [],
   careerGoal: "research",
-  preferredLocations: ["Austin", "Remote"],
-  preferredTerms: ["summer", "fall"],
+  preferredLocations: [],
+  preferredTerms: [],
   clubInterests: [],
 };
 
@@ -87,17 +84,6 @@ export default function ProfileForm({ onComplete }: ProfileFormProps) {
 
   const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setFormState((current) => ({ ...current, [key]: value }));
-  };
-
-  const toggleListItem = (key: "preferredLocations" | "preferredTerms", value: string) => {
-    setFormState((current) => {
-      const currentValues = current[key];
-      const nextValues = currentValues.includes(value)
-        ? currentValues.filter((item) => item !== value)
-        : [...currentValues, value];
-
-      return { ...current, [key]: nextValues };
-    });
   };
 
   const addTextTag = (key: "skills" | "interests" | "clubInterests", rawValue: string) => {
@@ -185,12 +171,6 @@ export default function ProfileForm({ onComplete }: ProfileFormProps) {
 
     if (step === 3) {
       if (!formState.resumeSummary.trim()) nextErrors.push("Add a short resume summary.");
-      if (formState.preferredLocations.length === 0) {
-        nextErrors.push("Choose at least one preferred location.");
-      }
-      if (formState.preferredTerms.length === 0) {
-        nextErrors.push("Choose at least one preferred term.");
-      }
     }
 
     if (step === 4) {
@@ -418,46 +398,6 @@ export default function ProfileForm({ onComplete }: ProfileFormProps) {
                 placeholder="Summarize your projects, leadership, technical skills, and what you want next."
               />
             </div>
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <span className="mb-2 block text-sm font-medium text-stone-700">
-                  Preferred Locations
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {locationOptions.map((location) => (
-                    <button
-                      key={location}
-                      type="button"
-                      onClick={() => toggleListItem("preferredLocations", location)}
-                      className={`rounded-full border px-3 py-2 text-sm font-medium ${pillClasses(
-                        formState.preferredLocations.includes(location)
-                      )}`}
-                    >
-                      {location}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <span className="mb-2 block text-sm font-medium text-stone-700">
-                  Preferred Terms
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {termOptions.map((term) => (
-                    <button
-                      key={term}
-                      type="button"
-                      onClick={() => toggleListItem("preferredTerms", term)}
-                      className={`rounded-full border px-3 py-2 text-sm font-medium ${pillClasses(
-                        formState.preferredTerms.includes(term)
-                      )}`}
-                    >
-                      {term}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
         );
       case 4:
@@ -610,4 +550,3 @@ export default function ProfileForm({ onComplete }: ProfileFormProps) {
     </form>
   );
 }
-

@@ -8,8 +8,14 @@ import type { Opportunity, OpportunityMatch, StudentProfile } from "../../../lib
 type MatchResponse = { matches: OpportunityMatch[] } | { error: string };
 
 async function readInternships(): Promise<Opportunity[]> {
-  const filePath = path.join(process.cwd(), "data", "opportunities", "internships.json");
-  const raw = await fs.readFile(filePath, "utf8");
+  const importedPath = path.join(process.cwd(), "data", "opportunities", "internships-imported.json");
+  const defaultPath = path.join(process.cwd(), "data", "opportunities", "internships.json");
+  let raw: string;
+  try {
+    raw = await fs.readFile(importedPath, "utf8");
+  } catch {
+    raw = await fs.readFile(defaultPath, "utf8");
+  }
   return JSON.parse(raw) as Opportunity[];
 }
 

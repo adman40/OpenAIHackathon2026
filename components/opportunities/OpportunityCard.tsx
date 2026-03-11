@@ -1,5 +1,6 @@
 import type { OpportunityMatch } from "../../lib/types";
 import { daysUntilDate, isUrgentDate } from "../../lib/opportunities/deadline";
+import type { AppliedState } from "../../lib/opportunities/saved-opportunities";
 
 type OpportunityCardProps = {
   match: OpportunityMatch;
@@ -7,6 +8,8 @@ type OpportunityCardProps = {
   onSelect: () => void;
   isSaved: boolean;
   onToggleSaved: () => void;
+  onOpenListing?: (opportunityId: string, url: string) => void;
+  appliedState?: AppliedState | null;
 };
 
 export function OpportunityCard({
@@ -15,6 +18,8 @@ export function OpportunityCard({
   onSelect,
   isSaved,
   onToggleSaved,
+  onOpenListing,
+  appliedState = null,
 }: OpportunityCardProps): JSX.Element {
   const { opportunity } = match;
   const daysLeft = daysUntilDate(opportunity.applyBy);
@@ -32,7 +37,12 @@ export function OpportunityCard({
       <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
         <button
           type="button"
-          onClick={onSelect}
+          onClick={() => {
+            onSelect();
+            if (opportunity.applyUrl && onOpenListing) {
+              onOpenListing(opportunity.id, opportunity.applyUrl);
+            }
+          }}
           style={{
             flex: 1,
             border: "none",
@@ -76,6 +86,20 @@ export function OpportunityCard({
             >
               {daysLeft >= 0 ? `${daysLeft} days left` : "Deadline passed"}
             </span>
+            {appliedState === "applied" ? (
+              <span
+                style={{
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  color: "#166534",
+                  background: "#dcfce7",
+                  borderRadius: "999px",
+                  padding: "2px 8px",
+                }}
+              >
+                APPLIED
+              </span>
+            ) : null}
           </div>
 
           <ul style={{ margin: "10px 0 0 18px", padding: 0, color: "#374151", fontSize: "14px" }}>

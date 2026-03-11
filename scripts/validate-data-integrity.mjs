@@ -93,6 +93,10 @@ function validateOpportunities(data, expectedKind, label) {
       assert(typeof row.sourceUrl === "string" && row.sourceUrl.length > 0, `${label}[${i}] sourceUrl must be non-empty string`);
       assert(Array.isArray(row.contactLeads) && row.contactLeads.length > 0, `${label}[${i}] contactLeads must be non-empty array`);
     }
+    if (expectedKind === "internship") {
+      assert(typeof row.applyUrl === "string" && row.applyUrl.startsWith("http"), `${label}[${i}] applyUrl must be a valid URL`);
+      assert(isIsoDateTime(row.freshnessTimestamp), `${label}[${i}] freshnessTimestamp must be ISO datetime`);
+    }
     const posted = new Date(row.datePosted).getTime();
     const applyBy = new Date(row.applyBy).getTime();
     assert(applyBy >= posted, `${label}[${i}] applyBy must be on/after datePosted`);

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "import:ut-lasso-scholarships": "node scripts/scholarships/import-ut-lasso.mjs",
-    "import:ut-lab-catalog": "node scripts/research/import-ut-labs.mjs"
+    "import:ut-lab-catalog": "node scripts/research/import-ut-labs.mjs",
+    "import:internships": "node scripts/internships/import-summer-2026.mjs"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",

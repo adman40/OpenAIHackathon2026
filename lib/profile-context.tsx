@@ -32,8 +32,8 @@ export const DEMO_PROFILE: StudentProfile = {
   skills: ["python", "typescript", "pytorch", "sql", "git"],
   interests: ["machine learning", "education", "student tools", "product design"],
   careerGoal: "research",
-  preferredLocations: ["Austin", "Remote"],
-  preferredTerms: ["summer", "fall"],
+  preferredLocations: [],
+  preferredTerms: [],
   clubInterests: ["ai", "entrepreneurship", "community service"],
 };
 
@@ -95,4 +95,3 @@ export function useProfile() {
 
   return context;
 }
-

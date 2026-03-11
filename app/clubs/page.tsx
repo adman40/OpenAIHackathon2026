@@ -21,8 +21,8 @@ const DEMO_PROFILE: StudentProfile = {
   skills: ["python", "typescript"],
   interests: ["ai", "education", "community", "product"],
   careerGoal: "research",
-  preferredLocations: ["Austin", "Remote"],
-  preferredTerms: ["fall", "spring"],
+  preferredLocations: [],
+  preferredTerms: [],
   clubInterests: ["ai", "entrepreneurship", "student tools", "community"],
   hoursPerWeek: 5,
 };

@@ -153,6 +153,8 @@ export interface Opportunity {
   contactLeads?: string[];
   sourceUrl?: string;
   importTimestamp?: string;
+  applyUrl?: string;
+  freshnessTimestamp?: string;
 }
 
 export interface OpportunityMatch {

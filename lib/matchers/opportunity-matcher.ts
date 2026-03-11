@@ -66,26 +66,27 @@ function profileKeywordAffinity(profile: StudentProfile, opportunity: Opportunit
   return listOverlap(profileTerms, opportunityText);
 }
 
-function locationMatches(profile: StudentProfile, opportunity: Opportunity): boolean {
-  if (profile.preferredLocations.length === 0) {
-    return true;
+function freshnessBonus(opportunity: Opportunity): number {
+  if (!opportunity.freshnessTimestamp) {
+    return 0;
   }
-  const location = normalize(opportunity.location);
-  return profile.preferredLocations.some((preferred) => {
-    const value = normalize(preferred);
-    return location.includes(value) || value.includes(location);
-  });
-}
 
-function termMatches(profile: StudentProfile, opportunity: Opportunity): boolean {
-  if (profile.preferredTerms.length === 0) {
-    return true;
+  const freshness = new Date(opportunity.freshnessTimestamp);
+  if (Number.isNaN(freshness.getTime())) {
+    return 0;
   }
-  const term = normalize(opportunity.term);
-  return profile.preferredTerms.some((preferred) => {
-    const value = normalize(preferred);
-    return term.includes(value) || value.includes(term);
-  });
+
+  const ageDays = Math.floor((Date.now() - freshness.getTime()) / (1000 * 60 * 60 * 24));
+  if (ageDays <= 1) {
+    return 7;
+  }
+  if (ageDays <= 7) {
+    return 5;
+  }
+  if (ageDays <= 21) {
+    return 3;
+  }
+  return 1;
 }
 
 export function matchOpportunities(
@@ -146,14 +147,10 @@ export function matchOpportunities(
         reasons.push(`Lab/program topic overlap: ${affinityMatches.slice(0, 2).join(", ")}.`);
       }
 
-      if (locationMatches(profile, opportunity)) {
-        score += 8;
-        reasons.push(`Location fit: ${opportunity.location}.`);
-      }
-
-      if (termMatches(profile, opportunity)) {
-        score += 8;
-        reasons.push(`Term fit: ${opportunity.term}.`);
+      const freshnessScore = freshnessBonus(opportunity);
+      if (freshnessScore > 0) {
+        score += freshnessScore;
+        reasons.push("Posting appears recently refreshed.");
       }
 
       // Specificity bonus rewards matches with multiple concrete fit signals.
