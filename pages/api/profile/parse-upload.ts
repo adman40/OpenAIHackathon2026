@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import {
-  extractPdfTextFromBuffer,
   parseResumeText,
   parseTranscriptText,
 } from "../../../lib/profile-upload-parsing";
+import { extractPdfTextFromBuffer } from "../../../lib/server/pdf-text";
 
 type ParseKind = "transcript" | "resume";
 

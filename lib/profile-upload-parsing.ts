@@ -151,18 +151,6 @@ function inferInProgressCredits(lines: string[], startIndex: number) {
   return undefined;
 }
 
-export async function extractPdfTextFromBuffer(buffer: Uint8Array) {
-  const { PDFParse } = await import("pdf-parse");
-  const parser = new PDFParse({ data: Buffer.from(buffer) });
-
-  try {
-    const parsed = await parser.getText();
-    return parsed.text;
-  } finally {
-    await parser.destroy();
-  }
-}
-
 export function parseTranscriptText(rawText: string, major: string) {
   const sourceLines = rawText
     .split(/\r?\n/)
