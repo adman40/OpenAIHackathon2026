@@ -16,3 +16,5 @@
 - `[T+3:55] [C] [app/research/page.tsx, app/internships/page.tsx, components/opportunities/*, lib/opportunities/saved-opportunities.ts] Added saved-opportunities persistence, saved-only filtering, and retry actions for opportunity pages to improve day-to-day usability.`
 - `[T+4:10] [C] [app/research/page.tsx, app/internships/page.tsx, components/opportunities/*, lib/opportunities/deadline.ts] Added deadline urgency UX (days-left badges), filter sort controls, and top-level fit/deadline stats on opportunity pages.`
 - `[T+4:14] [C] [scripts/validate-data-integrity.mjs] Added and ran data integrity checks for scholarships, research, and internships (schema, ids, kinds, dates).`
+- `[T+4:28] [C] [app/saved/page.tsx, app/research/page.tsx, app/internships/page.tsx, lib/opportunities/saved-opportunities.ts] Added a new Saved Opportunities hub with category tabs, export JSON, clear-saved controls, and cross-navigation from research/internships pages.`
+- `[T+4:30] [C] [docs/demo-script.md] Added optional demo beat for the new saved shortlist workflow and export action.`

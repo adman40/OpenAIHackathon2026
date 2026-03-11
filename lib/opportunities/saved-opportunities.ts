@@ -40,3 +40,8 @@ export function toggleSavedOpportunityId(opportunityId: string): string[] {
   persistSavedOpportunityIds(updated);
   return updated;
 }
+
+export function clearSavedOpportunityIds(): string[] {
+  persistSavedOpportunityIds([]);
+  return [];
+}

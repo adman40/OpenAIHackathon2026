@@ -46,6 +46,9 @@ Open `/research` and `/internships` and show:
 Line to say:
 "Hook ranks both research and internship opportunities from one profile, then lets students quickly filter by what they can actually do this term and where."
 
+Optional add-on if time:
+Open `/saved` to show a unified shortlist across research + internships, then export the saved list as JSON for follow-up planning.
+
 ### 1:02-1:10 - Clubs
 
 Show that Hook also recommends communities, not just work.

@@ -219,6 +219,14 @@ export default function ResearchPage(): JSX.Element {
       <p style={{ color: "#4b5563", marginTop: "8px" }}>
         Ranked by fit score with filters for research planning.
       </p>
+      <div style={{ marginTop: "6px", display: "flex", gap: "10px", fontSize: "13px" }}>
+        <a href="/internships" style={{ color: "#1d4ed8", textDecoration: "none" }}>
+          View internships
+        </a>
+        <a href="/saved" style={{ color: "#1d4ed8", textDecoration: "none" }}>
+          View saved opportunities
+        </a>
+      </div>
       <p style={{ color: "#4b5563", marginTop: "4px", fontSize: "14px" }}>
         Saved opportunities: {savedIds.length}
       </p>
