@@ -1,0 +1,455 @@
+{
+  "catalogId": "ut-undergrad-degree-plans",
+  "level": "undergraduate",
+  "sourceMetadata": {
+    "sourceName": "UT Austin Admissions + Hook normalized degree plans",
+    "sourceUrl": "https://admissions.utexas.edu/explore/colleges-degrees/",
+    "importedAt": "2026-03-11T04:14:37.043Z",
+    "notes": [
+      "This file preserves a normalized undergrad-only degree-plan format for Hook.",
+      "Current plans cover Hook-supported demo majors and stay consumable by the existing academic analysis engine through an adapter."
+    ]
+  },
+  "plans": [
+    {
+      "planId": "computer-science-bs",
+      "degreeId": "cs-bscs",
+      "majorId": "computer-science",
+      "majorName": "Computer Science",
+      "aliases": [
+        "Computer Science"
+      ],
+      "degreeName": "B.S. in Computer Science",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "totalCredits": 120,
+      "courseCatalogId": "cs-catalog",
+      "supportStatus": "supported",
+      "sourceMetadata": {
+        "sourceName": "UT Austin Admissions + Hook normalized degree plans",
+        "sourceUrl": "https://admissions.utexas.edu/explore/colleges-degrees/",
+        "importedAt": "2026-03-11T04:14:37.043Z",
+        "notes": [
+          "UT admissions confirms Computer Science as an undergraduate major in the College of Natural Sciences.",
+          "Requirement buckets are normalized from Hook's current curated CS degree data."
+        ]
+      },
+      "requirementBuckets": [
+        {
+          "id": "core-writing-humanities",
+          "title": "Writing & Humanities Core",
+          "bucketType": "core",
+          "creditsRequired": 12,
+          "courses": [
+            "ENGL 101",
+            "ENGL 201",
+            "HIST 210",
+            "PHIL 110"
+          ],
+          "notes": "Choose approved sections that meet university core outcomes."
+        },
+        {
+          "id": "core-math-science",
+          "title": "Math & Science Core",
+          "bucketType": "core",
+          "creditsRequired": 18,
+          "courses": [
+            "MATH 221",
+            "MATH 231",
+            "STAT 241",
+            "PHYS 201",
+            "PHYS 202"
+          ],
+          "notes": "Physics sequence must include labs."
+        },
+        {
+          "id": "core-social-science",
+          "title": "Social Science & Ethics",
+          "bucketType": "core",
+          "creditsRequired": 12,
+          "courses": [
+            "ECON 101",
+            "PSYC 101",
+            "SOC 200",
+            "ETHS 220"
+          ],
+          "notes": "At least one course must be designated writing intensive."
+        },
+        {
+          "id": "cs-foundations",
+          "title": "CS Foundations",
+          "bucketType": "major",
+          "creditsRequired": 24,
+          "courses": [
+            "CS 101",
+            "CS 111",
+            "CS 210",
+            "CS 220",
+            "CS 230",
+            "CS 310"
+          ],
+          "notes": "Programming sequence builds toward systems and algorithms."
+        },
+        {
+          "id": "cs-advanced",
+          "title": "CS Advanced Core",
+          "bucketType": "major",
+          "creditsRequired": 18,
+          "courses": [
+            "CS 320",
+            "CS 330",
+            "CS 410",
+            "CS 420",
+            "CS 450"
+          ],
+          "notes": "CS 450 is the capstone and must be taken after CS 410."
+        },
+        {
+          "id": "cs-electives",
+          "title": "CS Major Electives",
+          "bucketType": "elective",
+          "creditsRequired": 18,
+          "courses": [
+            "CS 360",
+            "CS 370",
+            "CS 430"
+          ],
+          "notes": "Select at least two courses at the 300-level or above."
+        }
+      ]
+    },
+    {
+      "planId": "electrical-and-computer-engineering-bs",
+      "degreeId": "ece-bsece",
+      "majorId": "electrical-and-computer-engineering",
+      "majorName": "Electrical and Computer Engineering",
+      "aliases": [
+        "Electrical and Computer Engineering"
+      ],
+      "degreeName": "B.S. in Electrical and Computer Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "totalCredits": 120,
+      "courseCatalogId": "ece-catalog",
+      "supportStatus": "supported",
+      "sourceMetadata": {
+        "sourceName": "UT Austin Admissions + Hook normalized degree plans",
+        "sourceUrl": "https://admissions.utexas.edu/explore/colleges-degrees/",
+        "importedAt": "2026-03-11T04:14:37.043Z",
+        "notes": [
+          "UT admissions confirms Electrical and Computer Engineering as an undergraduate Cockrell major.",
+          "Requirement buckets are normalized from Hook's current curated ECE degree data."
+        ]
+      },
+      "requirementBuckets": [
+        {
+          "id": "core-writing-humanities",
+          "title": "Writing & Humanities Core",
+          "bucketType": "core",
+          "creditsRequired": 12,
+          "courses": [
+            "ENGL 101",
+            "ENGL 201",
+            "HIST 210",
+            "PHIL 110"
+          ],
+          "notes": "Select humanities courses that satisfy university core outcomes."
+        },
+        {
+          "id": "core-math-science",
+          "title": "Math & Science Core",
+          "bucketType": "core",
+          "creditsRequired": 20,
+          "courses": [
+            "MATH 221",
+            "MATH 232",
+            "MATH 251",
+            "PHYS 201",
+            "PHYS 202",
+            "CHEM 101"
+          ],
+          "notes": "Calculus sequence must be completed before upper-division ECE labs."
+        },
+        {
+          "id": "core-social-science",
+          "title": "Social Science & Ethics",
+          "bucketType": "core",
+          "creditsRequired": 10,
+          "courses": [
+            "ECON 101",
+            "PSYC 101",
+            "ETHS 220"
+          ],
+          "notes": "At least one course must be designated writing intensive."
+        },
+        {
+          "id": "ece-foundations",
+          "title": "ECE Foundations",
+          "bucketType": "major",
+          "creditsRequired": 24,
+          "courses": [
+            "ECE 101",
+            "ECE 120",
+            "ECE 210",
+            "ECE 220",
+            "ECE 230",
+            "ECE 240"
+          ],
+          "notes": "Core circuit and programming sequence prepares students for systems labs."
+        },
+        {
+          "id": "ece-systems",
+          "title": "ECE Systems Core",
+          "bucketType": "major",
+          "creditsRequired": 21,
+          "courses": [
+            "ECE 310",
+            "ECE 320",
+            "ECE 330",
+            "ECE 340",
+            "ECE 410",
+            "ECE 420",
+            "ECE 450"
+          ],
+          "notes": "ECE 450 capstone requires completion of ECE 410."
+        },
+        {
+          "id": "ece-electives",
+          "title": "ECE Major Electives",
+          "bucketType": "elective",
+          "creditsRequired": 15,
+          "courses": [
+            "ECE 360",
+            "ECE 370",
+            "ECE 430"
+          ],
+          "notes": "Choose advanced electives aligned to power, embedded, or communications tracks."
+        }
+      ]
+    },
+    {
+      "planId": "biology-bs",
+      "degreeId": "biology-bsbi",
+      "majorId": "biology",
+      "majorName": "Biology",
+      "aliases": [
+        "Biology"
+      ],
+      "degreeName": "B.S. in Biology",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "totalCredits": 120,
+      "courseCatalogId": "biology-catalog",
+      "supportStatus": "supported",
+      "sourceMetadata": {
+        "sourceName": "UT Austin Admissions + Hook normalized degree plans",
+        "sourceUrl": "https://admissions.utexas.edu/explore/colleges-degrees/",
+        "importedAt": "2026-03-11T04:14:37.043Z",
+        "notes": [
+          "UT admissions confirms Biology as an undergraduate major in the College of Natural Sciences.",
+          "Requirement buckets are normalized from Hook's current curated Biology degree data."
+        ]
+      },
+      "requirementBuckets": [
+        {
+          "id": "core-writing-humanities",
+          "title": "Writing & Humanities Core",
+          "bucketType": "core",
+          "creditsRequired": 12,
+          "courses": [
+            "ENGL 101",
+            "ENGL 201",
+            "HIST 210",
+            "PHIL 110"
+          ],
+          "notes": "Complete the writing sequence before upper-division lab courses."
+        },
+        {
+          "id": "core-math-chemistry",
+          "title": "Math & Chemistry Core",
+          "bucketType": "core",
+          "creditsRequired": 20,
+          "courses": [
+            "MATH 121",
+            "STAT 201",
+            "CHEM 101",
+            "CHEM 102",
+            "CHEM 201",
+            "CHEM 202"
+          ],
+          "notes": "Organic chemistry must be completed before molecular biology."
+        },
+        {
+          "id": "core-social-ethics",
+          "title": "Social Science & Ethics",
+          "bucketType": "core",
+          "creditsRequired": 8,
+          "courses": [
+            "PSYC 101",
+            "SOC 200",
+            "ETHS 220"
+          ],
+          "notes": "Select one course that fulfills the civic engagement requirement."
+        },
+        {
+          "id": "bio-foundations",
+          "title": "Biology Foundations",
+          "bucketType": "major",
+          "creditsRequired": 24,
+          "courses": [
+            "BIOL 110",
+            "BIOL 120",
+            "BIOL 210",
+            "BIOL 220",
+            "BIOL 230",
+            "BIOL 240"
+          ],
+          "notes": "Intro sequence includes lectures and core lab skills."
+        },
+        {
+          "id": "bio-advanced",
+          "title": "Advanced Biology Core",
+          "bucketType": "major",
+          "creditsRequired": 24,
+          "courses": [
+            "BIOL 310",
+            "BIOL 320",
+            "BIOL 330",
+            "BIOL 410",
+            "BIOL 420"
+          ],
+          "notes": "BIOL 410 capstone requires completion of genetics and cell biology."
+        },
+        {
+          "id": "bio-electives",
+          "title": "Biology Electives",
+          "bucketType": "elective",
+          "creditsRequired": 12,
+          "courses": [
+            "BIOL 360",
+            "BIOL 370",
+            "BIOL 430"
+          ],
+          "notes": "Choose electives from ecology, microbiology, or neuroscience tracks."
+        }
+      ]
+    },
+    {
+      "planId": "mccombs-undergraduate-business-bba",
+      "degreeId": "business-bba",
+      "majorId": "mccombs-undergraduate-business",
+      "majorName": "McCombs Undergraduate Business",
+      "aliases": [
+        "Accounting",
+        "Business Administration",
+        "Business Analytics",
+        "Finance",
+        "International Business",
+        "Management",
+        "Management Information Systems",
+        "Marketing",
+        "Supply Chain Management"
+      ],
+      "degreeName": "B.B.A. in Business Administration",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "totalCredits": 120,
+      "courseCatalogId": "business-catalog",
+      "supportStatus": "supported",
+      "sourceMetadata": {
+        "sourceName": "UT Austin Admissions + Hook normalized degree plans",
+        "sourceUrl": "https://admissions.utexas.edu/explore/colleges-degrees/",
+        "importedAt": "2026-03-11T04:14:37.043Z",
+        "notes": [
+          "UT admissions lists McCombs majors individually; Hook currently maps them to one generalized undergraduate business plan for MVP analysis.",
+          "Requirement buckets are normalized from Hook's current curated business degree data."
+        ]
+      },
+      "requirementBuckets": [
+        {
+          "id": "core-writing-humanities",
+          "title": "Writing & Humanities Core",
+          "bucketType": "core",
+          "creditsRequired": 12,
+          "courses": [
+            "ENGL 101",
+            "ENGL 201",
+            "HIST 210",
+            "PHIL 110"
+          ],
+          "notes": "Writing sequence must be completed by the end of sophomore year."
+        },
+        {
+          "id": "core-quantitative",
+          "title": "Quantitative & Analytics Core",
+          "bucketType": "core",
+          "creditsRequired": 15,
+          "courses": [
+            "MATH 120",
+            "STAT 201",
+            "ECON 101",
+            "ECON 102"
+          ],
+          "notes": "Statistics and economics must be completed before upper-division finance."
+        },
+        {
+          "id": "core-social-ethics",
+          "title": "Social Science & Ethics",
+          "bucketType": "core",
+          "creditsRequired": 18,
+          "courses": [
+            "PSYC 101",
+            "SOC 200",
+            "ETHS 220",
+            "COMM 205"
+          ],
+          "notes": "COMM 205 satisfies the oral communication requirement."
+        },
+        {
+          "id": "business-core",
+          "title": "Business Core",
+          "bucketType": "major",
+          "creditsRequired": 30,
+          "courses": [
+            "BUS 101",
+            "ACCT 201",
+            "ACCT 202",
+            "BUS 210",
+            "MIS 301",
+            "BUSL 305",
+            "FIN 310",
+            "MKT 320",
+            "MGMT 330",
+            "OPS 340"
+          ],
+          "notes": "Accounting sequence must be completed prior to finance and strategy."
+        },
+        {
+          "id": "business-advanced",
+          "title": "Strategy & Analytics",
+          "bucketType": "major",
+          "creditsRequired": 18,
+          "courses": [
+            "BUS 350",
+            "BUS 360",
+            "STRAT 450",
+            "ENTR 410"
+          ],
+          "notes": "STRAT 450 is the capstone and should be taken in the final year."
+        },
+        {
+          "id": "business-electives",
+          "title": "Business Electives",
+          "bucketType": "elective",
+          "creditsRequired": 12,
+          "courses": [
+            "FIN 420",
+            "MKT 410",
+            "MGMT 410"
+          ],
+          "notes": "Select electives that align to finance, marketing, or operations pathways."
+        }
+      ]
+    }
+  ]
+}

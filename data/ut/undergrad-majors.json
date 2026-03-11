@@ -1,0 +1,1049 @@
+{
+  "catalogId": "ut-undergrad-majors",
+  "level": "undergraduate",
+  "sourceMetadata": {
+    "sourceName": "UT Austin Admissions - Colleges & Degrees",
+    "sourceUrl": "https://admissions.utexas.edu/explore/colleges-degrees/",
+    "importedAt": "2026-03-11T04:17:05.095Z",
+    "notes": [
+      "This file is intentionally undergraduate-only.",
+      "supportStatus marks majors Hook can currently map into normalized degree-plan analysis."
+    ]
+  },
+  "majors": [
+    {
+      "majorId": "school-of-architecture-architectural-studies",
+      "displayName": "Architectural Studies",
+      "college": "School of Architecture",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "school-of-architecture-architecture",
+      "displayName": "Architecture",
+      "college": "School of Architecture",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "school-of-architecture-architecture-architectural-engineering",
+      "displayName": "Architecture/Architectural Engineering",
+      "college": "School of Architecture",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "school-of-architecture-interior-design",
+      "displayName": "Interior Design",
+      "college": "School of Architecture",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "mccombs-school-of-business-accounting",
+      "displayName": "Accounting",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "mccombs-undergraduate-business-bba"
+    },
+    {
+      "majorId": "mccombs-school-of-business-business-analytics",
+      "displayName": "Business Analytics",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "mccombs-undergraduate-business-bba"
+    },
+    {
+      "majorId": "mccombs-school-of-business-canfield-business-honors-program",
+      "displayName": "Canfield Business Honors Program",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "mccombs-school-of-business-finance",
+      "displayName": "Finance",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "mccombs-undergraduate-business-bba"
+    },
+    {
+      "majorId": "mccombs-school-of-business-international-business",
+      "displayName": "International Business",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "mccombs-undergraduate-business-bba"
+    },
+    {
+      "majorId": "mccombs-school-of-business-management",
+      "displayName": "Management",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "mccombs-undergraduate-business-bba"
+    },
+    {
+      "majorId": "mccombs-school-of-business-management-information-systems",
+      "displayName": "Management Information Systems",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "mccombs-undergraduate-business-bba"
+    },
+    {
+      "majorId": "mccombs-school-of-business-marketing",
+      "displayName": "Marketing",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "mccombs-undergraduate-business-bba"
+    },
+    {
+      "majorId": "mccombs-school-of-business-supply-chain-management",
+      "displayName": "Supply Chain Management",
+      "college": "McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "mccombs-undergraduate-business-bba"
+    },
+    {
+      "majorId": "school-of-civic-leadership-civics-honors",
+      "displayName": "Civics Honors",
+      "college": "School of Civic Leadership",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "moody-college-of-communication-communication-studies",
+      "displayName": "Communication Studies",
+      "college": "Moody College of Communication",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Corporate Communication",
+        "Global and Intercultural Communication",
+        "Human Relations Communication",
+        "Interpersonal Communication",
+        "Political Communication",
+        "Strategic and Risk Communication"
+      ]
+    },
+    {
+      "majorId": "moody-college-of-communication-speech-language-and-hearing-sciences",
+      "displayName": "Speech, Language, and Hearing Sciences",
+      "college": "Moody College of Communication",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Audiology",
+        "Speech/Language Pathology"
+      ]
+    },
+    {
+      "majorId": "moody-college-of-communication-advertising",
+      "displayName": "Advertising",
+      "college": "Moody College of Communication",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "moody-college-of-communication-communication-and-leadership",
+      "displayName": "Communication and Leadership",
+      "college": "Moody College of Communication",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "moody-college-of-communication-journalism",
+      "displayName": "Journalism",
+      "college": "Moody College of Communication",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "moody-college-of-communication-public-relations",
+      "displayName": "Public Relations",
+      "college": "Moody College of Communication",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "moody-college-of-communication-radio-television-film",
+      "displayName": "Radio-Television-Film",
+      "college": "Moody College of Communication",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-education-applied-learning-and-development",
+      "displayName": "Applied Learning and Development",
+      "college": "College of Education",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "degreeLabel": "BS in Education",
+      "specializations": [
+        "All-Level Generic Special Education",
+        "Early Childhood to Grade 6 ESL Bilingual Generalist",
+        "Early Childhood to Grade 6 ESL Generalist",
+        "Urban Teachers – Social Studies",
+        "Urban Teachers – English/Language Arts",
+        "Youth and Community Studies"
+      ]
+    },
+    {
+      "majorId": "college-of-education-bs-in-kinesiology-and-health",
+      "displayName": "BS in Kinesiology and Health",
+      "college": "College of Education",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Applied Movement Science",
+        "Exercise Science",
+        "Health Promotion and Behavioral Science",
+        "Physical Culture and Sports",
+        "Sport Management"
+      ]
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-aerospace-engineering",
+      "displayName": "Aerospace Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-architectural-engineering",
+      "displayName": "Architectural Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-biomedical-engineering",
+      "displayName": "Biomedical Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-chemical-engineering",
+      "displayName": "Chemical Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-civil-engineering",
+      "displayName": "Civil Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-computational-engineering",
+      "displayName": "Computational Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-electrical-and-computer-engineering",
+      "displayName": "Electrical and Computer Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "electrical-and-computer-engineering-bs"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-environmental-engineering",
+      "displayName": "Environmental Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-geosystems-engineering",
+      "displayName": "Geosystems Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-mechanical-engineering",
+      "displayName": "Mechanical Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "cockrell-school-of-engineering-petroleum-engineering",
+      "displayName": "Petroleum Engineering",
+      "college": "Cockrell School of Engineering",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-music-studies-education",
+      "displayName": "Music Studies (Education)",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Choral Music Emphasis",
+        "Instrumental Emphasis"
+      ]
+    },
+    {
+      "majorId": "college-of-fine-arts-acting",
+      "displayName": "Acting",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-art-education",
+      "displayName": "Art Education",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-art-history",
+      "displayName": "Art History",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-arts-and-entertainment-technologies",
+      "displayName": "Arts and Entertainment Technologies",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-dance-bfa",
+      "displayName": "Dance (BFA)",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-dance-education-bfa",
+      "displayName": "Dance Education (BFA)",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-design-b-a-or-bfa",
+      "displayName": "Design (B.A. or BFA)",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-jazz",
+      "displayName": "Jazz",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-music-b-a",
+      "displayName": "Music (B.A.)",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-music-emphasis",
+      "displayName": "Music Emphasis",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-composition-emphasis",
+      "displayName": "Composition Emphasis",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-music-composition-b-m",
+      "displayName": "Music Composition (B.M.)",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-music-performance",
+      "displayName": "Music Performance",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-studio-art-b-a-or-bfa",
+      "displayName": "Studio Art (B.A. or BFA)",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-theatre-dance-dance",
+      "displayName": "Theatre & Dance, Dance",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-theatre-dance-theatre",
+      "displayName": "Theatre & Dance, Theatre",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-fine-arts-theatre-education",
+      "displayName": "Theatre Education",
+      "college": "College of Fine Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "jackson-school-of-geosciences-climate-system-science",
+      "displayName": "Climate System Science",
+      "college": "Jackson School of Geosciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "jackson-school-of-geosciences-environmental-science-geosciences",
+      "displayName": "Environmental Science (Geosciences)",
+      "college": "Jackson School of Geosciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "jackson-school-of-geosciences-general-geology",
+      "displayName": "General Geology",
+      "college": "Jackson School of Geosciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "jackson-school-of-geosciences-geophysics",
+      "displayName": "Geophysics",
+      "college": "Jackson School of Geosciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "jackson-school-of-geosciences-geosciences",
+      "displayName": "Geosciences",
+      "college": "Jackson School of Geosciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "jackson-school-of-geosciences-geosciences-teaching",
+      "displayName": "Geosciences (Teaching)",
+      "college": "Jackson School of Geosciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "jackson-school-of-geosciences-geosystems-engineering",
+      "displayName": "Geosystems Engineering",
+      "college": "Jackson School of Geosciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "jackson-school-of-geosciences-hydrology-and-water-resources",
+      "displayName": "Hydrology and Water Resources",
+      "college": "Jackson School of Geosciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "school-of-information-informatics-b-a-or-bsi",
+      "displayName": "Informatics (B.A. or BSI)",
+      "college": "School of Information",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-african-and-african-diaspora-studies",
+      "displayName": "African and African Diaspora Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-american-studies",
+      "displayName": "American Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-anthropology",
+      "displayName": "Anthropology",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-asian-american-studies",
+      "displayName": "Asian American Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-asian-cultures-and-languages-chinese",
+      "displayName": "Asian Cultures and Languages Chinese",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-hindi-urdu",
+      "displayName": "Hindi/Urdu",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-japanese",
+      "displayName": "Japanese",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-korean",
+      "displayName": "Korean",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-malayalam",
+      "displayName": "Malayalam",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-sanskrit",
+      "displayName": "Sanskrit",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-tamil",
+      "displayName": "Tamil",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-asian-studies-east-asia",
+      "displayName": "Asian Studies East Asia",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-south-asia",
+      "displayName": "South Asia",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-taiwan",
+      "displayName": "Taiwan",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-behavioral-and-social-data-science",
+      "displayName": "Behavioral and Social Data Science",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-classical-languages-classics",
+      "displayName": "Classical Languages Classics",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-greek",
+      "displayName": "Greek",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-latin",
+      "displayName": "Latin",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-classical-studies-ancient-history",
+      "displayName": "Classical Studies Ancient History",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-classical-archaeology",
+      "displayName": "Classical Archaeology",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-economics-b-a-or-b-s",
+      "displayName": "Economics (B.A. or B.S.)",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-english",
+      "displayName": "English",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-environmental-science-geographical-sciences",
+      "displayName": "Environmental Science (Geographical Sciences)",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-european-studies",
+      "displayName": "European Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-french-studies",
+      "displayName": "French Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-geography",
+      "displayName": "Geography",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-german",
+      "displayName": "German",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-government",
+      "displayName": "Government",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-health-society",
+      "displayName": "Health & Society",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-history",
+      "displayName": "History",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-human-dimensions-of-organizations",
+      "displayName": "Human Dimensions of Organizations",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-humanities",
+      "displayName": "Humanities",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-international-relations-and-global-studies",
+      "displayName": "International Relations and Global Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-italian",
+      "displayName": "Italian",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-jewish-studies",
+      "displayName": "Jewish Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-latin-american-studies",
+      "displayName": "Latin American Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-linguistics",
+      "displayName": "Linguistics",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-mexican-american-and-latina-o-studies",
+      "displayName": "Mexican American and Latina/o Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-middle-eastern-studies",
+      "displayName": "Middle Eastern Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-philosophy",
+      "displayName": "Philosophy",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-plan-ii-honors-program",
+      "displayName": "Plan II Honors Program",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-psychology-b-a-or-b-s",
+      "displayName": "Psychology (B.A. or B.S.)",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-race-indigeneity-and-migration",
+      "displayName": "Race, Indigeneity, and Migration",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-religious-studies",
+      "displayName": "Religious Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-rhetoric-and-writing",
+      "displayName": "Rhetoric and Writing",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-russian-east-european-and-eurasian-studies",
+      "displayName": "Russian, East European and Eurasian Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-sociology",
+      "displayName": "Sociology",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-spanish",
+      "displayName": "Spanish",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-sustainability-studies",
+      "displayName": "Sustainability Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-urban-studies",
+      "displayName": "Urban Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-liberal-arts-women-s-and-gender-studies",
+      "displayName": "Women’s and Gender Studies",
+      "college": "College of Liberal Arts",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-natural-sciences-biology",
+      "displayName": "Biology",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "biology-bs",
+      "specializations": [
+        "Cell and Molecular Biology",
+        "Computational Biology",
+        "Ecology, Evolution and Behavior",
+        "Genetics and Genomics",
+        "Human Biology",
+        "Marine and Freshwater Science",
+        "Microbiology and Infectious Diseases",
+        "Plant Biology",
+        "Teaching"
+      ]
+    },
+    {
+      "majorId": "college-of-natural-sciences-chemistry",
+      "displayName": "Chemistry",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Computation",
+        "Teaching"
+      ]
+    },
+    {
+      "majorId": "college-of-natural-sciences-human-development-and-family-sciences",
+      "displayName": "Human Development and Family Sciences",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Early Childhood",
+        "Families and Personal Relationships",
+        "Families and Society",
+        "Human Development"
+      ]
+    },
+    {
+      "majorId": "college-of-natural-sciences-mathematics",
+      "displayName": "Mathematics",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Actuarial Science",
+        "Applied Mathematics",
+        "Mathematical Sciences",
+        "Pure Mathematics",
+        "Teaching"
+      ]
+    },
+    {
+      "majorId": "college-of-natural-sciences-nutrition",
+      "displayName": "Nutrition",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Dietetics",
+        "International Nutrition",
+        "Nutritional Sciences",
+        "Nutrition and Public Health"
+      ]
+    },
+    {
+      "majorId": "college-of-natural-sciences-physics",
+      "displayName": "Physics",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Biophysics",
+        "Computation",
+        "Radiation Physics",
+        "Space Sciences",
+        "Teaching"
+      ]
+    },
+    {
+      "majorId": "college-of-natural-sciences-textiles-and-apparel",
+      "displayName": "Textiles and Apparel",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned",
+      "specializations": [
+        "Apparel, Functional and Technical Design",
+        "Merchandising and Consumer Sciences",
+        "Textile Conservation and Museum Studies"
+      ]
+    },
+    {
+      "majorId": "college-of-natural-sciences-astronomy",
+      "displayName": "Astronomy",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-natural-sciences-biochemistry",
+      "displayName": "Biochemistry",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-natural-sciences-computer-science",
+      "displayName": "Computer Science",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "computer-science-bs"
+    },
+    {
+      "majorId": "college-of-natural-sciences-environmental-science-biological-sciences",
+      "displayName": "Environmental Science (Biological Sciences)",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-natural-sciences-human-ecology",
+      "displayName": "Human Ecology",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-natural-sciences-medical-laboratory-science",
+      "displayName": "Medical Laboratory Science",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-natural-sciences-neuroscience",
+      "displayName": "Neuroscience",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-natural-sciences-pre-pharmacy",
+      "displayName": "Pre-Pharmacy",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-natural-sciences-public-health",
+      "displayName": "Public Health",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-natural-sciences-statistics-and-data-science",
+      "displayName": "Statistics and Data Science",
+      "college": "College of Natural Sciences",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "school-of-nursing-nursing",
+      "displayName": "Nursing",
+      "college": "School of Nursing",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "college-of-pharmacy-pharmacy",
+      "displayName": "Pharmacy",
+      "college": "College of Pharmacy",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "lyndon-b-johnson-school-of-public-affairs-public-affairs",
+      "displayName": "Public Affairs",
+      "college": "Lyndon B. Johnson School of Public Affairs",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "school-of-social-work-social-work",
+      "displayName": "Social Work",
+      "college": "School of Social Work",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "pre-med-pre-law-teaching-pre-law-pre-med",
+      "displayName": "Pre-Law Pre-Med",
+      "college": "Pre-Med, Pre-Law & Teaching",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    },
+    {
+      "majorId": "pre-med-pre-law-teaching-uteach",
+      "displayName": "UTeach",
+      "college": "Pre-Med, Pre-Law & Teaching",
+      "level": "undergraduate",
+      "supportStatus": "planned"
+    }
+  ]
+}

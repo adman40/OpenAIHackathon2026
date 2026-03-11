@@ -13,6 +13,15 @@ export type RecommendationUrgency = "critical" | "recommended" | "optional";
 
 export type RequirementBucket = "core" | "major" | "elective";
 
+export type AcademicSupportStatus = "supported" | "planned";
+
+export interface SourceMetadata {
+  sourceName: string;
+  sourceUrl: string;
+  importedAt: string;
+  notes?: string[];
+}
+
 export interface DegreeRequirementGroup {
   id: string;
   title: string;
@@ -33,6 +42,56 @@ export interface DegreeRequirements {
   totalCredits: number;
   coreRequirements: RequirementSection;
   majorRequirements: RequirementSection;
+}
+
+export interface UTUndergraduateMajor {
+  majorId: string;
+  displayName: string;
+  college: string;
+  level: "undergraduate";
+  supportStatus: AcademicSupportStatus;
+  normalizedPlanId?: string;
+  degreeLabel?: string;
+  specializations?: string[];
+}
+
+export interface UTUndergraduateMajorsCatalog {
+  catalogId: string;
+  level: "undergraduate";
+  sourceMetadata: SourceMetadata;
+  majors: UTUndergraduateMajor[];
+}
+
+export interface NormalizedDegreePlanBucket {
+  id: string;
+  title: string;
+  bucketType: RequirementBucket;
+  creditsRequired: number;
+  courses: string[];
+  notes: string;
+}
+
+export interface NormalizedDegreePlan {
+  planId: string;
+  degreeId: string;
+  majorId: string;
+  majorName: string;
+  aliases: string[];
+  degreeName: string;
+  college: string;
+  level: "undergraduate";
+  totalCredits: number;
+  courseCatalogId: string;
+  supportStatus: AcademicSupportStatus;
+  sourceMetadata: SourceMetadata;
+  requirementBuckets: NormalizedDegreePlanBucket[];
+}
+
+export interface NormalizedDegreePlanCatalog {
+  catalogId: string;
+  level: "undergraduate";
+  sourceMetadata: SourceMetadata;
+  plans: NormalizedDegreePlan[];
 }
 
 // Student profile types power every Hook surface.
