@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { OpportunityCard } from "../../components/opportunities/OpportunityCard";
 import { OpportunityDetailPanel } from "../../components/opportunities/OpportunityDetailPanel";
+import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
 import {
   clearSavedOpportunityIds,
@@ -168,6 +169,7 @@ export default function SavedPage(): JSX.Element {
 
   return (
     <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
+      <NavBar />
       <h1 style={{ margin: 0, fontSize: "28px", color: "#111827" }}>Saved Opportunities</h1>
       <p style={{ marginTop: "8px", color: "#4b5563" }}>
         Your pinned opportunities from research and internships in one place.

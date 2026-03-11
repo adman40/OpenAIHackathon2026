@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { DegreeProgressCard } from "../../components/academic/DegreeProgressCard";
@@ -7,37 +8,25 @@ import { EligibleCoursesTable } from "../../components/academic/EligibleCoursesT
 import { PrereqAlertBanner } from "../../components/academic/PrereqAlertBanner";
 import { PublicAcademicSummaryCard } from "../../components/academic/PublicAcademicSummaryCard";
 import { RecommendationSection } from "../../components/academic/RecommendationSection";
-import { AcademicAnalysis, StudentProfile } from "../../lib/types";
-
-const DEMO_PROFILE: StudentProfile = {
-  name: "Alex Rivera",
-  major: "Computer Science",
-  currentSemester: "Spring 2026",
-  completedCourses: [
-    { courseId: "ENGL 101", grade: "A-" },
-    { courseId: "MATH 221", grade: "B+" },
-    { courseId: "ECON 101", grade: "A" },
-    { courseId: "CS 101", grade: "A-" },
-  ],
-  gpaRange: "3.5-4.0",
-  gpaPublic: false,
-  residency: "texas",
-  financialNeed: "medium",
-  resumeSummary: "CS student interested in AI, product engineering, and student tools.",
-  skills: ["python", "typescript"],
-  interests: ["ai", "education", "student tools"],
-  careerGoal: "research",
-  preferredLocations: ["Austin", "Remote"],
-  preferredTerms: ["summer", "fall"],
-  clubInterests: ["ai", "entrepreneurship"],
-};
+import NavBar from "../../components/shared/NavBar";
+import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { AcademicAnalysis } from "../../lib/types";
 
 export default function AcademicPage() {
+  const { profile, isHydrated, authStatus } = useProfile();
   const [analysis, setAnalysis] = useState<AcademicAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const activeProfile = profile ?? (authStatus === "demo" ? DEMO_PROFILE : null);
+
   const loadAnalysis = useCallback(async () => {
+    if (!activeProfile) {
+      setIsLoading(false);
+      setAnalysis(null);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -47,7 +36,7 @@ export default function AcademicPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ profile: DEMO_PROFILE }),
+        body: JSON.stringify({ profile: activeProfile }),
       });
 
       const body = (await response.json()) as AcademicAnalysis | { error: string };
@@ -67,18 +56,48 @@ export default function AcademicPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [activeProfile]);
 
   useEffect(() => {
-    // The page uses a local demo profile until the shared profile context lands.
+    if (!isHydrated) {
+      return;
+    }
     void loadAnalysis();
-  }, [loadAnalysis]);
+  }, [isHydrated, loadAnalysis]);
+
+  if (!isHydrated) {
+    return null;
+  }
+
+  if (!activeProfile) {
+    return (
+      <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl space-y-6">
+          <NavBar />
+          <section className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+            <p className="text-sm font-medium text-orange-700">Academic Summary</p>
+            <h1 className="mt-1 text-3xl font-semibold">Start with onboarding first</h1>
+            <p className="mt-2 max-w-3xl text-sm text-slate-600">
+              Hook needs your saved student profile before it can calculate degree progress and recommended courses.
+            </p>
+            <Link
+              href="/onboarding"
+              className="mt-6 inline-flex rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white"
+            >
+              Open onboarding
+            </Link>
+          </section>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-6">
+        <NavBar />
         <div>
-          <p className="text-sm font-medium text-orange-700">Hook academic advisor</p>
+          <p className="text-sm font-medium text-orange-700">Hook academic summary</p>
           <h1 className="mt-1 text-3xl font-semibold">Stay on track without guesswork</h1>
           <p className="mt-2 max-w-3xl text-sm text-slate-600">
             One academic snapshot highlights progress, blocker courses, and the best next-semester options.
@@ -111,7 +130,7 @@ export default function AcademicPage() {
         {!isLoading && analysis ? (
           <div className="space-y-6">
             <div className="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
-              <PublicAcademicSummaryCard profile={DEMO_PROFILE} summary={analysis.summary} />
+              <PublicAcademicSummaryCard profile={activeProfile} summary={analysis.summary} />
               <DegreeProgressCard
                 percentComplete={analysis.percentComplete}
                 estimatedGraduationSemester={analysis.estimatedGraduationSemester}

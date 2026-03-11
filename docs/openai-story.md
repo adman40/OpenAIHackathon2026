@@ -30,6 +30,29 @@ This mattered because each person could build against the shared type contract w
 - Built the chat route and UI around GPT-4o plus local campus grounding.
 - Rewrote the demo, judge, and OpenAI story documentation once implementation stabilized.
 
+## Productization Branch Notes
+
+- Codex accelerated the productization branch by replacing the MVP's session-only profile state with a Supabase-ready auth/profile contract instead of rebuilding the app shell from scratch.
+- The collaboration pattern stayed pragmatic: Codex first mapped every `StudentProfile` dependency, then introduced a compatibility layer so Engineer A could move auth/onboarding forward without blocking the existing scholarship, opportunity, clubs, and chat surfaces.
+- The change mattered because the product story is now closer to a real student account system: UT email, UT EID, verification state, and persistent profile storage are part of the platform contract rather than presentation-only copy.
+- A controlled local fallback remains in place so the demo still works even if Supabase credentials are not configured in time for recording.
+
+## Engineer A Delivery Notes
+
+- Product changes: the onboarding flow now uses real account inputs, transcript upload, resume upload, optional photo, numeric GPA, and persistent profile identity instead of the MVP-only GPA-range / preferred-term / preferred-location form.
+- Product changes: the dashboard and nav now route through a shared home shell, greet the student by first name, surface degree completion instead of career-goal copy, and remove the remaining hardcoded Alex Rivera leaks from the academic and clubs pages.
+- Codex acceleration: rather than editing one surface at a time, Codex traced every profile-contract dependency first, then landed the shared type/auth layer, then rewrote onboarding, then applied compatibility fixes to the matchers and chat route so the branch still built end to end.
+- Collaboration flow: the human set the outcome and time-box, Codex handled repo evaluation, contract migration, implementation, smoke build, and docs updates in sequence, and the branch kept a demo fallback at each risky boundary instead of waiting for perfect backend completeness.
+
+## How We Used Codex Under Deadline
+
+- Fast repo evaluation: Codex started by comparing the live repo against the productization plan and identifying the exact MVP-shell gaps that would be visible in a demo.
+- Incremental prompts: instead of one giant rewrite, the work was sequenced into auth/profile foundation, onboarding, dashboard polish, demo-leak cleanup, and final integration.
+- Docs alongside code: each major product step also updated the repo narrative in `README.md`, `CODEX-LOG.md`, `docs/demo-script.md`, and `docs/judge-qa.md` so the implementation and the presentation story stayed aligned.
+- Fallback-conscious delivery: Codex preserved explicit demo-safe fallback paths at risky boundaries like auth, uploads, dashboard data, and chat rather than over-claiming unfinished production infrastructure.
+
+That workflow mattered because it turned Codex into a fast engineering partner with visible checkpoints, not a black-box code dump.
+
 ## What Codex Generated
 
 - Shared contracts in `lib/types.ts`
@@ -68,6 +91,12 @@ That design kept the product believable: deterministic ranking engines where exp
 - [`lib/demo-fallbacks.ts`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/lib/demo-fallbacks.ts) mirrors the live response shapes exactly.
 - `NEXT_PUBLIC_DEMO_STATIC=true` forces static mode for a judge-safe demo if network or route behavior gets unstable.
 - The dashboard shows a badge when fallback data is active so the behavior stays honest.
+
+## Demo Format
+
+- The current presentation assumption is a full 3-minute live demo.
+- That longer window helps because the team can now show onboarding, dashboard, academic/clubs profile consistency, one opportunity surface, and chat in one coherent flow instead of rushing directly to the dashboard.
+- The productization story lands better in 3 minutes because the audience can see both the user-facing polish and the infrastructure realism underneath it.
 
 ## Screenshot Checklist
 

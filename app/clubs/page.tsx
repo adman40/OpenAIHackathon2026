@@ -1,38 +1,28 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { ClubList } from "../../components/clubs/ClubList";
-import { ClubMatch, StudentProfile } from "../../lib/types";
-
-const DEMO_PROFILE: StudentProfile = {
-  name: "Alex Rivera",
-  major: "Computer Science",
-  currentSemester: "Spring 2026",
-  completedCourses: [
-    { courseId: "CS 101", grade: "A-" },
-    { courseId: "MATH 221", grade: "B+" },
-  ],
-  gpaRange: "3.5-4.0",
-  gpaPublic: false,
-  residency: "texas",
-  financialNeed: "medium",
-  resumeSummary: "CS student interested in AI, student tools, and mission-driven product work.",
-  skills: ["python", "typescript"],
-  interests: ["ai", "education", "community", "product"],
-  careerGoal: "research",
-  preferredLocations: ["Austin", "Remote"],
-  preferredTerms: ["fall", "spring"],
-  clubInterests: ["ai", "entrepreneurship", "student tools", "community"],
-  hoursPerWeek: 5,
-};
+import NavBar from "../../components/shared/NavBar";
+import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { ClubMatch } from "../../lib/types";
 
 export default function ClubsPage() {
+  const { profile, isHydrated, authStatus } = useProfile();
   const [matches, setMatches] = useState<ClubMatch[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const activeProfile = profile ?? (authStatus === "demo" ? DEMO_PROFILE : null);
+
   const loadMatches = useCallback(async () => {
+    if (!activeProfile) {
+      setIsLoading(false);
+      setMatches([]);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -42,7 +32,7 @@ export default function ClubsPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ profile: DEMO_PROFILE }),
+        body: JSON.stringify({ profile: activeProfile }),
       });
 
       const body = (await response.json()) as ClubMatch[] | { error: string };
@@ -60,25 +50,55 @@ export default function ClubsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [activeProfile]);
 
   useEffect(() => {
-    // The clubs page uses a local demo profile until the shared profile context lands.
+    if (!isHydrated) {
+      return;
+    }
     void loadMatches();
-  }, [loadMatches]);
+  }, [isHydrated, loadMatches]);
+
+  if (!isHydrated) {
+    return null;
+  }
+
+  if (!activeProfile) {
+    return (
+      <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl space-y-6">
+          <NavBar />
+          <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-medium text-orange-700">Hook clubs matcher</p>
+            <h1 className="mt-1 text-3xl font-semibold">Find communities that fit your week</h1>
+            <p className="mt-2 max-w-3xl text-sm text-slate-600">
+              Finish onboarding first so Hook can rank clubs against your saved interests and weekly availability.
+            </p>
+            <Link
+              href="/onboarding"
+              className="mt-6 inline-flex rounded-full bg-orange-700 px-5 py-3 text-sm font-semibold text-white"
+            >
+              Open onboarding
+            </Link>
+          </section>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl space-y-6">
+        <NavBar />
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <p className="text-sm font-medium text-orange-700">Hook clubs matcher</p>
           <h1 className="mt-1 text-3xl font-semibold">Find communities that fit your week</h1>
           <p className="mt-2 max-w-3xl text-sm text-slate-600">
-            Hook ranks student organizations using interests, major, career goals, and time availability so the list stays useful instead of overwhelming.
+            Hook ranks student organizations using interests, major fit, and time availability so the list stays useful instead of overwhelming.
           </p>
           <p className="mt-4 text-sm text-slate-700">
-            Demo profile: {DEMO_PROFILE.major}, {DEMO_PROFILE.hoursPerWeek} hours/week available, interests in{" "}
-            {DEMO_PROFILE.clubInterests.slice(0, 3).join(", ")}.
+            Profile: {activeProfile.major}, {activeProfile.hoursPerWeek ?? 5} hours/week available, interests in{" "}
+            {activeProfile.clubInterests.slice(0, 3).join(", ")}.
           </p>
         </div>
 

@@ -3,6 +3,13 @@ import path from "path";
 import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 
+import {
+  getProfileCareerGoal,
+  getProfileGpaRange,
+  getProfilePreferredLocations,
+  getProfilePreferredTerms,
+  getProfileResumeSummary,
+} from "../../../lib/profile-utils";
 import type { ChatCitation, ChatResponse, StudentProfile } from "../../../lib/types";
 
 type ChatMessage = {
@@ -148,7 +155,7 @@ function buildOutreachDraft(profile: StudentProfile, question: string): string {
     "",
     "Hi [Name],",
     "",
-    `I'm ${profile.name}, a ${profile.currentSemester} ${profile.major} student. ${profile.resumeSummary}`,
+    `I'm ${profile.name}, a ${profile.currentSemester} ${profile.major} student. ${getProfileResumeSummary(profile)}`,
     `I'm reaching out because ${question.replace(/\?+$/, "")}.`,
     "If you're open to it, I'd appreciate 15 minutes to learn about your work and how a student like me could prepare well.",
     "",
@@ -284,15 +291,15 @@ function profileSummary(profile: StudentProfile): string {
     `Name: ${profile.name}`,
     `Major: ${profile.major}`,
     `Semester: ${profile.currentSemester}`,
-    `Career goal: ${profile.careerGoal}`,
-    `GPA range: ${profile.gpaRange}`,
+    `Career goal: ${getProfileCareerGoal(profile)}`,
+    `GPA range: ${getProfileGpaRange(profile)}`,
     `Financial need: ${profile.financialNeed}`,
     `Residency: ${profile.residency}`,
     `Skills: ${profile.skills.join(", ")}`,
     `Interests: ${profile.interests.join(", ")}`,
-    `Preferred locations: ${profile.preferredLocations.join(", ")}`,
-    `Preferred terms: ${profile.preferredTerms.join(", ")}`,
-    `Resume summary: ${profile.resumeSummary}`,
+    `Preferred locations: ${getProfilePreferredLocations(profile).join(", ")}`,
+    `Preferred terms: ${getProfilePreferredTerms(profile).join(", ")}`,
+    `Resume summary: ${getProfileResumeSummary(profile)}`,
   ].join("\n");
 }
 

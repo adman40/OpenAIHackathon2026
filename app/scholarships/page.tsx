@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ScholarshipDetailPanel } from "../../components/scholarships/ScholarshipDetailPanel";
 import { ScholarshipList } from "../../components/scholarships/ScholarshipList";
+import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
 import type { ScholarshipMatch } from "../../lib/types";
 
@@ -112,6 +113,7 @@ export default function ScholarshipsPage(): JSX.Element {
 
   return (
     <main style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px 16px" }}>
+      <NavBar />
       <h1 style={{ margin: 0, fontSize: "28px", color: "#111827" }}>Scholarships</h1>
       <p style={{ color: "#4b5563", marginTop: "8px" }}>
         Ranked by fit score and urgency for your profile.

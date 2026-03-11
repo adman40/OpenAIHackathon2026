@@ -1,4 +1,5 @@
 import { Club, ClubMatch, StudentProfile } from "../types";
+import { getProfileCareerGoal } from "../profile-utils";
 
 function normalize(value: string): string {
   return value.trim().toLowerCase();
@@ -44,7 +45,8 @@ export function matchClubs(profile: StudentProfile, clubs: Club[]): ClubMatch[] 
   const clubInterests = new Set(profile.clubInterests.map(normalize));
   const interests = new Set(profile.interests.map(normalize));
   const major = normalize(profile.major);
-  const careerGoal = normalize(profile.careerGoal);
+  const careerGoalLabel = getProfileCareerGoal(profile);
+  const careerGoal = normalize(careerGoalLabel);
   const hoursPerWeek = profile.hoursPerWeek ?? 5;
 
   // We keep scoring simple so every result stays explainable in the demo.
@@ -75,7 +77,7 @@ export function matchClubs(profile: StudentProfile, clubs: Club[]): ClubMatch[] 
       }
 
       if (careerMatch) {
-        reasons.push(`Fits your ${profile.careerGoal.replace("_", " ")} goals.`);
+        reasons.push(`Fits your ${careerGoalLabel.replace("_", " ")} goals.`);
       }
 
       if (timeFitScore >= 10) {

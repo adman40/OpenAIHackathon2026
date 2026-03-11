@@ -1,4 +1,9 @@
 import type { CareerGoal, Scholarship, ScholarshipMatch, StudentProfile } from "../types";
+import {
+  getProfileCareerGoal,
+  getProfileGpaRange,
+  getProfileResumeSummary,
+} from "../profile-utils";
 
 type ParsedSignals = {
   residency: string[];
@@ -94,7 +99,7 @@ function parseProfileGpaHigh(gpaRange: string): number {
 }
 
 function inferYear(profile: StudentProfile): string {
-  const summary = normalize(profile.resumeSummary);
+  const summary = normalize(getProfileResumeSummary(profile));
   for (const yearLabel of YEAR_LABELS) {
     if (summary.includes(yearLabel)) {
       return yearLabel;
@@ -132,7 +137,7 @@ function computeSkillsOverlap(profile: StudentProfile, targetSkills: string[]): 
     return [];
   }
 
-  const combined = `${profile.resumeSummary} ${profile.skills.join(" ")}`;
+  const combined = `${getProfileResumeSummary(profile)} ${profile.skills.join(" ")}`;
   const tokens = toTokenSet(combined);
 
   return targetSkills.filter((skill) => {
@@ -153,10 +158,12 @@ export function matchScholarships(
   scholarships: Scholarship[],
 ): ScholarshipMatch[] {
   const year = inferYear(profile);
-  const gpaHigh = parseProfileGpaHigh(profile.gpaRange);
+  const profileGpaRange = getProfileGpaRange(profile);
+  const gpaHigh = parseProfileGpaHigh(profileGpaRange);
   const residency = normalize(profile.residency);
   const need = normalize(profile.financialNeed);
   const major = normalize(profile.major);
+  const careerGoal = getProfileCareerGoal(profile);
 
   const matches: ScholarshipMatch[] = [];
 
@@ -222,11 +229,11 @@ export function matchScholarships(
       if (gpaHigh >= signals.minGpa + 0.2) {
         score += 15;
         matchedSpecific += 1;
-        reasons.push(`GPA range (${profile.gpaRange}) is above the minimum ${signals.minGpa.toFixed(1)}.`);
+        reasons.push(`GPA range (${profileGpaRange}) is above the minimum ${signals.minGpa.toFixed(1)}.`);
       } else if (gpaHigh >= signals.minGpa) {
         score += 11;
         matchedSpecific += 1;
-        reasons.push(`GPA range (${profile.gpaRange}) meets the minimum ${signals.minGpa.toFixed(1)}.`);
+        reasons.push(`GPA range (${profileGpaRange}) meets the minimum ${signals.minGpa.toFixed(1)}.`);
       } else {
         score += 5;
         reasons.push(`GPA is near the minimum ${signals.minGpa.toFixed(1)}.`);
@@ -252,10 +259,10 @@ export function matchScholarships(
 
     if (!allowsAny(signals.careerGoals)) {
       availableSpecific += 1;
-      if (careerGoalMatches(profile.careerGoal, signals.careerGoals)) {
+      if (careerGoalMatches(careerGoal, signals.careerGoals)) {
         score += 10;
         matchedSpecific += 1;
-        reasons.push(`Career goal (${profile.careerGoal}) aligns with scholarship intent.`);
+        reasons.push(`Career goal (${careerGoal}) aligns with scholarship intent.`);
       } else {
         score += 3;
       }

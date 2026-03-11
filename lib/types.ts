@@ -7,6 +7,10 @@ export type FinancialNeed = "low" | "medium" | "high";
 
 export type CareerGoal = "industry" | "research" | "grad_school" | "undecided";
 
+export type AuthStatus = "signed_out" | "pending_verification" | "authenticated" | "demo";
+
+export type ProfilePersistenceMode = "supabase" | "fallback";
+
 export type OpportunityKind = "research" | "internship" | "new_grad";
 
 export type RecommendationUrgency = "critical" | "recommended" | "optional";
@@ -40,25 +44,42 @@ export interface CompletedCourse {
   courseId: string;
   grade: string;
   semester?: string;
+  source?: "transcript_upload" | "manual_entry" | "demo_seed";
+  creditHours?: number;
+  gradePoints?: number | null;
 }
 
 export interface StudentProfile {
+  id?: string;
+  authUserId?: string | null;
+  email: string;
+  utEid: string;
   name: string;
   major: string;
   currentSemester: string;
   completedCourses: CompletedCourse[];
-  gpaRange: string;
+  gpa: number | null;
+  gpaRange?: string;
   gpaPublic: boolean;
   residency: Residency;
   financialNeed: FinancialNeed;
-  resumeSummary: string;
+  resumeSummary?: string;
   skills: string[];
   interests: string[];
-  careerGoal: CareerGoal;
-  preferredLocations: string[];
-  preferredTerms: string[];
+  careerGoal?: CareerGoal;
+  preferredLocations?: string[];
+  preferredTerms?: string[];
   clubInterests: string[];
   hoursPerWeek?: number;
+  profilePhotoUrl?: string | null;
+  transcriptFileName?: string | null;
+  resumeFileName?: string | null;
+  transcriptUploadStatus?: "missing" | "uploaded" | "reviewed";
+  resumeUploadStatus?: "missing" | "uploaded" | "reviewed";
+  authStatus?: AuthStatus;
+  accountMode?: ProfilePersistenceMode;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Academic types drive course planning and on-track analysis.

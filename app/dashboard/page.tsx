@@ -14,6 +14,7 @@ import {
   scholarshipsDemoFallback,
 } from "../../lib/demo-fallbacks";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { getProfileFirstName } from "../../lib/profile-utils";
 import type {
   AcademicAnalysis,
   ClubMatch,
@@ -38,6 +39,7 @@ type DashboardCardData = {
 type DashboardState = {
   cards: DashboardCardData[];
   fallbackSources: ServiceKey[];
+  academicPercentComplete: number;
 };
 
 type ApiErrorResponse = {
@@ -221,6 +223,7 @@ async function loadDashboardState(profile: StudentProfile, preferStatic: boolean
         buildClubsCard(clubsDemoFallback),
       ],
       fallbackSources: ["academic", "scholarships", "research", "internships", "clubs"],
+      academicPercentComplete: academicDemoFallback.percentComplete,
     };
   }
 
@@ -264,11 +267,12 @@ async function loadDashboardState(profile: StudentProfile, preferStatic: boolean
       buildClubsCard(clubs),
     ],
     fallbackSources,
+    academicPercentComplete: academic.percentComplete,
   };
 }
 
 export default function DashboardPage() {
-  const { profile, setProfile, isHydrated } = useProfile();
+  const { profile, setProfile, isHydrated, authStatus } = useProfile();
   const [dashboardState, setDashboardState] = useState<DashboardState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
@@ -341,7 +345,9 @@ export default function DashboardPage() {
               </Link>
               <button
                 type="button"
-                onClick={() => setProfile(DEMO_PROFILE)}
+                onClick={() => {
+                  void setProfile(DEMO_PROFILE);
+                }}
                 className="rounded-full border border-orange-200 bg-orange-50 px-5 py-3 text-sm font-semibold text-orange-800 transition hover:border-orange-300"
               >
                 Load demo profile
@@ -354,9 +360,10 @@ export default function DashboardPage() {
   }
 
   const activeProfile = profile ?? DEMO_PROFILE;
-  const firstName = activeProfile.name.split(" ")[0] ?? activeProfile.name;
+  const firstName = getProfileFirstName(activeProfile);
   const fallbackSources = dashboardState?.fallbackSources ?? [];
   const usingFallback = fallbackSources.length > 0;
+  const academicPercentComplete = dashboardState?.academicPercentComplete ?? 0;
   const fallbackLabel = DEMO_STATIC
     ? "Static demo data"
     : `Fallback active: ${fallbackSources.join(", ")}`;
@@ -380,11 +387,11 @@ export default function DashboardPage() {
                 ) : null}
               </div>
               <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-5xl">
-                {`Welcome back, ${firstName}.`}
+                {`Welcome Back, ${firstName}.`}
               </h2>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-orange-50/90 md:text-base">
-                Hook is using your {activeProfile.major} profile to pull academic planning,
-                funding, opportunities, communities, and support into one coordinated view.
+                Hook is coordinating your academic planning, funding, opportunities,
+                communities, and support into one live student view.
               </p>
             </div>
 
@@ -397,14 +404,18 @@ export default function DashboardPage() {
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-orange-100/70">
-                  Career goal
+                  Degree complete
                 </p>
-                <p className="mt-2 text-lg font-semibold">
-                  {activeProfile.careerGoal.replace("_", " ")}
-                </p>
+                <p className="mt-2 text-lg font-semibold">{academicPercentComplete}%</p>
               </div>
             </div>
           </div>
+
+          {authStatus === "pending_verification" ? (
+            <div className="mt-6 rounded-2xl border border-white/15 bg-white/10 px-4 py-4 text-sm text-orange-50">
+              Your account draft is saved, but UT email verification is still pending. The demo remains usable while you finish verification.
+            </div>
+          ) : null}
 
           {!DEMO_STATIC && usingFallback ? (
             <div className="mt-6 flex flex-wrap items-center gap-3">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
+import { getProfileFirstName } from "../../lib/profile-utils";
 import { useProfile } from "../../lib/profile-context";
 
 const navItems = [
@@ -17,22 +18,24 @@ const navItems = [
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { clearProfile } = useProfile();
+  const { clearProfile, profile } = useProfile();
 
   const handleSignOut = () => {
-    clearProfile();
+    void clearProfile();
     router.push("/onboarding");
   };
 
   return (
     <nav className="rounded-[28px] border border-stone-200 bg-white/95 p-4 shadow-[0_18px_50px_rgba(28,25,23,0.08)] backdrop-blur">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
+        <Link href="/dashboard" className="block">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-orange-700">
             Hook Platform
           </p>
-          <h1 className="mt-1 text-xl font-semibold text-stone-900">Student admin co-pilot</h1>
-        </div>
+          <h1 className="mt-1 text-xl font-semibold text-stone-900">
+            {profile ? `Home for ${getProfileFirstName(profile)}` : "Student admin co-pilot"}
+          </h1>
+        </Link>
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex flex-wrap gap-2">

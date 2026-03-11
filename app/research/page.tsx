@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { OpportunityCard } from "../../components/opportunities/OpportunityCard";
 import { OpportunityDetailPanel } from "../../components/opportunities/OpportunityDetailPanel";
 import { OpportunityFilters } from "../../components/opportunities/OpportunityFilters";
+import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
 import {
   getSavedOpportunityIds,
@@ -198,6 +199,7 @@ export default function ResearchPage(): JSX.Element {
 
   return (
     <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
+      <NavBar />
       <h1 style={{ margin: 0, color: "#111827", fontSize: "28px" }}>Research Opportunities</h1>
       <p style={{ color: "#4b5563", marginTop: "8px" }}>
         Ranked by fit score with filters for research planning.

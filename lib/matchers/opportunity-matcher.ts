@@ -1,4 +1,9 @@
 import type { Opportunity, OpportunityMatch, StudentProfile } from "../types";
+import {
+  getProfilePreferredLocations,
+  getProfilePreferredTerms,
+  getProfileResumeSummary,
+} from "../profile-utils";
 
 function normalize(text: string): string {
   return text.trim().toLowerCase();
@@ -48,7 +53,7 @@ function listOverlap(candidates: string[], haystackText: string): string[] {
 
 function profileCombinedText(profile: StudentProfile): string {
   return [
-    profile.resumeSummary,
+    getProfileResumeSummary(profile),
     profile.skills.join(" "),
     profile.interests.join(" "),
     profile.major,
@@ -56,22 +61,24 @@ function profileCombinedText(profile: StudentProfile): string {
 }
 
 function locationMatches(profile: StudentProfile, opportunity: Opportunity): boolean {
-  if (profile.preferredLocations.length === 0) {
+  const preferredLocations = getProfilePreferredLocations(profile);
+  if (preferredLocations.length === 0) {
     return true;
   }
   const location = normalize(opportunity.location);
-  return profile.preferredLocations.some((preferred) => {
+  return preferredLocations.some((preferred) => {
     const value = normalize(preferred);
     return location.includes(value) || value.includes(location);
   });
 }
 
 function termMatches(profile: StudentProfile, opportunity: Opportunity): boolean {
-  if (profile.preferredTerms.length === 0) {
+  const preferredTerms = getProfilePreferredTerms(profile);
+  if (preferredTerms.length === 0) {
     return true;
   }
   const term = normalize(opportunity.term);
-  return profile.preferredTerms.some((preferred) => {
+  return preferredTerms.some((preferred) => {
     const value = normalize(preferred);
     return term.includes(value) || value.includes(term);
   });
@@ -111,7 +118,7 @@ export function matchOpportunities(
         reasons.push(`Skills overlap: ${skillMatches.slice(0, 3).join(", ")}.`);
       }
 
-      const resumeMatches = listOverlap(opportunity.skills, profile.resumeSummary);
+      const resumeMatches = listOverlap(opportunity.skills, getProfileResumeSummary(profile));
       if (resumeMatches.length > 0) {
         score += Math.min(12, 4 + resumeMatches.length * 2);
         reasons.push(`Resume summary connects to role skills (${resumeMatches.slice(0, 2).join(", ")}).`);

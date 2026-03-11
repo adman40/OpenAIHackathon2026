@@ -24,6 +24,10 @@ They are deterministic ranking signals, not opaque predictions. Each surface exp
 
 ## Technical
 
+### Does the same student profile really carry across the product now?
+
+Yes. The dashboard, academic, clubs, scholarships, research, internships, saved page, and chat all read from the same shared profile contract now. That was a key productization fix because some MVP pages still used a hardcoded demo student before this pass.
+
 ### How are the dashboard cards powered?
 
 [`app/dashboard/page.tsx`](/Users/amanoni/Desktop/OpenAIHackathon/OpenAIHackathon2026/app/dashboard/page.tsx) calls `/api/academic/analyze`, `/api/scholarships/match`, `/api/research/match`, `/api/internships/match`, and `/api/clubs/match` in parallel, then turns the responses into five top-line summaries.
@@ -65,6 +69,28 @@ Academic and opportunity ranking need deterministic outputs and clear explanatio
 ### What if the OpenAI call fails during the demo?
 
 The chat route is built with a local fallback path. If GPT-4o is unavailable or `OPENAI_API_KEY` is missing, Hook still returns grounded deterministic guidance instead of breaking.
+
+## Productization
+
+### What makes this more than a hackathon shell now?
+
+The biggest change is that the product now behaves around a durable student account instead of a temporary browser-only demo profile. Onboarding is more realistic, profile consistency carries across pages, and the demo has explicit fallback paths instead of hidden failure points.
+
+### Is this fully production-grade today?
+
+No. It is a productization branch optimized for a convincing live demo. The core user flow feels much more real, while some deeper backend pieces such as full parsing pipelines and full Supabase deployment are intentionally thin or staged behind fallback behavior.
+
+### Why keep fallback behavior instead of removing it?
+
+Because fallback behavior makes the demo honest and resilient. We would rather show a controlled backup path than risk a broken screen or pretend an unfinished integration is fully live.
+
+### What exactly did Codex help with in this final push?
+
+Codex accelerated repo inspection, contract migration, onboarding refactor, targeted cleanup of demo-profile leaks, and the synchronized documentation pass. The human team still decided scope, reviewed results, and shaped the product story.
+
+### How did you use Codex under deadline without losing control?
+
+We used incremental prompts tied to specific workstreams, reviewed the diff after each major step, and required docs to update alongside code. That kept the collaboration visible and reduced the risk of fast but sloppy changes.
 
 ## Credibility
 

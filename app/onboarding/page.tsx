@@ -3,12 +3,20 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ProfileForm from "../../components/profile/ProfileForm";
-import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { useProfile } from "../../lib/profile-context";
 import type { StudentProfile } from "../../lib/types";
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { profile, setProfile, isHydrated } = useProfile();
+  const {
+    profile,
+    signIn,
+    signUp,
+    loadDemoProfile,
+    isHydrated,
+    isSupabaseReady,
+    authStatus,
+  } = useProfile();
 
   useEffect(() => {
     if (isHydrated && profile) {
@@ -16,13 +24,40 @@ export default function OnboardingPage() {
     }
   }, [isHydrated, profile, router]);
 
-  const handleComplete = (nextProfile: StudentProfile) => {
-    setProfile(nextProfile);
-    router.push("/dashboard");
+  const handleCreateAccount = async (payload: {
+    email: string;
+    password: string;
+    fullName: string;
+    utEid: string;
+    profile: StudentProfile;
+  }) => {
+    const result = await signUp(
+      {
+        email: payload.email,
+        password: payload.password,
+        fullName: payload.fullName,
+        utEid: payload.utEid,
+      },
+      payload.profile,
+    );
+
+    if (!result.error) {
+      router.push("/dashboard");
+    }
+
+    return result;
   };
 
-  const handleDemoMode = () => {
-    setProfile(DEMO_PROFILE);
+  const handleSignIn = async (payload: { email: string; password: string }) => {
+    const result = await signIn(payload);
+    if (!result.error) {
+      router.push("/dashboard");
+    }
+    return result;
+  };
+
+  const handleDemoMode = async () => {
+    await loadDemoProfile();
     router.push("/dashboard");
   };
 
@@ -35,27 +70,37 @@ export default function OnboardingPage() {
               Hook
             </div>
             <h1 className="max-w-md text-4xl font-semibold leading-tight md:text-5xl">
-              College admin, organized around one student profile.
+              Productized onboarding for a real UT student profile.
             </h1>
             <p className="mt-5 max-w-lg text-sm leading-7 text-white/85 md:text-base">
-              Hook turns class planning, scholarships, research, internships, clubs, and
-              campus-resource support into one coordinated dashboard. Start with your profile,
-              then let Hook handle the administrative sprawl.
+              Engineer A&apos;s branch now starts with account identity, UT EID, transcript,
+              resume, profile photo, and GPA privacy before the student lands on the dashboard.
+              The shell still preserves a demo-safe fallback if Supabase is not configured yet.
             </p>
             <div className="mt-8 grid gap-3 text-sm text-white/90">
               <div className="rounded-2xl bg-white/10 px-4 py-3">
-                Academic planning with prerequisite warnings and next-semester recommendations
+                Account setup requires UT email, password, and UT EID
               </div>
               <div className="rounded-2xl bg-white/10 px-4 py-3">
-                Fit-scored scholarships, research, internships, and club recommendations
+                Transcript and resume uploads seed completed courses, GPA, and skills
               </div>
               <div className="rounded-2xl bg-white/10 px-4 py-3">
-                Profile-aware chat for outreach drafts, study strategy, and campus support
+                Demo-safe local persistence stays available when live auth is not ready
               </div>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3 text-xs uppercase tracking-[0.18em] text-white/80">
+              <span className="rounded-full border border-white/20 px-3 py-1">
+                {isSupabaseReady ? "Supabase mode ready" : "Fallback mode active"}
+              </span>
+              <span className="rounded-full border border-white/20 px-3 py-1">
+                Auth status: {authStatus.replace("_", " ")}
+              </span>
             </div>
             <button
               type="button"
-              onClick={handleDemoMode}
+              onClick={() => {
+                void handleDemoMode();
+              }}
               className="mt-8 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-orange-800 transition hover:bg-orange-50"
             >
               Try Demo Mode
@@ -63,11 +108,10 @@ export default function OnboardingPage() {
           </section>
 
           <section className="self-start">
-            <ProfileForm onComplete={handleComplete} />
+            <ProfileForm onCreateAccount={handleCreateAccount} onSignIn={handleSignIn} />
           </section>
         </div>
       </div>
     </main>
   );
 }
-

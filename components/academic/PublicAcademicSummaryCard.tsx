@@ -1,3 +1,4 @@
+import { getProfileGpaRange } from "../../lib/profile-utils";
 import { StudentProfile } from "../../lib/types";
 
 interface PublicAcademicSummaryCardProps {
@@ -13,7 +14,7 @@ export function PublicAcademicSummaryCard({
     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <p className="text-sm font-medium text-slate-500">Profile snapshot</p>
       <h1 className="mt-1 text-2xl font-semibold text-slate-900">
-        Academic Advisor
+        Academic Summary
       </h1>
       <p className="mt-2 text-sm text-slate-700">{summary}</p>
 
@@ -31,9 +32,9 @@ export function PublicAcademicSummaryCard({
           <dd className="mt-1 font-medium text-slate-900">{profile.currentSemester}</dd>
         </div>
         <div className="rounded-lg bg-slate-50 p-3">
-          <dt className="text-xs uppercase tracking-wide text-slate-500">GPA visibility</dt>
+          <dt className="text-xs uppercase tracking-wide text-slate-500">Recorded GPA</dt>
           <dd className="mt-1 font-medium text-slate-900">
-            {profile.gpaPublic ? `Public (${profile.gpaRange})` : "Hidden from public view"}
+            {profile.gpa?.toFixed(2) ?? getProfileGpaRange(profile)}
           </dd>
         </div>
       </dl>
