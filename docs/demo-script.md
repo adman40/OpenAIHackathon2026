@@ -56,4 +56,11 @@ Show that Hook also recommends communities, not just work.
 
 ### 1:10-1:30 - Chat
 
-Ask for a campus resource or outreach draft and show suggested actions.
+Ask for a campus resource, study strategy, sports snapshot, or outreach draft and show:
+
+- profile-aware answer from GPT-4o
+- suggested next actions
+- citations grounded in the local campus resource file or sports snapshot
+
+Line to say:
+"Hook does not just answer questions. It uses one student profile plus local campus context to route support, draft outreach, and keep the response explainable."

@@ -52,6 +52,21 @@ Explain how OpenAI tools were central to building Hook, not just embedded as a f
 - This phase matters because the same student profile now powers every Hook surface instead of each page inventing its own data.
 - Screenshot to save: `codex-log-01b-profile.png`
 
+### A4 - Chat Layer
+
+- Codex generated the local campus resource knowledge file in `data/resources/campus-resources.md`.
+- Codex generated the demo sports context file in `data/resources/sports-snapshot.json`.
+- Codex generated `pages/api/chat/respond.ts`, which builds a system prompt from `StudentProfile` plus local files and uses GPT-4o when an API key is available.
+- The chat route is intentionally demo-safe: if the OpenAI call fails or no API key is set, Hook falls back to local deterministic guidance instead of breaking.
+- Codex generated the chat UI in `components/chat/MessageBubble.tsx`, `components/chat/ChatInput.tsx`, and `components/chat/ChatWindow.tsx`.
+- Core chat use cases:
+  - campus resources
+  - study strategy
+  - mental-health and crisis routing
+  - sports snapshot questions
+  - cold outreach drafting
+- Screenshot to save: `codex-log-06-chat.png`
+
 ## Scholarship Matcher (Person C)
 
 - Dataset file: `data/scholarships/scholarships.json` (16 scholarships, UT + external mix).
@@ -94,3 +109,10 @@ Explain how OpenAI tools were central to building Hook, not just embedded as a f
 - Scholarship matcher (`lib/matchers/scholarship-matcher.ts`): Parses scholarship eligibility signals and computes weighted fit across residency, major, inferred year, GPA band, financial need, career goal, and resume/skills overlap; also adds specificity bonuses and deadline urgency.
 - Research matcher (`lib/matchers/opportunity-matcher.ts` via `pages/api/research/match.ts`): Uses shared opportunity scoring with research dataset inputs, emphasizing major fit, relevant completed coursework, skills/resume alignment, interests, and preferred location/term compatibility.
 - Internship matcher (`lib/matchers/opportunity-matcher.ts` via `pages/api/internships/match.ts`): Reuses the same scoring pipeline on internship data so ranking behavior is consistent across opportunity surfaces while allowing UI-layer filters for location, pay band, and term.
+
+## Technical Summary (Chat Stack)
+
+- Model usage: GPT-4o via the OpenAI Node SDK in `pages/api/chat/respond.ts`.
+- Grounding strategy: a system prompt built from the active `StudentProfile`, `data/resources/campus-resources.md`, and `data/resources/sports-snapshot.json`.
+- Safety and demo reliability: no vector database, no live scraping, and a local fallback path if the model call is unavailable.
+- Explainability: the route returns `ChatResponse` with `answer`, `suggestedActions`, and `citations` so the UI can show why a response was generated.

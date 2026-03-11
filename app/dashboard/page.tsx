@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import ChatWindow from "../../components/chat/ChatWindow";
 import NavBar from "../../components/shared/NavBar";
 import SummaryCard from "../../components/shared/SummaryCard";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
@@ -137,44 +138,7 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          <aside className="rounded-[32px] border border-stone-200 bg-white p-6 shadow-[0_18px_50px_rgba(28,25,23,0.08)] md:p-8">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-orange-700">
-                  Hook Chat
-                </p>
-                <h3 className="mt-2 text-2xl font-semibold text-stone-900">Action panel</h3>
-              </div>
-              <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-600">
-                Placeholder
-              </span>
-            </div>
-
-            <p className="mt-4 text-sm leading-7 text-stone-600">
-              This panel will host the profile-aware assistant. For the dashboard shell, it
-              previews the judge story: academic guidance, scholarship prioritization, outreach
-              drafts, and campus-resource routing from one assistant surface.
-            </p>
-
-            <div className="mt-8 space-y-4">
-              <div className="rounded-3xl bg-stone-100 p-4 text-sm leading-6 text-stone-600">
-                “What should I prioritize this week if I want research experience and more aid?”
-              </div>
-              <div className="rounded-3xl bg-orange-50 p-4 text-sm leading-6 text-stone-700">
-                Hook will soon respond with ranked actions, draft help, and source-backed next
-                steps based on this profile.
-              </div>
-            </div>
-
-            <div className="mt-8 rounded-[28px] border border-dashed border-stone-300 bg-stone-50 p-5">
-              <p className="text-sm font-semibold text-stone-900">Planned launch sequence</p>
-              <ul className="mt-4 space-y-3 text-sm text-stone-600">
-                <li>Academic and opportunity alerts land here first.</li>
-                <li>Suggested actions will deep-link into each product area.</li>
-                <li>Campus support routing will appear as citation-backed guidance.</li>
-              </ul>
-            </div>
-          </aside>
+          <ChatWindow title="Action panel" subtitle="Hook Chat" />
         </div>
 
         <button

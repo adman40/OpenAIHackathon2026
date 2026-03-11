@@ -1,0 +1,31 @@
+{
+  "snapshotLabel": "Curated demo sports snapshot for Hook chat. This is not live data.",
+  "generatedForDemo": "2026-03-11",
+  "campus": "UT Austin",
+  "sports": [
+    {
+      "sport": "Football",
+      "headline": "Spring practice storylines are centered on quarterback reps and defensive depth.",
+      "notes": [
+        "Demo takeaway: fans are watching offensive continuity and transfer impact.",
+        "Use this snapshot for broad questions, not live scores or verified roster updates."
+      ]
+    },
+    {
+      "sport": "Men's Basketball",
+      "headline": "The team is in late-season mode with focus on tournament positioning and defensive consistency.",
+      "notes": [
+        "Demo takeaway: judges should see that Hook can answer light campus-life questions too.",
+        "This file is a static snapshot and should be described as demo data."
+      ]
+    },
+    {
+      "sport": "Women's Basketball",
+      "headline": "The team profile emphasizes depth, guard play, and postseason momentum.",
+      "notes": [
+        "Demo takeaway: highlight campus community context, not just academics and opportunities.",
+        "If asked for exact records or next game times, say the sports file is a local snapshot."
+      ]
+    }
+  ]
+}
