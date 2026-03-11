@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hook - UT Austin Productization Plan</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1a1a1a; background: #fff; line-height: 1.55; }
+
+  @media print {
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    body { font-size: 11px; }
+    .container { padding: 0 0.5in; }
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 50px; }
+  .cover { background: linear-gradient(135deg, #BF5700 0%, #7a3600 100%); color: white; padding: 70px 60px; min-height: 280px; margin-bottom: 0; }
+  .cover h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 18px; opacity: 0.85; margin-bottom: 28px; }
+  .cover .meta { font-size: 13px; opacity: 0.7; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 18px; margin-top: 18px; }
+  .cover .meta span { margin-right: 28px; }
+  .cover .tagline { font-size: 15px; font-style: italic; opacity: 0.9; margin-top: 16px; }
+
+  .toc { background: #f9f5f2; border-left: 5px solid #BF5700; padding: 28px 32px; margin: 36px 0; }
+  .toc h2 { font-size: 16px; text-transform: uppercase; letter-spacing: 1px; color: #BF5700; margin-bottom: 16px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; color: #333; }
+  .toc a { color: #BF5700; text-decoration: none; }
+
+  h2.section-title { font-size: 22px; font-weight: 800; color: #BF5700; border-bottom: 3px solid #BF5700; padding-bottom: 8px; margin: 40px 0 18px; text-transform: uppercase; letter-spacing: 0.5px; }
+  h3.sub-title { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 24px 0 10px; }
+  h4 { font-size: 13px; font-weight: 700; color: #444; margin: 16px 0 8px; }
+
+  .person-header { display: flex; align-items: center; gap: 14px; background: #fff8f4; border: 2px solid #BF5700; border-radius: 8px; padding: 16px 20px; margin: 20px 0 16px; }
+  .person-badge { background: #BF5700; color: white; font-weight: 800; font-size: 22px; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .person-info h3 { font-size: 17px; font-weight: 800; color: #BF5700; margin: 0 0 2px; }
+  .person-info p { font-size: 12px; color: #666; margin: 0; }
+
+  .step { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
+  .step-num { background: #BF5700; color: white; font-weight: 800; font-size: 12px; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .step-content { flex: 1; }
+  .step-content strong { display: block; margin-bottom: 3px; }
+
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 16px 20px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 11.5px; overflow-x: auto; margin: 10px 0 16px; line-height: 1.6; }
+  code { background: #f0ebe6; color: #BF5700; padding: 1px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 11.5px; }
+
+  .prompt-box { background: #0d1117; border-left: 4px solid #58a6ff; color: #c9d1d9; padding: 14px 18px; border-radius: 0 6px 6px 0; font-family: 'Courier New', monospace; font-size: 11px; margin: 10px 0 16px; line-height: 1.65; white-space: pre-wrap; }
+  .prompt-box .prompt-label { color: #58a6ff; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; font-family: 'Segoe UI', Arial, sans-serif; display: block; white-space: normal; }
+
+  .box { padding: 14px 18px; border-radius: 6px; margin: 14px 0; }
+  .box-info { background: #e8f4fd; border-left: 4px solid #2196F3; }
+  .box-warn { background: #fff8e1; border-left: 4px solid #FF9800; }
+  .box-success { background: #e8f5e9; border-left: 4px solid #4CAF50; }
+  .box-danger { background: #fdecea; border-left: 4px solid #f44336; }
+  .box strong { display: block; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .box-info strong { color: #1565C0; }
+  .box-warn strong { color: #E65100; }
+  .box-success strong { color: #2E7D32; }
+  .box-danger strong { color: #c62828; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 12px; }
+  th { background: #BF5700; color: white; padding: 8px 12px; text-align: left; font-weight: 700; }
+  td { padding: 7px 12px; border-bottom: 1px solid #e8e0d8; vertical-align: top; }
+  tr:nth-child(even) td { background: #faf7f4; }
+
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #e0d4c8; }
+  .timeline-item { position: relative; margin-bottom: 18px; }
+  .timeline-item::before { content: ''; position: absolute; left: -24px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: #BF5700; }
+  .timeline-time { font-size: 11px; font-weight: 700; color: #BF5700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .timeline-title { font-weight: 700; font-size: 13px; margin: 2px 0; }
+  .timeline-desc { font-size: 12px; color: #555; }
+
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { padding: 5px 0 5px 26px; position: relative; border-bottom: 1px solid #f0ebe6; }
+  .checklist li::before { content: '[ ]'; position: absolute; left: 0; color: #BF5700; font-size: 12px; font-family: 'Courier New', monospace; }
+
+  .file-tree { background: #f9f5f2; border: 1px solid #e0d4c8; border-radius: 6px; padding: 16px 20px; font-family: 'Courier New', monospace; font-size: 11.5px; line-height: 1.8; margin: 10px 0 16px; white-space: pre-wrap; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; margin-right: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tag-a { background: #fdebd0; color: #BF5700; }
+  .tag-b { background: #d5e8d4; color: #2E7D32; }
+  .tag-c { background: #dae8fc; color: #1565C0; }
+  .tag-all { background: #e8e0f0; color: #4a148c; }
+  .tag-risk { background: #fdecea; color: #c62828; }
+
+  ul, ol { padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  p { margin-bottom: 10px; }
+  .muted { color: #666; font-size: 12px; }
+  .center { text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div style="max-width:900px; margin:0 auto; padding: 0 10px;">
+    <div style="font-size:13px; opacity:0.7; margin-bottom:12px; letter-spacing:2px; text-transform:uppercase;">OpenAI Build It Forward Hackathon - March 11, 2026</div>
+    <h1>Hook</h1>
+    <div class="subtitle">UT Austin Productization Plan - Real Data, Real Profiles, Real Workflows</div>
+    <div class="tagline">From demo shell to durable student platform.</div>
+    <div class="meta">
+      <span>Supabase auth + storage</span>
+      <span>Scheduled ETL snapshots</span>
+      <span>UT Austin undergraduate scope</span>
+      <span>Playwright QA baked into delivery</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#part1">Part 1 - What This Version Is</a></li>
+    <li><a href="#part2">Part 2 - Scope Lock</a></li>
+    <li><a href="#part3">Part 3 - Current Repo Reality</a></li>
+    <li><a href="#part4">Part 4 - Target Architecture</a></li>
+    <li><a href="#part5">Part 5 - Workstream A: Platform, Auth, Profile</a></li>
+    <li><a href="#part6">Part 6 - Workstream B: Academic and Course Intelligence</a></li>
+    <li><a href="#part7">Part 7 - Workstream C: Scholarships, Research, Internships, Clubs</a></li>
+    <li><a href="#part8">Part 8 - Chat and Resource Grounding</a></li>
+    <li><a href="#part9">Part 9 - Parallel Worktrees</a></li>
+    <li><a href="#part10">Part 10 - Testing and Playwright Validation</a></li>
+    <li><a href="#part11">Part 11 - Rollout Sequence</a></li>
+    <li><a href="#part12">Part 12 - Risks and Fallbacks</a></li>
+  </ol>
+</div>
+
+<h2 class="section-title" id="part1">Part 1 - What This Version Is</h2>
+
+<p>The current Hook repo is a successful hackathon MVP. It has a shared dashboard, parallel API calls, deterministic local datasets, and a clear product story. What it does not yet have is durable identity, imported UT data, or production-backed user state.</p>
+
+<p>This version is the bridge from demo to usable product. The objective is to preserve the current polished flow while replacing local-only assumptions with persistence, source-backed imports, structured parsers, and explicit operational fallbacks.</p>
+
+<table>
+  <tr><th>Area</th><th>Current demo behavior</th><th>Target product behavior</th></tr>
+  <tr><td><strong>Identity</strong></td><td>Session-backed browser profile</td><td>Supabase-backed account, verified UT email, required UT EID</td></tr>
+  <tr><td><strong>Onboarding</strong></td><td>Manual courses, GPA range, text resume summary</td><td>Transcript upload, resume upload, parsed skills, numeric GPA, optional photo</td></tr>
+  <tr><td><strong>Academic</strong></td><td>Curated JSON degree and course data</td><td>Degree-plan normalization, next-term schedule ingestion, course detail pages</td></tr>
+  <tr><td><strong>Opportunities</strong></td><td>Curated lists and local matchers</td><td>Scheduled imports from UT and external sources with persistent save/apply state</td></tr>
+  <tr><td><strong>Chat</strong></td><td>Markdown-grounded campus support plus optional model output</td><td>Official-link-first resource registry with grounded citations</td></tr>
+</table>
+
+<div class="box box-info">
+  <strong>The operating principle</strong>
+  Keep the current product shape intact. Productization is about making the existing surfaces real, durable, and auditable, not replacing them with a different concept.
+</div>
+
+<h2 class="section-title" id="part2">Part 2 - Scope Lock</h2>
+
+<table>
+  <tr><th>Bucket</th><th>Locked scope</th></tr>
+  <tr><td><strong>In Scope</strong></td><td>Supabase auth, profile persistence, transcript and resume upload, majors import, scheduled ETL snapshots, source-linked recommendations, course and lab detail pages, internship save/applied state, Playwright validation</td></tr>
+  <tr><td><strong>Allowed Fallbacks</strong></td><td>Manual correction after parsing, reviewed import snapshots when sources are brittle, deterministic fallback responses in chat</td></tr>
+  <tr><td><strong>Deferred</strong></td><td>Official UT SSO, live request-time scraping, mobile app, registrar-grade transcript sync, admin back office</td></tr>
+</table>
+
+<div class="box box-success">
+  <strong>Locked defaults</strong>
+  Use Supabase for auth, database, and storage. Refresh data through scheduled ETL snapshots, not live request-time scraping. Limit the student scope to UT Austin undergraduate majors. Prefer direct official UT links in chat whenever a reliable source exists.
+</div>
+
+<h2 class="section-title" id="part3">Part 3 - Current Repo Reality</h2>
+
+<table>
+  <tr><th>Observed repo fact</th><th>Implication</th></tr>
+  <tr><td><code>lib/profile-context.tsx</code> persists profile data in <code>sessionStorage</code></td><td>User state is browser-local, not durable</td></tr>
+  <tr><td><code>components/profile/ProfileForm.tsx</code> still captures manual courses and <code>gpaRange</code></td><td>Onboarding is still demo-shaped</td></tr>
+  <tr><td><code>app/academic/page.tsx</code> and <code>app/clubs/page.tsx</code> still use local <code>DEMO_PROFILE</code> objects</td><td>Hardcoded “Alex Rivera” leaks remain</td></tr>
+  <tr><td>Data lives in <code>data/*</code> as JSON and markdown</td><td>The app still depends on curated local fixtures</td></tr>
+  <tr><td>Server routes live in <code>pages/api/*</code></td><td>The app has API shape already, but not yet persistent platform infrastructure</td></tr>
+</table>
+
+<div class="box box-warn">
+  <strong>Why this matters</strong>
+  The repo is not broken. It is simply still operating as an MVP shell. The work ahead is to preserve the polished demo while systematically replacing local fixtures and browser-only state with real imports and persistent records.
+</div>
+
+<div class="page-break"></div>
+<h2 class="section-title" id="part4">Part 4 - Target Architecture</h2>
+
+<div class="file-tree">target-subsystems/
+  supabase/
+    migrations/
+    policies/
+    seed/
+  app/api/ or pages/api/
+    auth/
+    profile/
+    academic/
+    opportunities/
+    chat/
+  lib/etl/
+    majors/
+    course-schedule/
+    scholarships/
+    research/
+    internships/
+    clubs/
+  data/imports/
+    majors/
+    schedule/
+    scholarships/
+    labs/
+    internships/
+    clubs/
+  lib/parsers/
+    transcript/
+    resume/
+    skills/</div>
+
+<table>
+  <tr><th>Subsystem</th><th>Target behavior</th></tr>
+  <tr><td><strong>Auth / session</strong></td><td>Email/password auth with required UT EID and UT email verification</td></tr>
+  <tr><td><strong>Profile storage</strong></td><td>Server-backed student profile, visibility preferences, photo URL, and degree metrics</td></tr>
+  <tr><td><strong>Transcript storage / parsing</strong></td><td>Upload transcript PDF, extract and review courses, compute numeric GPA</td></tr>
+  <tr><td><strong>Resume storage / parsing</strong></td><td>Upload resume, extract text, infer skills, and preserve user edits</td></tr>
+  <tr><td><strong>Normalized opportunity datasets</strong></td><td>Store imported scholarships, labs, internships, clubs, source URLs, and refresh timestamps</td></tr>
+  <tr><td><strong>Chat resource registry</strong></td><td>Use structured UT resources with direct URLs instead of markdown-only grounding</td></tr>
+</table>
+
+<div class="box box-danger">
+  <strong>Public interfaces changing</strong>
+  <code>StudentProfile</code> needs durable identity, numeric GPA, profile photo, parsing status, and the removal of onboarding-only demo fields like preferred terms and preferred locations. <code>CompletedCourse</code> should store source, term, credit hours, and normalized grade points. <code>EligibleCourse</code> should point to an internal detail route and official course URL instead of exposing every instructor signal inline. <code>ChatCitation</code> should include the actual destination URL so the assistant can provide direct official UT resources.
+</div>
+
+<div class="box box-info">
+  <strong>How to use the prompts below</strong>
+  Each phase includes a Codex-ready prompt, similar to the original MVP build guide. Run one prompt at a time inside the correct worktree, review the diff, commit, and only then move to the next prompt.
+</div>
+
+<h2 class="section-title" id="part5">Part 5 - Workstream A: Platform, Auth, Profile</h2>
+
+<div class="person-header">
+  <div class="person-badge">A</div>
+  <div class="person-info">
+    <h3>Person A - Platform, Auth, Profile, Dashboard Shell</h3>
+    <p>You own the durable student identity, onboarding rewrite, dashboard polish, and cleanup of the remaining demo-only profile behavior.</p>
+  </div>
+</div>
+
+<h3 class="sub-title">Phase A1 - Durable Auth and Profile Storage</h3>
+<p>Replace session-only profile state with a real account model while preserving the current onboarding experience shape.</p>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person A - A1 Auth Foundation</span>
+You are upgrading the Hook repo from demo-only profile state to durable auth and profile persistence.
+
+Repo context:
+- Next.js 14 app
+- current profile state lives in lib/profile-context.tsx using sessionStorage
+- current pages rely on StudentProfile from lib/types.ts
+- API routes currently live in pages/api/*
+
+Goal:
+Add Supabase-backed auth and persistent profile storage without breaking the existing app shell.
+
+Requirements:
+1. Add the initial Supabase wiring for client and server usage.
+2. Create a minimal database schema for:
+   - users/auth linkage
+   - student profiles
+   - profile settings / visibility
+3. Require these identity fields for account creation:
+   - email
+   - password
+   - full name
+   - UT EID
+4. Treat UT email verification as required before the account is fully activated.
+5. Refactor the profile context so it hydrates from the authenticated stored profile instead of sessionStorage.
+6. Preserve a clearly isolated demo fallback path only if no authenticated flow is available yet.
+7. Update docs that explain the new durable auth direction.
+
+Output files:
+- Supabase config/helpers
+- schema or migration files
+- updated lib/profile-context.tsx
+- any auth bootstrap utilities
+
+Commit message:
+feat: add Supabase auth foundation and persistent profile storage
+
+Docs update requirement:
+Update the productization plan docs or CODEX-LOG with the new auth boundary and any environment variables required.
+</div>
+
+<h3 class="sub-title">Phase A2 - Onboarding Rewrite for Real Inputs</h3>
+<p>Replace demo-centric onboarding inputs with a real account, major, transcript, resume, and privacy flow.</p>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person A - A2 Onboarding Rewrite</span>
+Rewrite the onboarding flow for Hook so it supports a real student profile instead of the demo-only field set.
+
+Requirements:
+1. Update the onboarding UX to include:
+   - account information
+   - UT undergraduate major selection
+   - transcript upload
+   - resume upload
+   - optional profile photo
+   - GPA visibility preference
+2. Remove these demo-first onboarding fields:
+   - GPA range
+   - preferred term
+   - preferred location
+   - career goal
+3. Keep skills editable, but expect them to be pre-populated from resume parsing.
+4. Preserve a clean multi-step UX with progress indication.
+5. Make the flow feel consistent with the current Hook design language.
+6. Update any shared types or props that still assume the old onboarding fields.
+
+Output files:
+- app/onboarding/page.tsx
+- components/profile/ProfileForm.tsx
+- related shared types/utilities
+
+Commit message:
+feat: rewrite onboarding for transcript, resume, and persistent profile inputs
+
+Docs update requirement:
+Document the new onboarding steps and the removed demo-only fields.
+</div>
+
+<h3 class="sub-title">Phase A3 - Dashboard and Navigation Cleanup</h3>
+<p>Fix the last remaining top-level copy and navigation issues so the product feels coherent with real user profiles.</p>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person A - A3 Dashboard and Nav Cleanup</span>
+Clean up the Hook dashboard and global nav now that the app is moving toward real profiles.
+
+Requirements:
+1. Ensure there is always a clear home/dashboard route from every page.
+2. Make the Hook brand or equivalent global element route to /dashboard.
+3. Update the dashboard greeting to:
+   - capitalize “Welcome Back”
+   - use first name only
+4. Remove major from the coordinating-view summary sentence.
+5. Replace any dashboard references to career goal with:
+   - current semester
+   - percentage toward degree completion
+6. Preserve loading, retry, and fallback behaviors already present on the dashboard.
+7. Do not regress the current all-five-APIs-in-parallel dashboard behavior.
+
+Output files:
+- components/shared/NavBar.tsx
+- app/dashboard/page.tsx
+- any affected summary-card or profile-display utilities
+
+Commit message:
+feat: refine dashboard copy and add universal home navigation
+</div>
+
+<h3 class="sub-title">Phase A4 - Hardcoded Demo Identity Removal</h3>
+<p>Remove the last known hardcoded “Alex Rivera” leaks from the academic and clubs pages.</p>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person A - A4 Shared Profile Cleanup</span>
+Remove the remaining page-level demo profile usage in Hook.
+
+Known problem:
+- app/academic/page.tsx still uses a local DEMO_PROFILE object
+- app/clubs/page.tsx still uses a local DEMO_PROFILE object
+- this causes the entered onboarding profile to be ignored on those surfaces
+
+Requirements:
+1. Rewire both pages to use the shared profile context.
+2. Preserve graceful loading and retry behavior.
+3. Keep a controlled fallback only if the shared profile is absent and the app is intentionally in demo mode.
+4. Remove visible “Alex Rivera” leaks caused by local page-level profile objects.
+5. Do not break the existing page layouts or API request shapes.
+
+Output files:
+- app/academic/page.tsx
+- app/clubs/page.tsx
+
+Commit message:
+fix: rewire academic and clubs pages to shared profile context
+</div>
+
+<div class="page-break"></div>
+<h2 class="section-title" id="part6">Part 6 - Workstream B: Academic and Course Intelligence</h2>
+
+<div class="person-header">
+  <div class="person-badge">B</div>
+  <div class="person-info">
+    <h3>Person B - Academic Data, Transcript Logic, Course Intelligence</h3>
+    <p>You own the academic data model, transcript parsing behavior, prereq correctness, and course-detail experience.</p>
+  </div>
+</div>
+
+<h3 class="sub-title">Phase B1 - Majors and Degree Plan Ingestion</h3>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person B - B1 Majors and Degree Plans</span>
+Build the academic data foundation for real UT undergraduate degree support in Hook.
+
+Sources:
+- https://admissions.utexas.edu/explore/colleges-degrees/
+
+Requirements:
+1. Create an import/normalization path for UT undergraduate majors from the public admissions site.
+2. Create a normalized degree-plan representation that Hook can use for:
+   - major selection
+   - degree completion percentage
+   - remaining requirement grouping
+3. Keep the design undergrad-only for now.
+4. Make the result consumable by the existing academic analysis flow.
+5. Preserve clear source metadata or import timestamps where practical.
+
+Output files:
+- import script(s) or ETL utilities
+- normalized majors data
+- normalized degree-plan data
+- any shared academic type updates
+
+Commit message:
+feat: add UT undergraduate major ingestion and normalized degree plans
+</div>
+
+<h3 class="sub-title">Phase B2 - Transcript Parsing and GPA Computation</h3>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person B - B2 Transcript and GPA Engine</span>
+Add transcript-driven academic state to Hook.
+
+Requirements:
+1. Create transcript parsing utilities that can turn uploaded academic-summary text into normalized completed courses.
+2. Support:
+   - course code extraction
+   - term extraction where available
+   - letter grade extraction
+   - numeric GPA computation
+3. Replace the old GPA-range assumption with a numeric GPA pathway.
+4. Keep the parser deterministic and easy to review.
+5. Design the parser so user correction can be layered on top of it.
+6. Update any academic analysis code that still expects gpaRange.
+
+Output files:
+- transcript parser utilities
+- GPA computation utilities
+- updated types and analysis hooks as needed
+
+Commit message:
+feat: add transcript parsing and numeric GPA computation
+</div>
+
+<h3 class="sub-title">Phase B3 - Prereq Logic and Eligible Courses</h3>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person B - B3 Academic Engine Corrections</span>
+Correct the academic engine so it behaves like a real planning tool instead of a naive demo.
+
+Requirements:
+1. Fix prereq alert logic so already-completed downstream coursework prevents bogus earlier-prerequisite blocker warnings.
+2. Restrict eligible courses to the next regular term only.
+3. Use imported course-schedule data rather than local generic term lists.
+4. Preserve clear reasoning for why a course is recommended or eligible.
+5. Keep the engine explainable and deterministic.
+
+Output files:
+- academic engine updates
+- prerequisite logic updates
+- eligible-course ranking updates
+- any supporting imported schedule data structures
+
+Commit message:
+feat: improve prerequisite logic and next-term course eligibility
+</div>
+
+<h3 class="sub-title">Phase B4 - Academic UI and Course Detail Pages</h3>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person B - B4 Academic UI and Course Details</span>
+Upgrade the academic UI in Hook to match the new product requirements.
+
+Requirements:
+1. Rename “Academic Advisor” to “Academic Summary”.
+2. Always show GPA on the academic page even if the user marked GPA private elsewhere.
+3. Capitalize “Complete” correctly in progress displays.
+4. Remove the on-track signal language.
+5. Remove these columns from the main eligible-courses table:
+   - Terms
+   - Professor
+   - Difficulty
+   - Grade tendency
+   - Attendance
+6. Make each eligible course route to an internal detail page.
+7. The course detail page should show:
+   - course description
+   - official UT course listing link
+   - available professors for the next term
+   - Rate My Professor aggregate
+   - grade tendency summary
+
+Output files:
+- academic page components
+- course detail page route/components
+- supporting data-loading utilities
+
+Commit message:
+feat: upgrade academic UI and add course detail pages
+</div>
+
+<h2 class="section-title" id="part7">Part 7 - Workstream C: Scholarships, Research, Internships, Clubs</h2>
+
+<div class="person-header">
+  <div class="person-badge">C</div>
+  <div class="person-info">
+    <h3>Person C - Opportunity Ingestion and Matching</h3>
+    <p>You own the real-data ingestion and behavior for scholarships, research, internships, and clubs.</p>
+  </div>
+</div>
+
+<h3 class="sub-title">Phase C1 - Scholarships</h3>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person C - C1 Scholarships Ingestion</span>
+Replace the demo scholarship dataset in Hook with real UT-backed scholarship data.
+
+Source:
+- https://utexas.scholarships.ngwebsolutions.com/Scholarships/Search
+
+Requirements:
+1. Build a normalization/import path for UT Lasso scholarships.
+2. Preserve:
+   - scholarship name
+   - amount
+   - eligibility signals
+   - deadline
+   - official link
+   - import timestamp
+3. Refine fit scoring so it uses real profile criteria instead of only the current demo heuristics.
+4. Display only the top 200 visible scholarship matches for a user after ranking.
+5. Preserve the existing usable scholarships UI shape where possible.
+
+Output files:
+- scholarship import utilities/data
+- scholarship matcher updates
+- any API route adjustments required
+
+Commit message:
+feat: ingest UT Lasso scholarships and refine scholarship fit scoring
+</div>
+
+<h3 class="sub-title">Phase C2 - Research</h3>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person C - C2 Research Lab Catalog</span>
+Replace the demo research opportunities in Hook with a normalized UT lab catalog.
+
+Sources:
+- https://exl.cns.utexas.edu/do-research/research-major
+- https://research.utexas.edu/research-centers-units
+- https://dellmed.utexas.edu/research/faculty-research-labs
+- https://neuroscience.utexas.edu/academics/undergraduate-study/undergraduate-research-labs
+- https://cockrell.utexas.edu/research/
+- https://fri.cns.utexas.edu/research-streams
+
+Requirements:
+1. Build a normalized research-lab dataset for undergrad-friendly labs and programs.
+2. Include:
+   - lab title
+   - description
+   - skills commonly desired
+   - likely contact leads
+   - source URL
+3. Preserve fit scoring based on skills, major, and relevant coursework.
+4. Clicking a research result should expose a detailed lab view with description and contacts.
+
+Output files:
+- research import utilities/data
+- research matcher updates
+- research UI/detail updates
+
+Commit message:
+feat: build UT lab catalog and detailed research matching flow
+</div>
+
+<h3 class="sub-title">Phase C3 - Internships</h3>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person C - C3 Internship Ingestion and Apply State</span>
+Replace the demo internships in Hook with imported internship data and persistent action tracking.
+
+Sources:
+- https://github.com/SimplifyJobs/Summer2026-Internships
+- https://github.com/vanshb03/Summer2026-Internships
+
+Requirements:
+1. Normalize imported internship postings with:
+   - title
+   - company
+   - location
+   - term
+   - direct apply URL
+   - freshness timestamp
+2. Clicking a listing should open the real job posting in a new tab.
+3. When the student returns to Hook, prompt whether they applied and persist that answer.
+4. Support saved/bookmarked and applied-state views.
+5. Move preferred term and location out of onboarding assumptions and treat them as page filters only.
+
+Output files:
+- internship import utilities/data
+- matcher updates
+- internships page/UI updates
+- saved/applied persistence helpers
+
+Commit message:
+feat: ingest real internships and add saved/applied workflow
+</div>
+
+<h3 class="sub-title">Phase C4 - Clubs</h3>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Person C - C4 Clubs from Hornslink</span>
+Replace the demo club dataset in Hook with real organizations from Hornslink.
+
+Source:
+- https://utexas.campuslabs.com/engage/organizations
+
+Requirements:
+1. Build a normalized clubs import path from Hornslink.
+2. Preserve:
+   - organization name
+   - category
+   - description
+   - tags or inferred interests where possible
+   - Hornslink URL
+3. Keep the current matching logic centered on interest fit and weekly commitment, but let the dataset become real.
+4. Clicking a club should take the user directly to the organization’s Hornslink page.
+
+Output files:
+- clubs import utilities/data
+- club matcher updates
+- clubs UI updates if needed for source-backed fields
+
+Commit message:
+feat: ingest Hornslink clubs and link club cards to real organization pages
+</div>
+
+<div class="page-break"></div>
+<h2 class="section-title" id="part8">Part 8 - Chat and Resource Grounding</h2>
+
+<p>Chat already works as a demo-safe helper. The next move is to make it more trustworthy by grounding it in a structured registry of official UT resources instead of markdown-only sections.</p>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - Optional Workstream - D1 Chat Resource Registry</span>
+Upgrade Hook chat so it prioritizes direct university links and structured resource grounding.
+
+Requirements:
+1. Replace or supplement markdown-only campus-resource grounding with a structured resource registry.
+2. Each resource should include:
+   - label
+   - category
+   - official URL
+   - short routing note
+3. Update the chat response shape so citations can include direct URLs.
+4. Update the chat prompt or synthesis layer so it prefers official UT links whenever a strong match exists.
+5. Keep deterministic local fallback behavior when model access or source lookup fails.
+6. Do not turn chat into a live web-search feature.
+
+Output files:
+- resource registry data/utilities
+- updated chat route
+- updated citation types/components if needed
+
+Commit message:
+feat: ground chat in official-link resource registry
+</div>
+
+<div class="box box-info">
+  <strong>Model boundary</strong>
+  GPT should synthesize responses and next steps. It should not invent the source-of-truth. Source discovery belongs to imported UT resources and normalized links.
+</div>
+
+<h2 class="section-title" id="part9">Part 9 - Parallel Worktrees</h2>
+
+<table>
+  <tr><th>Worktree</th><th>Owner</th><th>Primary scope</th></tr>
+  <tr><td><code>feat/platform-auth-profile</code></td><td><span class="tag tag-a">Person A</span></td><td>Auth, onboarding, nav, dashboard copy, shared profile cleanup</td></tr>
+  <tr><td><code>feat/academic-data</code></td><td><span class="tag tag-b">Person B</span></td><td>Majors, transcript parsing, GPA, academic engine, course details</td></tr>
+  <tr><td><code>feat/opportunity-ingestion</code></td><td><span class="tag tag-c">Person C</span></td><td>Scholarships, research, internships, clubs, save/apply behavior</td></tr>
+  <tr><td><code>feat/chat-qa-docs</code></td><td><span class="tag tag-all">Optional</span></td><td>Chat grounding, QA artifacts, screenshots, docs</td></tr>
+</table>
+
+<pre># Create the worktrees from the main repo
+git branch feat/platform-auth-profile
+git branch feat/academic-data
+git branch feat/opportunity-ingestion
+git branch feat/chat-qa-docs
+
+git worktree add ../hook-platform feat/platform-auth-profile
+git worktree add ../hook-academic feat/academic-data
+git worktree add ../hook-opportunities feat/opportunity-ingestion
+git worktree add ../hook-chat-qa feat/chat-qa-docs</pre>
+
+<div class="box box-warn">
+  <strong>Merge order</strong>
+  Merge shared schema and type changes first. Merge auth/profile persistence second. Merge academic and opportunity work after shared interfaces stabilize. Run browser QA and doc cleanup after the integrated app is standing.
+</div>
+
+<h2 class="section-title" id="part10">Part 10 - Testing and Playwright Validation</h2>
+
+<ul class="checklist">
+  <li>Account creation requires password, UT EID, and verified UT email.</li>
+  <li>Transcript upload produces parsed courses and a numeric GPA.</li>
+  <li>Resume upload pre-populates skills and allows manual edits.</li>
+  <li>Major dropdown shows UT undergraduate majors.</li>
+  <li>Dashboard greeting uses first name only and proper “Welcome Back” capitalization.</li>
+  <li>Academic page always shows GPA to the owner.</li>
+  <li>Completed downstream courses do not create bogus prerequisite blockers.</li>
+  <li>Eligible courses only show the next regular term.</li>
+  <li>Course detail pages show official links, instructors, RMP aggregate, and grade tendency.</li>
+  <li>Scholarships are capped at the top 200 visible results.</li>
+  <li>Internship links open in a new tab and applied-state can be saved on return.</li>
+  <li>Saved and applied states persist across refresh.</li>
+  <li>Club links route to Hornslink.</li>
+  <li>Chat answers include direct official UT links when available.</li>
+</ul>
+
+<div class="prompt-box">
+<span class="prompt-label">Codex Prompt - QA Pass - Q1 Playwright Validation</span>
+Run a browser-validation pass for the Hook productization branch using Playwright CLI.
+
+Requirements:
+1. Use headed mode when visual inspection helps.
+2. Validate these flows:
+   - sign up / sign in
+   - onboarding with upload controls visible
+   - dashboard greeting and home navigation
+   - academic page
+   - scholarships page
+   - research page
+   - internships page
+   - clubs page
+   - chat page or dashboard chat section
+3. Capture screenshots and traces for regressions or layout issues.
+4. Focus especially on:
+   - upload flows
+   - external-link behavior
+   - saved/applied persistence
+   - broken nav or broken empty states
+5. Summarize concrete findings and fixes rather than just saying the app “looks good.”
+
+Artifacts:
+- output/playwright/*
+
+Commit message if fixes are made:
+fix: resolve Playwright validation issues across productization flows
+</div>
+
+<h2 class="section-title" id="part11">Part 11 - Rollout Sequence</h2>
+
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="timeline-time">Phase 1</div>
+    <div class="timeline-title">Shared schema and contracts</div>
+    <div class="timeline-desc">Update type definitions, migrations, and the new profile contract first so worktrees do not drift.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-time">Phase 2</div>
+    <div class="timeline-title">Auth and profile persistence</div>
+    <div class="timeline-desc">Land durable identity and profile storage before expanding the data-backed surfaces.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-time">Phase 3</div>
+    <div class="timeline-title">Academic ingestion and transcript intelligence</div>
+    <div class="timeline-desc">Bring majors, transcript parsing, GPA, prereq logic, and course detail pages online.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-time">Phase 4</div>
+    <div class="timeline-title">Opportunity ingestion</div>
+    <div class="timeline-desc">Land scholarships, research, internships, clubs, and saved/applied persistence with normalized imports.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-time">Phase 5</div>
+    <div class="timeline-title">Chat grounding</div>
+    <div class="timeline-desc">Switch chat from markdown-first grounding to official-link-first routing and citations.</div>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-time">Phase 6</div>
+    <div class="timeline-title">Browser QA and docs</div>
+    <div class="timeline-desc">Run Playwright validation, collect screenshots, document import assumptions, and keep the demo fallback path available.</div>
+  </div>
+</div>
+
+<h2 class="section-title" id="part12">Part 12 - Risks and Fallbacks</h2>
+
+<table>
+  <tr><th>Risk</th><th>Likely impact</th><th>Mitigation</th></tr>
+  <tr><td><strong>Source brittleness</strong></td><td>Imports break when UT or external markup changes</td><td>Use scheduled ETL with validation, import timestamps, and reviewed snapshots instead of live request-time scraping</td></tr>
+  <tr><td><strong>Transcript parsing ambiguity</strong></td><td>Incorrect academic record and GPA</td><td>Require user review and correction before committing parsed transcript results</td></tr>
+  <tr><td><strong>Stale imported data</strong></td><td>Students see outdated scholarships, clubs, labs, or jobs</td><td>Store freshness metadata and refresh on a cadence tuned to source volatility</td></tr>
+  <tr><td><strong>Rate My Professor aggregation gaps</strong></td><td>Some course detail pages have incomplete instructor quality signals</td><td>Treat RMP as optional enrichment and do not block course detail rendering when it is absent</td></tr>
+  <tr><td><strong>Auth friction</strong></td><td>Students abandon onboarding before completion</td><td>Keep steps tight, delay non-critical questions, and make verification state explicit</td></tr>
+  <tr><td><strong>Broken external links</strong></td><td>Trust drops when source URLs rot</td><td>Validate source URLs during ETL and browser QA and expose fallback source labels when needed</td></tr>
+</table>
+
+<div class="box box-danger">
+  <strong>Final success test</strong>
+  Hook succeeds if it still feels like the same polished product after these changes, but the data and student state are now durable, traceable, and grounded in real UT-facing sources.
+</div>
+
+</div>
+</body>
+</html>
