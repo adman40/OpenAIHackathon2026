@@ -295,6 +295,15 @@ function buildFallbackDashboardState(): DashboardState {
   };
 }
 
+function getInitials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+}
+
 export default function DashboardPage() {
   const { profile, setProfile, isHydrated, authStatus } = useProfile();
   const [dashboardState, setDashboardState] = useState<DashboardState | null>(null);
@@ -397,6 +406,7 @@ export default function DashboardPage() {
   const fallbackLabel = DEMO_STATIC
     ? "Static demo data"
     : `Fallback active: ${fallbackSources.join(", ")}`;
+  const profileInitials = getInitials(activeProfile.name);
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top,#fff7ed_0%,#f5f5f4_55%,#f0fdf4_100%)] px-4 py-6 text-stone-900 md:px-8">
@@ -425,7 +435,20 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-[auto_1fr_1fr]">
+              <div className="flex items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-4 py-4">
+                {activeProfile.profilePhotoUrl ? (
+                  <img
+                    src={activeProfile.profilePhotoUrl}
+                    alt={`${activeProfile.name} profile`}
+                    className="h-20 w-20 rounded-2xl object-cover ring-1 ring-white/20"
+                  />
+                ) : (
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/15 text-2xl font-semibold text-white">
+                    {profileInitials}
+                  </div>
+                )}
+              </div>
               <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-orange-100/70">
                   Current semester

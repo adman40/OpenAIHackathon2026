@@ -131,7 +131,7 @@
       "degreeName": "Honors Computer Science and Business",
       "college": "College of Natural Sciences and McCombs School of Business",
       "level": "undergraduate",
-      "totalCredits": 124,
+      "totalCredits": 144,
       "courseCatalogId": "csb-catalog",
       "supportStatus": "supported",
       "sourceMetadata": {
@@ -146,86 +146,392 @@
       },
       "requirementBuckets": [
         {
-          "id": "csb-math-foundation",
-          "title": "Mathematics and Statistics Foundation",
+          "id": "csb-core-signature-course",
+          "title": "Core Signature Course",
           "bucketType": "core",
-          "creditsRequired": 14,
+          "creditsRequired": 3,
           "courses": [
-            "M 408C",
-            "M 408D",
-            "M 340L",
-            "SDS 321"
+            "UGS 303"
           ],
-          "notes": "Representative CSB calculus, linear algebra, and statistics path."
+          "notes": "IDA core (090) first-year signature requirement."
         },
         {
-          "id": "csb-natural-science-sequence",
-          "title": "Natural Science Sequence",
+          "id": "csb-core-writing",
+          "title": "Core Writing",
           "bucketType": "core",
-          "creditsRequired": 20,
+          "creditsRequired": 3,
           "courses": [
-            "BIO 311C",
-            "BIO 311D",
-            "CH 301",
-            "CH 302",
-            "PHY 302K",
-            "PHY 102M",
-            "PHY 303L",
-            "PHY 105N"
+            "CMS 306M"
           ],
-          "notes": "Uses one UT-aligned biology, chemistry, and physics sequence for Hook's CSB demo path."
+          "notes": "IDA core writing requirement using the student's equivalent course."
         },
         {
-          "id": "csb-economics-social-science",
-          "title": "Economics and Social Science Context",
+          "id": "csb-core-humanities",
+          "title": "Core Humanities",
+          "bucketType": "core",
+          "creditsRequired": 3,
+          "courses": [
+            "E 316P"
+          ],
+          "notes": "IDA core humanities bucket."
+        },
+        {
+          "id": "csb-core-government",
+          "title": "Core Government",
+          "bucketType": "core",
+          "creditsRequired": 6,
+          "courses": [
+            "GOV 306C",
+            "GOV 312L"
+          ],
+          "notes": "IDA government requirement; GOV 306C is the parsed UT equivalency for GOV F306C."
+        },
+        {
+          "id": "csb-core-history",
+          "title": "Core U.S. History",
+          "bucketType": "core",
+          "creditsRequired": 6,
+          "courses": [
+            "HIS 315L",
+            "HIS 317L"
+          ],
+          "notes": "IDA core history requirement."
+        },
+        {
+          "id": "csb-core-social-science",
+          "title": "Core Social and Behavioral Science",
+          "bucketType": "core",
+          "creditsRequired": 3,
+          "courses": [
+            "SOC 302"
+          ],
+          "notes": "IDA core social and behavioral science requirement."
+        },
+        {
+          "id": "csb-core-math",
+          "title": "Core Mathematics",
+          "bucketType": "core",
+          "creditsRequired": 3,
+          "courses": [
+            "M 408C"
+          ],
+          "notes": "IDA core mathematics requirement."
+        },
+        {
+          "id": "csb-core-science-and-technology",
+          "title": "Core Science and Technology",
           "bucketType": "core",
           "creditsRequired": 9,
           "courses": [
-            "ECO 304K",
-            "ECO 304L",
-            "SOC 302"
+            "BIO 311C",
+            "BIO 311D",
+            "PHY 302K"
           ],
-          "notes": "SOC 302 is used as the representative approved social science course for the demo."
+          "notes": "IDA core science and technology bucket using the student's completed biology sequence plus physics lecture."
         },
         {
-          "id": "csb-cs-honors-core",
-          "title": "Computer Science Honors Core",
+          "id": "csb-core-visual-performing-arts",
+          "title": "Core Visual and Performing Arts",
+          "bucketType": "core",
+          "creditsRequired": 3,
+          "courses": [
+            "MUS 302L"
+          ],
+          "notes": "IDA core arts requirement."
+        },
+        {
+          "id": "csb-core-writing-intensive",
+          "title": "Core Writing-Intensive",
+          "bucketType": "core",
+          "creditsRequired": 3,
+          "courses": [
+            "BA 324H"
+          ],
+          "notes": "IDA core C1 writing-intensive requirement."
+        },
+        {
+          "id": "csb-core-total-hours",
+          "title": "Core Curriculum Completion",
+          "bucketType": "core",
+          "creditsRequired": 3,
+          "courses": [
+            "GOV 312L"
+          ],
+          "notes": "Matches the IDA '42 hours are required to complete the core curriculum' checkpoint that remains open until the final government course is complete."
+        },
+        {
+          "id": "csb-general-science-sequence",
+          "title": "General Education Science Sequence",
           "bucketType": "major",
-          "creditsRequired": 16,
+          "creditsRequired": 6,
+          "courses": [
+            "BIO 311C",
+            "BIO 311D"
+          ],
+          "notes": "IDA approved BIO/CH/PHY sequence requirement."
+        },
+        {
+          "id": "csb-general-man-101h",
+          "title": "General Education MAN 101H",
+          "bucketType": "major",
+          "creditsRequired": 1,
+          "courses": [
+            "MAN 101H"
+          ],
+          "notes": "IDA general education bucket."
+        },
+        {
+          "id": "csb-general-ba-101h",
+          "title": "General Education BA 101H",
+          "bucketType": "major",
+          "creditsRequired": 1,
+          "courses": [
+            "BA 101H"
+          ],
+          "notes": "IDA general education bucket."
+        },
+        {
+          "id": "csb-general-eco-304k",
+          "title": "General Education ECO 304K",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "ECO 304K"
+          ],
+          "notes": "IDA general education economics requirement."
+        },
+        {
+          "id": "csb-general-eco-304l",
+          "title": "General Education ECO 304L",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "ECO 304L"
+          ],
+          "notes": "IDA general education economics requirement."
+        },
+        {
+          "id": "csb-general-math-sequence",
+          "title": "General Education Calculus Sequence",
+          "bucketType": "major",
+          "creditsRequired": 8,
+          "courses": [
+            "M 408C",
+            "M 408D"
+          ],
+          "notes": "IDA general education calculus requirement."
+        },
+        {
+          "id": "csb-general-approved-social-science",
+          "title": "General Education Approved Social Science",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "SOC 302"
+          ],
+          "notes": "IDA approved anthropology/psychology/sociology/EDP bucket."
+        },
+        {
+          "id": "csb-general-sds-321",
+          "title": "General Education SDS 321",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "SDS 321"
+          ],
+          "notes": "IDA SDS 321 requirement."
+        },
+        {
+          "id": "csb-general-linear-algebra",
+          "title": "General Education Linear Algebra",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "M 340L"
+          ],
+          "notes": "IDA M 340L / M 341 / SDS 329C requirement."
+        },
+        {
+          "id": "csb-major-mis-301h",
+          "title": "Major MIS 301H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "MIS 301H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-bah-151h",
+          "title": "Major BAH 151H",
+          "bucketType": "major",
+          "creditsRequired": 1,
+          "courses": [
+            "BAH 151H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-acc-311h",
+          "title": "Major ACC 311H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "ACC 311H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-acc-312h",
+          "title": "Major ACC 312H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "ACC 312H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-sta-235h",
+          "title": "Major STA 235H",
+          "bucketType": "major",
+          "creditsRequired": 2,
+          "courses": [
+            "STA 235H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-ds-235h",
+          "title": "Major DS 235H",
+          "bucketType": "major",
+          "creditsRequired": 2,
+          "courses": [
+            "DS 235H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-om-235h",
+          "title": "Major OM 235H",
+          "bucketType": "major",
+          "creditsRequired": 2,
+          "courses": [
+            "OM 235H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-ba-324h",
+          "title": "Major BA 324H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "BA 324H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-man-336h",
+          "title": "Major MAN 336H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "MAN 336H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-mkt-337h",
+          "title": "Major MKT 337H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "MKT 337H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-fin-357h",
+          "title": "Major FIN 357H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "FIN 357H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-leb-323h",
+          "title": "Major LEB 323H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "LEB 323H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-man-327h",
+          "title": "Major MAN 327H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "MAN 327H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-man-374h",
+          "title": "Major MAN 374H",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "MAN 374H"
+          ],
+          "notes": "IDA major requirement."
+        },
+        {
+          "id": "csb-major-ba-353",
+          "title": "Major Experiential Course",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "BA 353"
+          ],
+          "notes": "IDA experiential learning requirement represented with BA 353."
+        },
+        {
+          "id": "csb-major-cs-theory",
+          "title": "Major CS Theory",
+          "bucketType": "major",
+          "creditsRequired": 6,
           "courses": [
             "CS 311H",
-            "CS 314H",
-            "CS 331H",
+            "CS 331H"
+          ],
+          "notes": "IDA CS theory requirement."
+        },
+        {
+          "id": "csb-major-cs-programming",
+          "title": "Major CS Programming",
+          "bucketType": "major",
+          "creditsRequired": 3,
+          "courses": [
+            "CS 314H"
+          ],
+          "notes": "IDA CS programming requirement."
+        },
+        {
+          "id": "csb-major-cs-systems",
+          "title": "Major CS Systems",
+          "bucketType": "major",
+          "creditsRequired": 8,
+          "courses": [
             "CS 429H",
             "CS 439H"
           ],
-          "notes": "Theory, programming, and systems requirements for the CSB track."
-        },
-        {
-          "id": "csb-business-honors-core",
-          "title": "Business Honors Core",
-          "bucketType": "major",
-          "creditsRequired": 36,
-          "courses": [
-            "ACC 311H",
-            "ACC 312H",
-            "BA 101H",
-            "BAH 151H",
-            "BA 324H",
-            "DS 235H",
-            "FIN 357H",
-            "FIN 366P",
-            "LEB 323H",
-            "MAN 101H",
-            "MAN 327H",
-            "MAN 336H",
-            "MAN 374H",
-            "MIS 301H",
-            "MKT 337H",
-            "OM 235H",
-            "STA 235H"
-          ],
-          "notes": "Uses the honors-section business path plus one representative approved experiential course."
+          "notes": "IDA CS systems requirement."
         },
         {
           "id": "csb-cs-electives",
@@ -248,7 +554,7 @@
             "CS 375",
             "CS 376"
           ],
-          "notes": "Represents real upper-division CS electives surfaced in the Fall 2026 and Spring 2027 UT registrar snapshots used for the CSB demo."
+          "notes": "IDA upper-division elective requirement using the current UT-aligned Fall 2026 pool."
         }
       ]
     },

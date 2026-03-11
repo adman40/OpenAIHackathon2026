@@ -134,13 +134,14 @@ export function matchOpportunities(
   return opportunities
     .map((opportunity) => {
       const reasons: string[] = [];
-      let score = 18;
+      let score = 28;
+      let strongSignalCount = 0;
 
       if (majorMatch(profile.major, opportunity.preferredMajors)) {
-        score += 22;
+        score += 12;
         reasons.push(`Major alignment: ${profile.major}.`);
       } else {
-        score += 4;
+        score -= 6;
       }
 
       const courseMatches = completedCourseOverlap(
@@ -148,19 +149,21 @@ export function matchOpportunities(
         opportunity.preferredCoursework,
       );
       if (courseMatches.length > 0) {
-        score += Math.min(18, 8 + courseMatches.length * 4);
+        score += Math.min(20, 8 + courseMatches.length * 4);
+        strongSignalCount += 1;
         reasons.push(`Completed coursework match: ${courseMatches.slice(0, 3).join(", ")}.`);
       }
 
       const skillMatches = listOverlap(opportunity.skills, profile.skills.join(" "));
       if (skillMatches.length > 0) {
-        score += Math.min(20, 8 + skillMatches.length * 4);
+        score += Math.min(22, 8 + skillMatches.length * 4);
+        strongSignalCount += 1;
         reasons.push(`Skills overlap: ${skillMatches.slice(0, 3).join(", ")}.`);
       }
 
       const resumeMatches = listOverlap(opportunity.skills, getProfileResumeSummary(profile));
       if (resumeMatches.length > 0) {
-        score += Math.min(12, 4 + resumeMatches.length * 2);
+        score += Math.min(10, 3 + resumeMatches.length * 2);
         reasons.push(
           `Resume summary connects to role skills (${resumeMatches.slice(0, 2).join(", ")}).`,
         );
@@ -171,25 +174,26 @@ export function matchOpportunities(
         `${opportunity.description} ${opportunity.details}`,
       );
       if (interestMatches.length > 0) {
-        score += Math.min(12, 4 + interestMatches.length * 2);
+        score += Math.min(18, 6 + interestMatches.length * 3);
+        strongSignalCount += 1;
         reasons.push(`Interest alignment: ${interestMatches.slice(0, 2).join(", ")}.`);
       } else {
         const opportunityText = `${opportunity.description} ${opportunity.details} ${opportunity.title}`;
         const genericInterestMatches = listOverlap(tokenize(combinedText), opportunityText);
         if (genericInterestMatches.length > 0) {
-          score += 4;
+          score += 2;
         }
       }
 
       if (locationMatches(profile, opportunity)) {
-        score += preferredLocations.length > 0 ? 8 : 3;
+        score += preferredLocations.length > 0 ? 5 : 2;
         if (preferredLocations.length > 0) {
           reasons.push(`Location matches your preferences (${preferredLocations.slice(0, 2).join(", ")}).`);
         }
       }
 
       if (termMatches(profile, opportunity)) {
-        score += preferredTerms.length > 0 ? 6 : 2;
+        score += preferredTerms.length > 0 ? 4 : 1;
         if (preferredTerms.length > 0) {
           reasons.push(`Term fit: ${opportunity.term} matches your preferred timing.`);
         }
@@ -197,25 +201,32 @@ export function matchOpportunities(
 
       const affinityMatches = profileKeywordAffinity(profile, opportunity);
       if (affinityMatches.length > 0) {
-        score += Math.min(10, 3 + affinityMatches.length * 2);
+        score += Math.min(12, 4 + affinityMatches.length * 2);
+        strongSignalCount += 1;
         reasons.push(`Lab/program topic overlap: ${affinityMatches.slice(0, 2).join(", ")}.`);
       }
 
       const freshnessScore = freshnessBonus(opportunity);
       if (freshnessScore > 0) {
-        score += freshnessScore;
+        score += Math.min(freshnessScore, 4);
         reasons.push("Posting appears recently refreshed.");
       }
 
       const specificity = reasons.length;
       if (specificity >= 4) {
-        score += 8;
+        score += 5;
       } else if (specificity >= 2) {
-        score += 4;
+        score += 2;
+      }
+
+      if (strongSignalCount === 0) {
+        score -= 16;
+      } else if (strongSignalCount === 1) {
+        score -= 8;
       }
 
       return {
-        fitScore: Math.max(0, Math.min(100, Math.round(score))),
+        fitScore: Math.max(18, Math.min(96, Math.round(score))),
         matchReasons: reasons.slice(0, 5),
         opportunity,
       };

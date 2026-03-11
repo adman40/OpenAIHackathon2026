@@ -3,6 +3,7 @@ import path from "path";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { matchOpportunities } from "../../../lib/matchers/opportunity-matcher";
+import { isOpenDate } from "../../../lib/opportunities/deadline";
 import type { Opportunity, OpportunityMatch, StudentProfile } from "../../../lib/types";
 
 type MatchResponse = { matches: OpportunityMatch[] } | { error: string };
@@ -36,7 +37,9 @@ export default async function handler(
       return;
     }
 
-    const opportunities = await readInternships();
+    const opportunities = (await readInternships()).filter((opportunity) =>
+      isOpenDate(opportunity.applyBy),
+    );
     const matches = matchOpportunities(profile, opportunities);
     res.status(200).json({ matches });
   } catch (error) {

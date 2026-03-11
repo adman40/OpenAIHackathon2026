@@ -369,7 +369,7 @@ export function AcademicCourseBrowser({ analysis }: AcademicCourseBrowserProps) 
                 </div>
               ) : (
                 <p className="mt-3 text-sm leading-6 text-slate-600">
-                  Hook does not currently have a next-term professor snapshot for this course.
+                  No professor data found for this course.
                 </p>
               )}
             </section>

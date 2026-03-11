@@ -1,11 +1,8 @@
 "use client";
 
-import type { ChatCitation } from "../../lib/types";
-
 interface MessageBubbleProps {
   role: "user" | "assistant";
   content: string;
-  citations?: ChatCitation[];
   suggestedActions?: string[];
   isPending?: boolean;
   onSuggestedActionClick?: (action: string) => void;
@@ -14,7 +11,6 @@ interface MessageBubbleProps {
 export default function MessageBubble({
   role,
   content,
-  citations = [],
   suggestedActions = [],
   isPending = false,
   onSuggestedActionClick,
@@ -51,22 +47,6 @@ export default function MessageBubble({
                 {action}
               </button>
             ))}
-          </div>
-        ) : null}
-
-        {!isUser && citations.length > 0 ? (
-          <div className="mt-4 border-t border-stone-200 pt-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">
-              Citations
-            </p>
-            <ul className="mt-2 space-y-1 text-xs text-stone-600">
-              {citations.map((citation) => (
-                <li key={`${citation.sourceType}-${citation.label}`}>
-                  <span className="font-semibold text-stone-700">{citation.label}</span>
-                  {citation.note ? ` - ${citation.note}` : ""}
-                </li>
-              ))}
-            </ul>
           </div>
         ) : null}
       </div>

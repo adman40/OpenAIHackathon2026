@@ -95,7 +95,32 @@ export function buildSeedCourses(major: string): CompletedCourse[] {
   return DEMO_COURSE_SEEDS[major] ?? DEMO_COURSE_SEEDS["Computer Science"];
 }
 
+export function normalizeCompletedCourseId(courseId: string): string {
+  const normalized = courseId.trim().toUpperCase().replace(/\s+/g, " ");
+  const match = normalized.match(/^((?:[A-Z]\s+){1,4}|[A-Z]{1,4})\s*(\d{3}[A-Z]?)$/);
+
+  if (!match) {
+    return normalized;
+  }
+
+  const subject = match[1].replace(/\s+/g, "");
+  const courseNumber = match[2];
+  return `${subject} ${courseNumber}`;
+}
+
 export function normalizeProfile(profile: StudentProfile): StudentProfile {
+  const normalizedCompletedCourses = Array.from(
+    new Map(
+      (profile.completedCourses ?? []).map((course) => [
+        `${normalizeCompletedCourseId(course.courseId)}-${course.semester ?? ""}-${course.grade ?? ""}`,
+        {
+          ...course,
+          courseId: normalizeCompletedCourseId(course.courseId),
+        },
+      ]),
+    ).values(),
+  );
+
   return {
     ...profile,
     authUserId: profile.authUserId ?? null,
@@ -109,7 +134,7 @@ export function normalizeProfile(profile: StudentProfile): StudentProfile {
     skills: profile.skills ?? [],
     interests: profile.interests ?? [],
     clubInterests: profile.clubInterests ?? [],
-    completedCourses: profile.completedCourses ?? [],
+    completedCourses: normalizedCompletedCourses,
     profilePhotoUrl: profile.profilePhotoUrl ?? null,
     transcriptFileName: profile.transcriptFileName ?? null,
     resumeFileName: profile.resumeFileName ?? null,

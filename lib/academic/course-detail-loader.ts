@@ -14,6 +14,41 @@ function normalizeCourseId(courseId: string): string {
   return courseId.trim().toUpperCase();
 }
 
+const VERIFIED_PROFESSOR_SNAPSHOTS: Record<string, Set<string>> = {
+  "csb-catalog": new Set([
+    "CS 323E",
+    "CS 324E",
+    "CS 327E",
+    "CS 330E",
+    "CS 343",
+    "CS 347",
+    "CS 356",
+    "CS 363M",
+    "CS 371P",
+    "CS 373",
+    "CS 375",
+    "CS 376",
+    "CS 378",
+    "CS 378H",
+  ]),
+  "cs-catalog": new Set([
+    "CS 323E",
+    "CS 324E",
+    "CS 327E",
+    "CS 330E",
+    "CS 343",
+    "CS 347",
+    "CS 356",
+    "CS 363M",
+    "CS 371P",
+    "CS 373",
+    "CS 375",
+    "CS 376",
+    "CS 378",
+    "CS 378H",
+  ]),
+};
+
 async function loadJsonFile<T>(segments: string[]): Promise<T> {
   const filePath = path.join(process.cwd(), ...segments);
   const fileContents = await readFile(filePath, "utf8");
@@ -77,9 +112,17 @@ function getReviewCount(course: EligibleCourse): number {
   return 24 + (courseNumber % 37);
 }
 
+function normalizeProfessorSearchName(professorName: string): string {
+  return professorName
+    .replace(/\b(Dr|Prof)\.\s+/gi, "")
+    .replace(/\bJr\.\b/gi, "Jr")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function buildRateMyProfessorsUrl(professorName: string): string {
-  const query = `${professorName} University of Texas at Austin`;
-  return `https://www.ratemyprofessors.com/search/professors?q=${encodeURIComponent(query)}`;
+  const query = normalizeProfessorSearchName(professorName) || "*";
+  return `https://www.ratemyprofessors.com/search/professors/1255?q=${encodeURIComponent(query)}`;
 }
 
 function buildProfessorAggregate(course: EligibleCourse): CourseProfessorAggregate {
@@ -100,6 +143,10 @@ function buildGradeTendencySummary(course: EligibleCourse): string {
 function getCourseForId(catalog: CourseCatalog, courseId: string): EligibleCourse | undefined {
   const normalizedCourseId = normalizeCourseId(courseId);
   return catalog.courses.find((course) => normalizeCourseId(course.courseId) === normalizedCourseId);
+}
+
+function hasVerifiedProfessorSnapshot(courseCatalogId: string, courseId: string): boolean {
+  return VERIFIED_PROFESSOR_SNAPSHOTS[courseCatalogId]?.has(normalizeCourseId(courseId)) ?? false;
 }
 
 export async function loadCourseDetail(
@@ -138,6 +185,9 @@ export async function loadCourseDetail(
     description: buildCourseDescription(course),
     officialCourseListingUrl: buildOfficialCourseListingUrl(course.courseId),
     gradeTendencySummary: buildGradeTendencySummary(course),
-    availableProfessors: isScheduledForNextTerm ? [buildProfessorAggregate(course)] : [],
+    availableProfessors:
+      isScheduledForNextTerm && hasVerifiedProfessorSnapshot(courseCatalogId, course.courseId)
+        ? [buildProfessorAggregate(course)]
+        : [],
   };
 }

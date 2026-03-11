@@ -2,10 +2,16 @@
 
 import { useState, type KeyboardEvent } from "react";
 
+type QuickPrompt = {
+  id: string;
+  title: string;
+  prompt: string;
+};
+
 interface ChatInputProps {
   disabled?: boolean;
   onSend: (message: string) => Promise<void> | void;
-  quickPrompts?: string[];
+  quickPrompts?: QuickPrompt[];
 }
 
 export default function ChatInput({
@@ -35,16 +41,21 @@ export default function ChatInput({
   return (
     <div className="border-t border-stone-200 bg-white px-4 py-4">
       {quickPrompts.length > 0 ? (
-        <div className="mb-3 flex flex-wrap gap-2">
+        <div className="mb-4 grid gap-3 md:grid-cols-3">
           {quickPrompts.map((prompt) => (
             <button
-              key={prompt}
+              key={prompt.id}
               type="button"
-              onClick={() => void submit(prompt)}
+              onClick={() => void submit(prompt.prompt)}
               disabled={disabled}
-              className="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700 transition hover:border-orange-300 hover:text-orange-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="min-h-[124px] rounded-[24px] border border-stone-200 bg-[linear-gradient(180deg,#fffaf5_0%,#f5f5f4_100%)] p-4 text-left transition hover:border-orange-300 hover:bg-[linear-gradient(180deg,#fff7ed_0%,#fef3c7_100%)] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {prompt}
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-orange-700">
+                You can ask...
+              </p>
+              <p className="mt-3 text-sm font-semibold leading-6 text-stone-900">
+                {prompt.title}
+              </p>
             </button>
           ))}
         </div>

@@ -46,6 +46,8 @@ const CREDIT_LINE_REGEX = /^\d(?:\.\d{1,2})?$/;
 const ALL_CAPS_SECTION_REGEX = /^[A-Z][A-Z &/+-]{2,}$/;
 const TRANSCRIPT_ROW_REGEX =
   /^(.*?)\s+(A-|A|B\+|B|B-|C\+|C|C-|D\+|D|D-|F|CR|P|S|U|W|Q|I)\s+(\d{1,5})\s+(Transfer|Extension|In residence|Credit by exam|Credit by|exam)\s+(\d(?:\.\d{1,2})?)\s+(\d+\.\d{2})$/i;
+const IN_PROGRESS_ROW_REGEX =
+  /^(.*?)\s+(\d{1,5})\s+(Transfer|Extension|In residence|Credit by exam|Credit by|exam)\s+(\d(?:\.\d{1,2})?)\s+0\.00$/i;
 
 function normalizeWhitespace(text: string) {
   return text.replace(/\s+/g, " ").trim();
@@ -247,6 +249,19 @@ export function parseTranscriptText(rawText: string, major: string) {
       const numericCredits = Number(rowMatch[5]);
       if (numericCredits > 0) {
         credits = numericCredits;
+      }
+    }
+
+    if (!grade) {
+      const inProgressRowMatch = line.match(IN_PROGRESS_ROW_REGEX);
+
+      if (inProgressRowMatch) {
+        grade = "IP";
+        const numericCredits = Number(inProgressRowMatch[4]);
+
+        if (numericCredits > 0) {
+          credits = numericCredits;
+        }
       }
     }
 

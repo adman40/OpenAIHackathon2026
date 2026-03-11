@@ -45,6 +45,21 @@ export function OpportunityFilters({
   savedCount = 0,
   onReset,
 }: OpportunityFiltersProps): JSX.Element {
+  const fieldLabelStyle: React.CSSProperties = {
+    display: "grid",
+    gap: "4px",
+    color: "#374151",
+    fontSize: "14px",
+    minWidth: 0,
+  };
+
+  const fieldInputStyle: React.CSSProperties = {
+    width: "100%",
+    minWidth: 0,
+    maxWidth: "100%",
+    boxSizing: "border-box",
+  };
+
   return (
     <section
       style={{
@@ -59,9 +74,13 @@ export function OpportunityFilters({
       <div style={{ fontWeight: 700, color: "#111827" }}>Filters</div>
 
       <div style={{ display: "grid", gap: "8px", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-        <label style={{ display: "grid", gap: "4px", color: "#374151", fontSize: "14px" }}>
+        <label style={fieldLabelStyle}>
           Term
-          <select value={selectedTerm} onChange={(event) => onTermChange(event.target.value)}>
+          <select
+            value={selectedTerm}
+            onChange={(event) => onTermChange(event.target.value)}
+            style={fieldInputStyle}
+          >
             <option value="all">All terms</option>
             {termOptions.map((term) => (
               <option key={term} value={term}>
@@ -72,11 +91,12 @@ export function OpportunityFilters({
         </label>
 
         {locationOptions.length > 0 && onLocationChange ? (
-          <label style={{ display: "grid", gap: "4px", color: "#374151", fontSize: "14px" }}>
+          <label style={fieldLabelStyle}>
             Location
             <select
               value={selectedLocation}
               onChange={(event) => onLocationChange(event.target.value)}
+              style={fieldInputStyle}
             >
               <option value="all">All locations</option>
               {locationOptions.map((location) => (
@@ -89,9 +109,13 @@ export function OpportunityFilters({
         ) : null}
 
         {payOptions.length > 0 && onPayChange ? (
-          <label style={{ display: "grid", gap: "4px", color: "#374151", fontSize: "14px" }}>
+          <label style={fieldLabelStyle}>
             Pay
-            <select value={selectedPay} onChange={(event) => onPayChange(event.target.value)}>
+            <select
+              value={selectedPay}
+              onChange={(event) => onPayChange(event.target.value)}
+              style={fieldInputStyle}
+            >
               {payOptions.map((payOption) => (
                 <option key={payOption.value} value={payOption.value}>
                   {payOption.label}
@@ -102,9 +126,13 @@ export function OpportunityFilters({
         ) : null}
 
         {skillOptions.length > 0 && onSkillChange ? (
-          <label style={{ display: "grid", gap: "4px", color: "#374151", fontSize: "14px" }}>
+          <label style={fieldLabelStyle}>
             Skill
-            <select value={selectedSkill} onChange={(event) => onSkillChange(event.target.value)}>
+            <select
+              value={selectedSkill}
+              onChange={(event) => onSkillChange(event.target.value)}
+              style={fieldInputStyle}
+            >
               <option value="all">All skills</option>
               {skillOptions.map((skill) => (
                 <option key={skill} value={skill}>
@@ -116,9 +144,13 @@ export function OpportunityFilters({
         ) : null}
 
         {sortOptions.length > 0 && onSortChange ? (
-          <label style={{ display: "grid", gap: "4px", color: "#374151", fontSize: "14px" }}>
+          <label style={fieldLabelStyle}>
             Sort
-            <select value={selectedSort} onChange={(event) => onSortChange(event.target.value)}>
+            <select
+              value={selectedSort}
+              onChange={(event) => onSortChange(event.target.value)}
+              style={fieldInputStyle}
+            >
               {sortOptions.map((sortOption) => (
                 <option key={sortOption.value} value={sortOption.value}>
                   {sortOption.label}
@@ -130,13 +162,14 @@ export function OpportunityFilters({
       </div>
 
       {onKeywordChange ? (
-        <label style={{ display: "grid", gap: "4px", color: "#374151", fontSize: "14px" }}>
+        <label style={fieldLabelStyle}>
           Keyword
           <input
             type="text"
             value={keyword}
             placeholder="Search title, org, or description"
             onChange={(event) => onKeywordChange(event.target.value)}
+            style={fieldInputStyle}
           />
         </label>
       ) : null}

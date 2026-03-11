@@ -267,9 +267,16 @@ export default function ResearchPage(): JSX.Element {
             display: "grid",
             gap: "16px",
             gridTemplateColumns: "minmax(0, 1fr)",
+            alignItems: "start",
           }}
         >
-          <div style={{ display: "grid", gap: "10px" }}>
+          <div
+            style={{
+              display: "grid",
+              gap: "10px",
+            }}
+            className="research-list-pane"
+          >
             {filtered.map((match) => (
               <OpportunityCard
                 key={match.opportunity.id}
@@ -281,15 +288,17 @@ export default function ResearchPage(): JSX.Element {
               />
             ))}
           </div>
-          <OpportunityDetailPanel
-            match={selectedMatch}
-            isSaved={selectedMatch ? savedIds.includes(selectedMatch.opportunity.id) : false}
-            onToggleSaved={
-              selectedMatch
-                ? () => setSavedIds(toggleSavedOpportunityId(selectedMatch.opportunity.id))
-                : undefined
-            }
-          />
+          <div className="research-detail-pane">
+            <OpportunityDetailPanel
+              match={selectedMatch}
+              isSaved={selectedMatch ? savedIds.includes(selectedMatch.opportunity.id) : false}
+              onToggleSaved={
+                selectedMatch
+                  ? () => setSavedIds(toggleSavedOpportunityId(selectedMatch.opportunity.id))
+                  : undefined
+              }
+            />
+          </div>
         </section>
       )}
 
@@ -298,6 +307,19 @@ export default function ResearchPage(): JSX.Element {
           section {
             grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr) !important;
             align-items: start;
+          }
+
+          .research-list-pane {
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+            padding-right: 6px;
+          }
+
+          .research-detail-pane {
+            position: sticky;
+            top: 24px;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
           }
         }
       `}</style>

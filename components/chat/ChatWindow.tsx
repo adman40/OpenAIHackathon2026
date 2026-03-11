@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { getProfileFirstName } from "../../lib/profile-utils";
+import { toRequestSafeProfile } from "../../lib/request-safe-profile";
 import type { ChatCitation, ChatResponse } from "../../lib/types";
 import ChatInput from "./ChatInput";
 import MessageBubble from "./MessageBubble";
@@ -22,25 +24,49 @@ interface ChatWindowProps {
 }
 
 const QUICK_PROMPTS = [
-  "You can ask where to get help with food insecurity, stress, or mental health at UT.",
-  "You can ask how many times Texas has beaten Texas A&M in football.",
-  "You can ask for a cold outreach email to a professor.",
+  {
+    id: "resource-help",
+    title: "Where can I get UT help for food insecurity, stress, or mental health?",
+    prompt: "Where can I get UT help for food insecurity, stress, or mental health?",
+  },
+  {
+    id: "sports-history",
+    title: "How many times has Texas beaten Texas A&M in football?",
+    prompt: "How many times has Texas beaten Texas A&M in football?",
+  },
+  {
+    id: "professor-email",
+    title: "Draft a cold outreach email to a professor for me.",
+    prompt: "Draft a cold outreach email to a professor for me.",
+  },
 ];
-
-const INITIAL_MESSAGE: Message = {
-  id: "hook-chat-intro",
-  role: "assistant",
-  content:
-    "I can help with campus resources, live UT sports questions, and cold outreach drafts. Ask one concrete question and I will turn it into a next step.",
-};
 
 export default function ChatWindow({
   title = "Hook Chat",
   subtitle = "Profile-aware assistant",
 }: ChatWindowProps) {
   const { profile } = useProfile();
-  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
+  const activeProfile = profile ?? DEMO_PROFILE;
+  const initialMessage = useMemo<Message>(
+    () => ({
+      id: "hook-chat-intro",
+      role: "assistant",
+      content: `I’m using ${getProfileFirstName(activeProfile)}'s profile, transcript, resume context, and UT resources to answer questions about campus support, UT sports, and outreach drafts. Ask one concrete question and I will turn it into a next step.`,
+    }),
+    [activeProfile],
+  );
+  const [messages, setMessages] = useState<Message[]>([initialMessage]);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setMessages((current) => {
+      if (current.length !== 1 || current[0]?.id !== "hook-chat-intro") {
+        return current;
+      }
+
+      return [initialMessage];
+    });
+  }, [initialMessage]);
 
   const messagePayload = useMemo(
     () =>
@@ -76,7 +102,7 @@ export default function ChatWindow({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [...messagePayload, { role: "user", content }],
-          profile: profile ?? DEMO_PROFILE,
+          profile: toRequestSafeProfile(activeProfile),
         }),
       });
 
@@ -145,7 +171,6 @@ export default function ChatWindow({
               key={message.id}
               role={message.role}
               content={message.content}
-              citations={message.citations}
               suggestedActions={message.suggestedActions}
               isPending={message.isPending}
               onSuggestedActionClick={isLoading ? undefined : sendMessage}

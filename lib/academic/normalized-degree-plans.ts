@@ -49,6 +49,9 @@ export function toDegreeRequirements(plan: NormalizedDegreePlan): DegreeRequirem
       courses: bucket.courses,
       notes: bucket.notes,
     }));
+  const nonElectiveMajorCredits = majorGroups
+    .filter((group) => group.id && !group.id.toLowerCase().includes("elective"))
+    .reduce((total, group) => total + group.credits, 0);
 
   return {
     degreeId: plan.degreeId,
@@ -60,7 +63,7 @@ export function toDegreeRequirements(plan: NormalizedDegreePlan): DegreeRequirem
       groups: coreGroups,
     },
     majorRequirements: {
-      creditsRequired: majorGroups.reduce((total, group) => total + group.credits, 0),
+      creditsRequired: nonElectiveMajorCredits,
       groups: majorGroups,
     },
   };

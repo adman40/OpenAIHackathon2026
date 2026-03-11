@@ -537,6 +537,40 @@ function profileSummary(profile: StudentProfile): string {
   ].join("\n");
 }
 
+function buildStudentContextDescription(profile: StudentProfile): string {
+  const focusAreas = Array.from(
+    new Set([
+      ...profile.interests.filter(Boolean),
+      ...profile.clubInterests.filter(Boolean),
+      ...profile.skills.filter(Boolean),
+    ]),
+  ).slice(0, 8);
+
+  const transcriptStatus =
+    profile.transcriptUploadStatus === "reviewed"
+      ? "Transcript context is available."
+      : "Transcript context is limited.";
+  const resumeStatus =
+    profile.resumeUploadStatus === "reviewed"
+      ? "Resume context is available."
+      : "Resume context is limited.";
+  const availability =
+    typeof profile.hoursPerWeek === "number"
+      ? `They can realistically commit about ${profile.hoursPerWeek} hours per week.`
+      : "Weekly availability is not specified.";
+
+  return [
+    `${profile.name} is a ${profile.currentSemester} ${profile.major} student at UT Austin.`,
+    transcriptStatus,
+    resumeStatus,
+    availability,
+    focusAreas.length > 0
+      ? `Use these profile signals when they are relevant: ${focusAreas.join(", ")}.`
+      : "Use the available profile and local UT resources to personalize the answer.",
+    "When giving campus help, route them to the most relevant UT resource first instead of giving generic advice.",
+  ].join(" ");
+}
+
 async function readCampusResources(): Promise<string> {
   const filePath = path.join(process.cwd(), "data", "resources", "campus-resources.md");
   return fs.readFile(filePath, "utf8");
@@ -572,7 +606,11 @@ async function generateModelAnswer(
           "For mental-health or crisis questions: do not diagnose; route to urgent support and emergency help when appropriate.",
           "For sports questions: do not claim to have live data unless the route explicitly provides it outside this prompt.",
           "For outreach requests: write concise practical drafts.",
+          "Ground every answer in a short student-context description before choosing what matters from the resources.",
           "Return strict JSON with keys: answer (string), suggestedActions (array of 2-3 short strings).",
+          "",
+          "Student context description:",
+          buildStudentContextDescription(profile),
           "",
           "Student profile:",
           profileSummary(profile),
