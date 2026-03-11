@@ -58,6 +58,7 @@ export interface StudentProfile {
   preferredLocations: string[];
   preferredTerms: string[];
   clubInterests: string[];
+  hoursPerWeek?: number;
 }
 
 // Academic types drive course planning and on-track analysis.

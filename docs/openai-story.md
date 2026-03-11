@@ -48,3 +48,7 @@ Explain how OpenAI tools were central to building Hook, not just embedded as a f
 
 The academic UI translated the engine output into a scan-friendly story for judges: one page shows progress at a glance, surfaces the biggest prereq blocker, separates core and major next steps, and keeps the eligible course list easy to narrate during the live demo.
 
+## Clubs Note
+
+The clubs feature stayed intentionally lightweight so it could answer one useful question fast: "Which organizations fit this student right now?" A single ranked list with short reasons, meeting cadence, and join links keeps community fit visible without turning the demo into a second full planner.
+
