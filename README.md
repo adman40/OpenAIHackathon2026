@@ -2,6 +2,8 @@
 
 Hook is a profile-first student support app for UT Austin. One student profile powers academic planning, scholarships, research, internships, clubs, saved opportunities, and campus-support chat.
 
+Live: https://hook-demo.vercel.app/
+
 ## What It Does
 
 - Builds a student profile from onboarding, transcript upload, resume upload, and preferences
