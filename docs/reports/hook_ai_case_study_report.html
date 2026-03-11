@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hook AI Case Study Report</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #1c1917;
+        background: #fffdf8;
+      }
+
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 56px 48px 72px;
+        line-height: 1.58;
+      }
+
+      h1,
+      h2 {
+        line-height: 1.15;
+        margin: 0 0 16px;
+      }
+
+      h1 {
+        font-size: 30px;
+        margin-bottom: 28px;
+      }
+
+      h2 {
+        font-size: 19px;
+        margin-top: 28px;
+      }
+
+      p {
+        margin: 0 0 14px;
+        font-size: 12.5pt;
+      }
+
+      ul,
+      ol {
+        margin: 0 0 16px 22px;
+        padding: 0;
+      }
+
+      li {
+        margin: 0 0 8px;
+        font-size: 12.5pt;
+      }
+
+      .lede {
+        font-size: 13.5pt;
+      }
+
+      .section {
+        page-break-inside: avoid;
+      }
+
+      .source {
+        margin-top: 28px;
+        font-size: 11pt;
+        color: #57534e;
+      }
+
+      @page {
+        margin: 0.7in;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Hook AI Case Study Report</h1>
+
+      <section class="section">
+        <h2>Abstract</h2>
+        <p class="lede">
+          Hook is a profile-first student support product built for the OpenAI
+          Build It Forward Hackathon. One student profile powers academic
+          planning, scholarships, research, internships, clubs, saved
+          opportunities, and campus-support chat. The project also serves as a
+          case study in parallel AI-assisted development with Codex: multiple
+          workstreams moved at once, shared contracts stayed aligned, and the
+          final product remained demo-safe under deadline pressure.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Executive Summary</h2>
+        <ul>
+          <li>
+            Hook turns one student profile into ranked next steps across the
+            main areas where students lose time and momentum.
+          </li>
+          <li>
+            The team used Codex as an engineering collaborator inside a
+            controlled workflow, not as a one-shot code generator.
+          </li>
+          <li>
+            Deterministic local datasets were used for ranking surfaces to keep
+            the demo explainable and reliable.
+          </li>
+          <li>
+            GPT-4o was used narrowly in chat, where freeform drafting and
+            routing are actually useful.
+          </li>
+          <li>
+            Fallback behavior was treated as a feature, not something to hide.
+          </li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Product Overview</h2>
+        <p>
+          Hook is built around a simple claim: students should not need to
+          restate their identity, coursework, interests, and goals across
+          disconnected systems. In Hook, onboarding creates one durable profile,
+          and that profile powers academic progress and next-semester planning,
+          scholarship ranking, research and internship matching, club matching,
+          saved opportunities, and campus support and outreach chat.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Engineering Approach</h2>
+        <p>The project used a three-track collaboration model:</p>
+        <ul>
+          <li>
+            Person A: platform shell, onboarding, dashboard, chat, docs, and
+            final integration
+          </li>
+          <li>Person B: academic engine, degree data, and clubs</li>
+          <li>
+            Person C: scholarships, research, internships, and saved
+            opportunities
+          </li>
+        </ul>
+        <p>Codex accelerated delivery most effectively when prompts included:</p>
+        <ul>
+          <li>exact repo context</li>
+          <li>clear ownership boundaries</li>
+          <li>a shared type contract</li>
+          <li>concrete files in scope</li>
+          <li>explicit fallback and verification requirements</li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Why Codex Worked Here</h2>
+        <p>
+          Codex was most useful when the problem was framed as bounded
+          engineering work rather than vague feature generation. In this project
+          it helped scaffold and restore app structure, wire shared profile
+          state, implement API routes and ranking logic, build dashboard
+          integration, patch demo-facing bugs quickly, and keep documentation
+          synchronized with code changes.
+        </p>
+        <p>
+          The central lesson is operational: AI became more useful as repository
+          structure, review checkpoints, and ownership became clearer.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Reliability and Demo Safety</h2>
+        <p>
+          Hook was optimized for a stable demo, not inflated production claims.
+          Important reliability choices included deterministic local datasets
+          for ranking, explicit fallback payloads for dashboard cards, local
+          persistence when Supabase is absent, controlled chat fallback when
+          GPT-4o is unavailable, and transcript and resume parsing tuned for the
+          demo documents.
+        </p>
+        <p>
+          This made the system more credible because failure modes were visible
+          and controlled rather than hidden.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Key Lessons</h2>
+        <ol>
+          <li>Shared contracts matter more than generation speed.</li>
+          <li>
+            AI output is easiest to use on bounded tasks and hardest on
+            cross-cutting migrations.
+          </li>
+          <li>
+            Parallel worktrees reduce merge risk when multiple AI-assisted
+            sessions are active.
+          </li>
+          <li>
+            Diff review and incremental prompting outperform giant rewrite
+            prompts.
+          </li>
+          <li>Documentation should move alongside code, not after it.</li>
+          <li>
+            Demo-safe fallbacks are often more valuable than unfinished live
+            integrations.
+          </li>
+        </ol>
+      </section>
+
+      <section class="section">
+        <h2>Recommendations for Future Teams</h2>
+        <ol>
+          <li>
+            Use AI inside a repository operating model with ownership and
+            review, not as an isolated code-writing step.
+          </li>
+          <li>Define shared contracts early and protect them.</li>
+          <li>Separate deadline pressure from minimum acceptable scope.</li>
+          <li>
+            Budget time for integration, verification, and presentation cleanup.
+          </li>
+          <li>
+            Treat screenshots, logs, and docs as technical evidence, not
+            decoration.
+          </li>
+        </ol>
+      </section>
+
+      <section class="section">
+        <h2>Repo References</h2>
+        <ul>
+          <li><code>README.md</code></li>
+          <li><code>docs/demo-script.md</code></li>
+          <li><code>docs/judge-qa.md</code></li>
+          <li><code>docs/openai-story.md</code></li>
+        </ul>
+      </section>
+
+      <p class="source">
+        Source note: this HTML and PDF version is a cleaned repo copy of the
+        submission support report. It is intentionally text-only.
+      </p>
+    </main>
+  </body>
+</html>
