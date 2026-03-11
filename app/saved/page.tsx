@@ -1,0 +1,310 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { OpportunityCard } from "../../components/opportunities/OpportunityCard";
+import { OpportunityDetailPanel } from "../../components/opportunities/OpportunityDetailPanel";
+import {
+  clearSavedOpportunityIds,
+  getSavedOpportunityIds,
+  toggleSavedOpportunityId,
+} from "../../lib/opportunities/saved-opportunities";
+import type { OpportunityMatch, StudentProfile } from "../../lib/types";
+
+type MatchApiResponse = {
+  matches: OpportunityMatch[];
+};
+
+const DEMO_PROFILE: StudentProfile = {
+  name: "Alex Rivera",
+  major: "Computer Science",
+  currentSemester: "Spring 2026",
+  completedCourses: [
+    { courseId: "CS 312", grade: "A" },
+    { courseId: "CS 314", grade: "A-" },
+    { courseId: "CS 315", grade: "B+" },
+    { courseId: "CS 429", grade: "A-" },
+    { courseId: "SDS 321", grade: "A" },
+  ],
+  gpaRange: "3.5-4.0",
+  gpaPublic: true,
+  residency: "texas",
+  financialNeed: "medium",
+  resumeSummary:
+    "CS student interested in research and internships, especially ML and product engineering roles.",
+  skills: ["python", "typescript", "sql", "pytorch", "react"],
+  interests: ["machine learning", "education", "product engineering", "research"],
+  careerGoal: "industry",
+  preferredLocations: ["Austin", "Remote"],
+  preferredTerms: ["summer", "fall"],
+  clubInterests: ["ai", "entrepreneurship"],
+};
+
+function rank(matches: OpportunityMatch[]): OpportunityMatch[] {
+  return [...matches].sort((a, b) => {
+    if (b.fitScore !== a.fitScore) {
+      return b.fitScore - a.fitScore;
+    }
+    return a.opportunity.applyBy.localeCompare(b.opportunity.applyBy);
+  });
+}
+
+function exportMatches(matches: OpportunityMatch[]): void {
+  const payload = matches.map((match) => ({
+    id: match.opportunity.id,
+    kind: match.opportunity.kind,
+    title: match.opportunity.title,
+    organization: match.opportunity.organization,
+    applyBy: match.opportunity.applyBy,
+    fitScore: match.fitScore,
+    reasons: match.matchReasons,
+  }));
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "hook-saved-opportunities.json";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
+export default function SavedPage(): JSX.Element {
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [allMatches, setAllMatches] = useState<OpportunityMatch[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [kindFilter, setKindFilter] = useState<"all" | "research" | "internship">("all");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const currentSaved = getSavedOpportunityIds();
+      setSavedIds(currentSaved);
+
+      const [researchRes, internshipsRes] = await Promise.all([
+        fetch("/api/research/match", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ profile: DEMO_PROFILE }),
+        }),
+        fetch("/api/internships/match", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ profile: DEMO_PROFILE }),
+        }),
+      ]);
+
+      if (!researchRes.ok || !internshipsRes.ok) {
+        throw new Error("One or more opportunity APIs failed.");
+      }
+
+      const researchPayload = (await researchRes.json()) as MatchApiResponse;
+      const internshipsPayload = (await internshipsRes.json()) as MatchApiResponse;
+      const combined = rank([
+        ...(researchPayload.matches ?? []),
+        ...(internshipsPayload.matches ?? []),
+      ]);
+
+      setAllMatches(combined);
+      const firstSaved = combined.find((item) => currentSaved.includes(item.opportunity.id));
+      setSelectedId(firstSaved?.opportunity.id ?? null);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Failed to load saved opportunities.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const visible = useMemo(() => {
+    return allMatches.filter((match) => {
+      if (!savedIds.includes(match.opportunity.id)) {
+        return false;
+      }
+      if (kindFilter === "all") {
+        return true;
+      }
+      return match.opportunity.kind === kindFilter;
+    });
+  }, [allMatches, savedIds, kindFilter]);
+
+  useEffect(() => {
+    if (visible.length === 0) {
+      setSelectedId(null);
+      return;
+    }
+    if (!selectedId || !visible.some((item) => item.opportunity.id === selectedId)) {
+      setSelectedId(visible[0].opportunity.id);
+    }
+  }, [visible, selectedId]);
+
+  const selectedMatch = useMemo(
+    () => visible.find((item) => item.opportunity.id === selectedId) ?? null,
+    [visible, selectedId],
+  );
+
+  if (isLoading) {
+    return (
+      <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
+        <h1 style={{ margin: 0, fontSize: "28px", color: "#111827" }}>Saved Opportunities</h1>
+        <p style={{ marginTop: "8px", color: "#4b5563" }}>Loading saved items...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
+        <h1 style={{ margin: 0, fontSize: "28px", color: "#111827" }}>Saved Opportunities</h1>
+        <p style={{ marginTop: "8px", color: "#b91c1c" }}>Could not load saved items: {error}</p>
+        <button
+          type="button"
+          onClick={() => void load()}
+          style={{
+            marginTop: "10px",
+            border: "1px solid #1d4ed8",
+            background: "#eff6ff",
+            color: "#1d4ed8",
+            borderRadius: "8px",
+            padding: "8px 10px",
+            cursor: "pointer",
+          }}
+        >
+          Retry
+        </button>
+      </main>
+    );
+  }
+
+  return (
+    <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
+      <h1 style={{ margin: 0, fontSize: "28px", color: "#111827" }}>Saved Opportunities</h1>
+      <p style={{ marginTop: "8px", color: "#4b5563" }}>
+        Your pinned opportunities from research and internships in one place.
+      </p>
+      <div style={{ marginTop: "8px", color: "#334155", fontSize: "13px" }}>
+        {visible.length} visible | {savedIds.length} saved total
+      </div>
+
+      <div style={{ marginTop: "14px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {[
+          { value: "all", label: "All" },
+          { value: "research", label: "Research" },
+          { value: "internship", label: "Internships" },
+        ].map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => setKindFilter(option.value as "all" | "research" | "internship")}
+            style={{
+              border: kindFilter === option.value ? "1px solid #1d4ed8" : "1px solid #cbd5e1",
+              background: kindFilter === option.value ? "#eff6ff" : "#ffffff",
+              color: kindFilter === option.value ? "#1d4ed8" : "#334155",
+              borderRadius: "999px",
+              padding: "6px 10px",
+              fontSize: "13px",
+              cursor: "pointer",
+            }}
+          >
+            {option.label}
+          </button>
+        ))}
+
+        <button
+          type="button"
+          onClick={() => exportMatches(visible)}
+          disabled={visible.length === 0}
+          style={{
+            border: "1px solid #cbd5e1",
+            background: "#f8fafc",
+            color: "#334155",
+            borderRadius: "8px",
+            padding: "6px 10px",
+            fontSize: "13px",
+            cursor: visible.length === 0 ? "not-allowed" : "pointer",
+          }}
+        >
+          Export JSON
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            const cleared = clearSavedOpportunityIds();
+            setSavedIds(cleared);
+            setSelectedId(null);
+          }}
+          disabled={savedIds.length === 0}
+          style={{
+            border: "1px solid #fecaca",
+            background: "#fef2f2",
+            color: "#b91c1c",
+            borderRadius: "8px",
+            padding: "6px 10px",
+            fontSize: "13px",
+            cursor: savedIds.length === 0 ? "not-allowed" : "pointer",
+          }}
+        >
+          Clear Saved
+        </button>
+      </div>
+
+      {savedIds.length === 0 ? (
+        <p style={{ marginTop: "18px", color: "#4b5563" }}>
+          No saved opportunities yet. Save items from Research or Internships.
+        </p>
+      ) : visible.length === 0 ? (
+        <p style={{ marginTop: "18px", color: "#4b5563" }}>
+          No saved opportunities in this category.
+        </p>
+      ) : (
+        <section
+          style={{
+            marginTop: "16px",
+            display: "grid",
+            gap: "16px",
+            gridTemplateColumns: "minmax(0, 1fr)",
+          }}
+        >
+          <div style={{ display: "grid", gap: "10px" }}>
+            {visible.map((match) => (
+              <OpportunityCard
+                key={match.opportunity.id}
+                match={match}
+                isSelected={selectedId === match.opportunity.id}
+                onSelect={() => setSelectedId(match.opportunity.id)}
+                isSaved={savedIds.includes(match.opportunity.id)}
+                onToggleSaved={() => setSavedIds(toggleSavedOpportunityId(match.opportunity.id))}
+              />
+            ))}
+          </div>
+          <OpportunityDetailPanel
+            match={selectedMatch}
+            isSaved={selectedMatch ? savedIds.includes(selectedMatch.opportunity.id) : false}
+            onToggleSaved={
+              selectedMatch
+                ? () => setSavedIds(toggleSavedOpportunityId(selectedMatch.opportunity.id))
+                : undefined
+            }
+          />
+        </section>
+      )}
+
+      <style jsx>{`
+        @media (min-width: 1024px) {
+          section {
+            grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr) !important;
+            align-items: start;
+          }
+        }
+      `}</style>
+    </main>
+  );
+}
