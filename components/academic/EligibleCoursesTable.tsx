@@ -11,7 +11,7 @@ export function EligibleCoursesTable({ courses }: EligibleCoursesTableProps) {
         <div>
           <h3 className="text-lg font-semibold text-slate-900">Eligible Courses</h3>
           <p className="text-sm text-slate-600">
-            Ranked by requirement fit, downstream unlocks, and professor signal.
+            Next regular term only, ranked by requirement fit, downstream unlocks, and professor signal.
           </p>
         </div>
         <span className="text-sm text-slate-500">{courses.length} courses</span>
@@ -19,7 +19,7 @@ export function EligibleCoursesTable({ courses }: EligibleCoursesTableProps) {
 
       {courses.length === 0 ? (
         <p className="mt-4 text-sm text-slate-600">
-          No courses are currently eligible from this profile snapshot.
+          No courses are currently both next-term scheduled and fully unlocked from this profile snapshot.
         </p>
       ) : (
         <div className="mt-4 overflow-x-auto">
@@ -42,6 +42,11 @@ export function EligibleCoursesTable({ courses }: EligibleCoursesTableProps) {
                   <td className="py-3 pr-4">
                     <div className="font-medium text-slate-900">{course.courseId}</div>
                     <div className="text-slate-600">{course.courseName}</div>
+                    {course.eligibilityReason ? (
+                      <div className="mt-1 max-w-md text-xs text-slate-500">
+                        {course.eligibilityReason}
+                      </div>
+                    ) : null}
                   </td>
                   <td className="py-3 pr-4 capitalize">{course.requirementBucket}</td>
                   <td className="py-3 pr-4">{course.credits}</td>

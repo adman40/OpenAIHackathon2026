@@ -94,6 +94,20 @@ export interface NormalizedDegreePlanCatalog {
   plans: NormalizedDegreePlan[];
 }
 
+export interface ImportedCourseScheduleTermSnapshot {
+  courseCatalogId: string;
+  term: string;
+  isRegularTerm: boolean;
+  offeredCourseIds: string[];
+}
+
+export interface ImportedCourseScheduleCatalog {
+  catalogId: string;
+  level: "undergraduate";
+  sourceMetadata: SourceMetadata;
+  termSnapshots: ImportedCourseScheduleTermSnapshot[];
+}
+
 // Student profile types power every Hook surface.
 export interface CompletedCourse {
   courseId: string;
@@ -163,6 +177,7 @@ export interface EligibleCourse {
   credits: number;
   prerequisites: string[];
   termsOffered: string[];
+  eligibilityReason?: string;
   professorName: string;
   professorDifficulty: string;
   gradeTendency: string;

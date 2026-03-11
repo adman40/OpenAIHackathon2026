@@ -10,6 +10,7 @@ import {
 import {
   AcademicAnalysis,
   CourseCatalog,
+  ImportedCourseScheduleCatalog,
   NormalizedDegreePlanCatalog,
   StudentProfile,
 } from "../../../lib/types";
@@ -60,9 +61,16 @@ export default async function handler(
       "courses",
       `${plan.courseCatalogId}.json`,
     ]);
+    const scheduleCatalog = await loadJsonFile<ImportedCourseScheduleCatalog>([
+      "data",
+      "ut",
+      "course-schedule.json",
+    ]);
     const degree = toDegreeRequirements(plan);
 
-    return res.status(200).json(analyzeDegree(profile, degree, catalog));
+    return res.status(200).json(
+      analyzeDegree(profile, degree, catalog, scheduleCatalog, plan.courseCatalogId),
+    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown academic analysis error";
