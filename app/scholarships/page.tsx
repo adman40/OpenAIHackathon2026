@@ -4,38 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ScholarshipDetailPanel } from "../../components/scholarships/ScholarshipDetailPanel";
 import { ScholarshipList } from "../../components/scholarships/ScholarshipList";
-import type { ScholarshipMatch, StudentProfile } from "../../lib/types";
+import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import type { ScholarshipMatch } from "../../lib/types";
 
 type MatchApiResponse = {
   matches: ScholarshipMatch[];
-};
-
-const DEMO_PROFILE: StudentProfile = {
-  name: "Alex Rivera",
-  major: "Computer Science",
-  currentSemester: "Spring 2026",
-  completedCourses: [
-    { courseId: "CS 312", grade: "A" },
-    { courseId: "CS 314", grade: "A-" },
-    { courseId: "M 408C", grade: "A" },
-    { courseId: "M 408D", grade: "A-" },
-    { courseId: "CS 315", grade: "B+" },
-    { courseId: "CS 429", grade: "A-" },
-    { courseId: "SDS 321", grade: "A" },
-    { courseId: "CS 331", grade: "A" },
-  ],
-  gpaRange: "3.5-4.0",
-  gpaPublic: true,
-  residency: "texas",
-  financialNeed: "medium",
-  resumeSummary:
-    "Junior CS student with Python, TypeScript, and ML projects interested in research and product engineering.",
-  skills: ["python", "typescript", "sql", "git", "machine learning", "pytorch"],
-  interests: ["ai", "education", "student tools"],
-  careerGoal: "research",
-  preferredLocations: ["Austin", "Remote"],
-  preferredTerms: ["summer", "fall"],
-  clubInterests: ["ai", "entrepreneurship"],
 };
 
 function rankMatches(matches: ScholarshipMatch[]): ScholarshipMatch[] {
@@ -51,13 +24,19 @@ function rankMatches(matches: ScholarshipMatch[]): ScholarshipMatch[] {
 }
 
 export default function ScholarshipsPage(): JSX.Element {
+  const { profile, isHydrated } = useProfile();
   const [matches, setMatches] = useState<ScholarshipMatch[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
     let isMounted = true;
+    const activeProfile = profile ?? DEMO_PROFILE;
 
     async function loadMatches(): Promise<void> {
       setIsLoading(true);
@@ -67,7 +46,7 @@ export default function ScholarshipsPage(): JSX.Element {
         const response = await fetch("/api/scholarships/match", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profile: DEMO_PROFILE }),
+          body: JSON.stringify({ profile: activeProfile }),
         });
 
         if (!response.ok) {
@@ -104,14 +83,14 @@ export default function ScholarshipsPage(): JSX.Element {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isHydrated, profile]);
 
   const selectedMatch = useMemo(
     () => matches.find((match) => match.scholarship.id === selectedId) ?? null,
     [matches, selectedId],
   );
 
-  if (isLoading) {
+  if (!isHydrated || isLoading) {
     return (
       <main style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px 16px" }}>
         <h1 style={{ margin: 0, fontSize: "28px", color: "#111827" }}>Scholarships</h1>

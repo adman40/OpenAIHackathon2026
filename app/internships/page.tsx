@@ -5,12 +5,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { OpportunityCard } from "../../components/opportunities/OpportunityCard";
 import { OpportunityDetailPanel } from "../../components/opportunities/OpportunityDetailPanel";
 import { OpportunityFilters } from "../../components/opportunities/OpportunityFilters";
+import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
 import {
   getSavedOpportunityIds,
   toggleSavedOpportunityId,
 } from "../../lib/opportunities/saved-opportunities";
 import { isUrgentDate } from "../../lib/opportunities/deadline";
-import type { OpportunityMatch, StudentProfile } from "../../lib/types";
+import type { OpportunityMatch } from "../../lib/types";
 
 type MatchApiResponse = {
   matches: OpportunityMatch[];
@@ -28,31 +29,6 @@ const SORT_OPTIONS = [
   { value: "deadline_soon", label: "Deadline soonest" },
   { value: "pay_high", label: "Highest pay" },
 ];
-
-const DEMO_PROFILE: StudentProfile = {
-  name: "Alex Rivera",
-  major: "Computer Science",
-  currentSemester: "Spring 2026",
-  completedCourses: [
-    { courseId: "CS 312", grade: "A" },
-    { courseId: "CS 314", grade: "A-" },
-    { courseId: "CS 315", grade: "B+" },
-    { courseId: "CS 429", grade: "A-" },
-    { courseId: "SDS 321", grade: "A" },
-  ],
-  gpaRange: "3.5-4.0",
-  gpaPublic: true,
-  residency: "texas",
-  financialNeed: "medium",
-  resumeSummary:
-    "CS student with Python and TypeScript experience looking for software engineering internships.",
-  skills: ["python", "typescript", "react", "sql", "node"],
-  interests: ["product engineering", "ai", "education", "startup"],
-  careerGoal: "industry",
-  preferredLocations: ["Austin", "Remote"],
-  preferredTerms: ["summer", "fall"],
-  clubInterests: ["ai", "entrepreneurship"],
-};
 
 function extractHourlyPay(payText: string): number | null {
   const match = payText.match(/\$(\d+(?:\.\d+)?)/);
@@ -92,6 +68,7 @@ function rank(matches: OpportunityMatch[]): OpportunityMatch[] {
 }
 
 export default function InternshipsPage(): JSX.Element {
+  const { profile, isHydrated } = useProfile();
   const [matches, setMatches] = useState<OpportunityMatch[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [termFilter, setTermFilter] = useState("all");
@@ -104,13 +81,15 @@ export default function InternshipsPage(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (): Promise<void> => {
+    const activeProfile = profile ?? DEMO_PROFILE;
+
     try {
       setIsLoading(true);
       setError(null);
       const response = await fetch("/api/internships/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile: DEMO_PROFILE }),
+        body: JSON.stringify({ profile: activeProfile }),
       });
 
       if (!response.ok) {
@@ -126,11 +105,15 @@ export default function InternshipsPage(): JSX.Element {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [profile]);
 
   useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
     void load();
-  }, [load]);
+  }, [isHydrated, load]);
 
   useEffect(() => {
     setSavedIds(getSavedOpportunityIds());
@@ -215,7 +198,7 @@ export default function InternshipsPage(): JSX.Element {
     [filtered, selectedId],
   );
 
-  if (isLoading) {
+  if (!isHydrated || isLoading) {
     return (
       <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
         <h1 style={{ margin: 0, color: "#111827", fontSize: "28px" }}>Internships</h1>

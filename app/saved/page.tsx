@@ -4,40 +4,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { OpportunityCard } from "../../components/opportunities/OpportunityCard";
 import { OpportunityDetailPanel } from "../../components/opportunities/OpportunityDetailPanel";
+import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
 import {
   clearSavedOpportunityIds,
   getSavedOpportunityIds,
   toggleSavedOpportunityId,
 } from "../../lib/opportunities/saved-opportunities";
-import type { OpportunityMatch, StudentProfile } from "../../lib/types";
+import type { OpportunityMatch } from "../../lib/types";
 
 type MatchApiResponse = {
   matches: OpportunityMatch[];
-};
-
-const DEMO_PROFILE: StudentProfile = {
-  name: "Alex Rivera",
-  major: "Computer Science",
-  currentSemester: "Spring 2026",
-  completedCourses: [
-    { courseId: "CS 312", grade: "A" },
-    { courseId: "CS 314", grade: "A-" },
-    { courseId: "CS 315", grade: "B+" },
-    { courseId: "CS 429", grade: "A-" },
-    { courseId: "SDS 321", grade: "A" },
-  ],
-  gpaRange: "3.5-4.0",
-  gpaPublic: true,
-  residency: "texas",
-  financialNeed: "medium",
-  resumeSummary:
-    "CS student interested in research and internships, especially ML and product engineering roles.",
-  skills: ["python", "typescript", "sql", "pytorch", "react"],
-  interests: ["machine learning", "education", "product engineering", "research"],
-  careerGoal: "industry",
-  preferredLocations: ["Austin", "Remote"],
-  preferredTerms: ["summer", "fall"],
-  clubInterests: ["ai", "entrepreneurship"],
 };
 
 function rank(matches: OpportunityMatch[]): OpportunityMatch[] {
@@ -71,6 +47,7 @@ function exportMatches(matches: OpportunityMatch[]): void {
 }
 
 export default function SavedPage(): JSX.Element {
+  const { profile, isHydrated } = useProfile();
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [allMatches, setAllMatches] = useState<OpportunityMatch[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -79,6 +56,8 @@ export default function SavedPage(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (): Promise<void> => {
+    const activeProfile = profile ?? DEMO_PROFILE;
+
     try {
       setIsLoading(true);
       setError(null);
@@ -89,12 +68,12 @@ export default function SavedPage(): JSX.Element {
         fetch("/api/research/match", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profile: DEMO_PROFILE }),
+          body: JSON.stringify({ profile: activeProfile }),
         }),
         fetch("/api/internships/match", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profile: DEMO_PROFILE }),
+          body: JSON.stringify({ profile: activeProfile }),
         }),
       ]);
 
@@ -117,11 +96,15 @@ export default function SavedPage(): JSX.Element {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [profile]);
 
   useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
     void load();
-  }, [load]);
+  }, [isHydrated, load]);
 
   const visible = useMemo(() => {
     return allMatches.filter((match) => {
@@ -150,7 +133,7 @@ export default function SavedPage(): JSX.Element {
     [visible, selectedId],
   );
 
-  if (isLoading) {
+  if (!isHydrated || isLoading) {
     return (
       <main style={{ maxWidth: "1120px", margin: "0 auto", padding: "24px 16px" }}>
         <h1 style={{ margin: 0, fontSize: "28px", color: "#111827" }}>Saved Opportunities</h1>
