@@ -209,6 +209,19 @@ function amountBonus(amount: number): number {
   return 2;
 }
 
+function compareDeadlines(a: string | null, b: string | null): number {
+  if (a && b) {
+    return a.localeCompare(b);
+  }
+  if (a) {
+    return -1;
+  }
+  if (b) {
+    return 1;
+  }
+  return 0;
+}
+
 export function matchScholarships(
   profile: StudentProfile,
   scholarships: Scholarship[],
@@ -346,17 +359,22 @@ export function matchScholarships(
 
     score += amountBonus(scholarship.amount);
 
-    const deadlineDate = new Date(scholarship.deadline);
-    const now = Date.now();
-    const daysUntilDeadline = Math.floor(
-      (deadlineDate.getTime() - now) / (1000 * 60 * 60 * 24),
-    );
+    let daysUntilDeadline: number | null = null;
 
-    if (!Number.isNaN(deadlineDate.getTime())) {
-      if (daysUntilDeadline >= 0 && daysUntilDeadline <= 30) {
-        score += 8;
-      } else if (daysUntilDeadline < 0) {
-        score -= 12;
+    if (scholarship.deadline) {
+      const deadlineDate = new Date(`${scholarship.deadline}T00:00:00Z`);
+      const now = Date.now();
+      daysUntilDeadline = Math.floor(
+        (deadlineDate.getTime() - now) / (1000 * 60 * 60 * 24),
+      );
+      if (!Number.isNaN(deadlineDate.getTime())) {
+        if (daysUntilDeadline >= 0 && daysUntilDeadline <= 30) {
+          score += 8;
+        } else if (daysUntilDeadline < 0) {
+          score -= 12;
+        }
+      } else {
+        daysUntilDeadline = null;
       }
     }
 
@@ -369,7 +387,7 @@ export function matchScholarships(
       fitScore: cappedScore,
       matchReasons: reasons.slice(0, 4),
       deadline: scholarship.deadline,
-      isUrgent: daysUntilDeadline >= 0 && daysUntilDeadline <= 30,
+      isUrgent: daysUntilDeadline !== null && daysUntilDeadline >= 0 && daysUntilDeadline <= 30,
       scholarship,
     });
   });
@@ -382,7 +400,7 @@ export function matchScholarships(
       if (a.isUrgent !== b.isUrgent) {
         return a.isUrgent ? -1 : 1;
       }
-      return a.deadline.localeCompare(b.deadline);
+      return compareDeadlines(a.deadline, b.deadline);
     })
     .slice(0, MAX_MATCHES);
 }

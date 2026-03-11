@@ -6,6 +6,7 @@ import { ScholarshipDetailPanel } from "../../components/scholarships/Scholarshi
 import { ScholarshipList } from "../../components/scholarships/ScholarshipList";
 import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { toRequestSafeProfile } from "../../lib/request-safe-profile";
 import type { ScholarshipMatch } from "../../lib/types";
 
 type MatchApiResponse = {
@@ -14,16 +15,32 @@ type MatchApiResponse = {
 
 const MAX_VISIBLE_MATCHES = 200;
 
+function compareDeadlines(a: string | null, b: string | null): number {
+  if (a && b) {
+    return a.localeCompare(b);
+  }
+  if (a) {
+    return -1;
+  }
+  if (b) {
+    return 1;
+  }
+  return 0;
+}
+
 function rankMatches(matches: ScholarshipMatch[]): ScholarshipMatch[] {
   return [...matches]
     .sort((a, b) => {
-    if (b.fitScore !== a.fitScore) {
-      return b.fitScore - a.fitScore;
-    }
-    if (a.isUrgent !== b.isUrgent) {
-      return a.isUrgent ? -1 : 1;
-    }
-    return a.deadline.localeCompare(b.deadline);
+      if (b.fitScore !== a.fitScore) {
+        return b.fitScore - a.fitScore;
+      }
+      if (a.isUrgent !== b.isUrgent) {
+        return a.isUrgent ? -1 : 1;
+      }
+      if (b.scholarship.amount !== a.scholarship.amount) {
+        return b.scholarship.amount - a.scholarship.amount;
+      }
+      return compareDeadlines(a.deadline, b.deadline);
     })
     .slice(0, MAX_VISIBLE_MATCHES);
 }
@@ -51,7 +68,7 @@ export default function ScholarshipsPage(): JSX.Element {
         const response = await fetch("/api/scholarships/match", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profile: activeProfile }),
+          body: JSON.stringify({ profile: toRequestSafeProfile(activeProfile) }),
         });
 
         if (!response.ok) {
@@ -116,7 +133,13 @@ export default function ScholarshipsPage(): JSX.Element {
   }
 
   return (
-    <main style={{ maxWidth: "1100px", margin: "0 auto", padding: "24px 16px" }}>
+    <main
+      style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "24px 16px",
+      }}
+    >
       <NavBar />
       <h1 style={{ margin: 0, fontSize: "28px", color: "#111827" }}>Scholarships</h1>
       <p style={{ color: "#4b5563", marginTop: "8px" }}>
@@ -136,7 +159,13 @@ export default function ScholarshipsPage(): JSX.Element {
             gap: "16px",
           }}
         >
-          <div style={{ display: "grid", gap: "16px" }}>
+          <div
+            style={{
+              display: "grid",
+              gap: "16px",
+              minHeight: 0,
+            }}
+          >
             <ScholarshipList
               matches={matches}
               selectedScholarshipId={selectedId}
@@ -153,6 +182,22 @@ export default function ScholarshipsPage(): JSX.Element {
           section {
             grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr) !important;
             align-items: start;
+            height: calc(100vh - 210px);
+            min-height: 680px;
+            overflow: hidden;
+          }
+
+          section > div:first-child {
+            height: 100%;
+            min-height: 0;
+            overflow-y: auto;
+            padding-right: 8px;
+          }
+
+          section > :global(aside) {
+            height: 100%;
+            min-height: 0;
+            overflow-y: auto;
           }
         }
       `}</style>

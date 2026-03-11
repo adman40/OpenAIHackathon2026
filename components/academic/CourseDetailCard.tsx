@@ -72,7 +72,14 @@ export function CourseDetailCard({ detail }: CourseDetailCardProps) {
                   key={professor.professorName}
                   className="rounded-xl border border-slate-200 bg-slate-50 p-4"
                 >
-                  <p className="font-medium text-slate-900">{professor.professorName}</p>
+                  <a
+                    href={professor.rateMyProfessorsUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium text-slate-900 underline decoration-slate-300 underline-offset-4 transition hover:text-orange-700"
+                  >
+                    {professor.professorName}
+                  </a>
                   <p className="mt-2 text-sm text-slate-700">
                     Rate My Professor aggregate: {professor.rateMyProfessorRating.toFixed(1)}/5
                     {" · "}

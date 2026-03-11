@@ -15,6 +15,7 @@ import {
 } from "../../lib/demo-fallbacks";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
 import { getProfileFirstName } from "../../lib/profile-utils";
+import { toRequestSafeProfile } from "../../lib/request-safe-profile";
 import type {
   AcademicAnalysis,
   ClubMatch,
@@ -71,7 +72,11 @@ function formatMoney(amount: number) {
   return `$${amount}`;
 }
 
-function formatDate(isoDate: string) {
+function formatDate(isoDate: string | null) {
+  if (!isoDate) {
+    return null;
+  }
+
   const parsedDate = new Date(`${isoDate}T00:00:00`);
 
   if (Number.isNaN(parsedDate.getTime())) {
@@ -105,7 +110,8 @@ function buildAcademicCard(analysis: AcademicAnalysis): DashboardCardData {
 }
 
 function buildScholarshipsCard(response: { matches: ScholarshipMatch[] }): DashboardCardData {
-  const topMatch = response.matches[0];
+  const topMatch =
+    response.matches.find((match) => match.scholarship.amount > 0) ?? response.matches[0];
   const urgentCount = response.matches.filter((match) => match.isUrgent).length;
 
   if (!topMatch) {
@@ -119,10 +125,17 @@ function buildScholarshipsCard(response: { matches: ScholarshipMatch[] }): Dashb
     };
   }
 
+  const formattedDeadline = formatDate(topMatch.deadline);
+
   return {
     title: "Scholarships",
-    subtitle: `${topMatch.scholarship.name} leads with ${topMatch.fitScore} fit and a ${formatDate(topMatch.deadline)} deadline.`,
-    metric: `${formatMoney(topMatch.scholarship.amount)} top award`,
+    subtitle: formattedDeadline
+      ? `${topMatch.scholarship.name} leads with ${topMatch.fitScore} fit and a ${formattedDeadline} deadline.`
+      : `${topMatch.scholarship.name} leads with ${topMatch.fitScore} fit.`,
+    metric:
+      topMatch.scholarship.amount > 0
+        ? `${formatMoney(topMatch.scholarship.amount)} top award`
+        : "Amount varies",
     status: urgentCount > 0 ? `${urgentCount} urgent` : `${response.matches.length} ranked`,
     actionHref: "/scholarships",
     actionLabel: "View awards",
@@ -195,10 +208,17 @@ async function postJson<T extends object>(
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ profile }),
+    body: JSON.stringify({ profile: toRequestSafeProfile(profile) }),
   });
 
-  const payload = (await response.json()) as T | ApiErrorResponse;
+  const rawPayload = await response.text();
+  let payload: T | ApiErrorResponse;
+
+  try {
+    payload = (rawPayload ? JSON.parse(rawPayload) : {}) as T | ApiErrorResponse;
+  } catch {
+    throw new Error(rawPayload || `Request failed with status ${response.status}`);
+  }
 
   if (!response.ok) {
     throw new Error("error" in payload ? payload.error : `Request failed with status ${response.status}`);
@@ -209,22 +229,7 @@ async function postJson<T extends object>(
 
 async function loadDashboardState(profile: StudentProfile, preferStatic: boolean): Promise<DashboardState> {
   if (preferStatic) {
-    return {
-      cards: [
-        buildAcademicCard(academicDemoFallback),
-        buildScholarshipsCard(scholarshipsDemoFallback),
-        buildOpportunityCard("Research", researchDemoFallback.matches, "/research", "Explore roles"),
-        buildOpportunityCard(
-          "Internships",
-          internshipsDemoFallback.matches,
-          "/internships",
-          "See matches",
-        ),
-        buildClubsCard(clubsDemoFallback),
-      ],
-      fallbackSources: ["academic", "scholarships", "research", "internships", "clubs"],
-      academicPercentComplete: academicDemoFallback.percentComplete,
-    };
+    return buildFallbackDashboardState();
   }
 
   const results = await Promise.allSettled([
@@ -271,6 +276,25 @@ async function loadDashboardState(profile: StudentProfile, preferStatic: boolean
   };
 }
 
+function buildFallbackDashboardState(): DashboardState {
+  return {
+    cards: [
+      buildAcademicCard(academicDemoFallback),
+      buildScholarshipsCard(scholarshipsDemoFallback),
+      buildOpportunityCard("Research", researchDemoFallback.matches, "/research", "Explore roles"),
+      buildOpportunityCard(
+        "Internships",
+        internshipsDemoFallback.matches,
+        "/internships",
+        "See matches",
+      ),
+      buildClubsCard(clubsDemoFallback),
+    ],
+    fallbackSources: ["academic", "scholarships", "research", "internships", "clubs"],
+    academicPercentComplete: academicDemoFallback.percentComplete,
+  };
+}
+
 export default function DashboardPage() {
   const { profile, setProfile, isHydrated, authStatus } = useProfile();
   const [dashboardState, setDashboardState] = useState<DashboardState | null>(null);
@@ -294,7 +318,13 @@ export default function DashboardPage() {
     let isActive = true;
 
     async function load() {
-      setIsLoading(true);
+      const shouldShowImmediateFallback = !dashboardState;
+
+      if (shouldShowImmediateFallback) {
+        setDashboardState(buildFallbackDashboardState());
+      }
+
+      setIsLoading(shouldShowImmediateFallback ? false : true);
 
       try {
         const nextState = await loadDashboardState(resolvedProfile, DEMO_STATIC);

@@ -955,6 +955,14 @@
       "normalizedPlanId": "computer-science-bs"
     },
     {
+      "majorId": "college-of-natural-sciences-honors-computer-science-and-business",
+      "displayName": "Honors Computer Science and Business",
+      "college": "College of Natural Sciences and McCombs School of Business",
+      "level": "undergraduate",
+      "supportStatus": "supported",
+      "normalizedPlanId": "honors-computer-science-and-business-bs"
+    },
+    {
       "majorId": "college-of-natural-sciences-environmental-science-biological-sciences",
       "displayName": "Environmental Science (Biological Sciences)",
       "college": "College of Natural Sciences",

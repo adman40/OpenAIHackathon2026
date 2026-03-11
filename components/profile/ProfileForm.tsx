@@ -38,7 +38,6 @@ interface FormState {
   currentSemester: string;
   completedCourses: StudentProfile["completedCourses"];
   gpa: string;
-  gpaPublic: boolean;
   residency: Residency;
   financialNeed: FinancialNeed;
   resumeSummary: string;
@@ -48,7 +47,6 @@ interface FormState {
   preferredLocations: string[];
   preferredTerms: string[];
   clubInterests: string[];
-  hoursPerWeek: number;
   transcriptFileName: string | null;
   resumeFileName: string | null;
   transcriptUploadStatus: NonNullable<StudentProfile["transcriptUploadStatus"]>;
@@ -71,7 +69,6 @@ const initialState: FormState = {
   currentSemester: "Spring 2026",
   completedCourses: [],
   gpa: "",
-  gpaPublic: true,
   residency: "texas",
   financialNeed: "medium",
   resumeSummary: "",
@@ -81,7 +78,6 @@ const initialState: FormState = {
   preferredLocations: ["Austin", "Remote"],
   preferredTerms: ["summer", "fall"],
   clubInterests: [],
-  hoursPerWeek: 5,
   transcriptFileName: null,
   resumeFileName: null,
   transcriptUploadStatus: "missing",
@@ -184,12 +180,6 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
     if (step === 2) {
       if (!formState.major.trim()) nextErrors.push("Choose a major.");
       if (!formState.currentSemester.trim()) nextErrors.push("Add your current semester.");
-      if (formState.gpa.trim().length > 0) {
-        const gpa = Number(formState.gpa);
-        if (Number.isNaN(gpa) || gpa < 0 || gpa > 4) {
-          nextErrors.push("GPA must be between 0.0 and 4.0.");
-        }
-      }
     }
 
     if (step === 3) {
@@ -250,7 +240,7 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
       currentSemester: formState.currentSemester,
       completedCourses: formState.completedCourses,
       gpa: formState.gpa.trim() ? Number(formState.gpa) : null,
-      gpaPublic: formState.gpaPublic,
+      gpaPublic: true,
       residency: formState.residency,
       financialNeed: formState.financialNeed,
       resumeSummary: formState.resumeSummary,
@@ -260,7 +250,6 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
       preferredLocations: formState.preferredLocations,
       preferredTerms: formState.preferredTerms,
       clubInterests: formState.clubInterests,
-      hoursPerWeek: formState.hoursPerWeek,
       profilePhotoUrl: formState.profilePhotoUrl,
       transcriptFileName: formState.transcriptFileName,
       resumeFileName: formState.resumeFileName,
@@ -363,62 +352,6 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
                 />
               </div>
             </div>
-            <div className="grid gap-5 md:grid-cols-3">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-stone-700">
-                  Numeric GPA
-                </label>
-                <input
-                  className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-orange-600"
-                  value={formState.gpa}
-                  onChange={(event) => updateField("gpa", event.target.value)}
-                  type="number"
-                  min="0"
-                  max="4"
-                  step="0.01"
-                  inputMode="decimal"
-                  placeholder="Auto-filled after transcript upload"
-                />
-              </div>
-              <div>
-                <span className="mb-2 block text-sm font-medium text-stone-700">
-                  GPA Visibility
-                </span>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => updateField("gpaPublic", true)}
-                    className={`rounded-xl border px-4 py-3 text-sm font-medium ${pillClasses(
-                      formState.gpaPublic,
-                    )}`}
-                  >
-                    Public
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => updateField("gpaPublic", false)}
-                    className={`rounded-xl border px-4 py-3 text-sm font-medium ${pillClasses(
-                      !formState.gpaPublic,
-                    )}`}
-                  >
-                    Hidden
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-stone-700">
-                  Weekly availability
-                </label>
-                <input
-                  className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-orange-600"
-                  type="number"
-                  min={1}
-                  max={20}
-                  value={formState.hoursPerWeek}
-                  onChange={(event) => updateField("hoursPerWeek", Number(event.target.value))}
-                />
-              </div>
-            </div>
           </div>
         );
       case 3:
@@ -447,7 +380,7 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
                     setInfoMessage(
                       parsed.usedFallback
                         ? "Transcript uploaded. Hook used a major-based fallback because the browser-only parser could not extract structured text from that file yet."
-                        : "Transcript uploaded and parsed into completed courses for the demo profile.",
+                        : `Transcript uploaded and parsed into completed courses for the demo profile. GPA ${typeof parsed.gpa === "number" ? parsed.gpa.toFixed(2) : "not found"} detected from the academic summary.`,
                     );
                   }}
                 />

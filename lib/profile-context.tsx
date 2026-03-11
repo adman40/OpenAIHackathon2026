@@ -80,7 +80,7 @@ type ProfileSettingsRow = {
 };
 
 function isUtEmail(email: string) {
-  return email.trim().toLowerCase().endsWith("@utexas.edu");
+  return /^[^@\s]+@(?:[a-z0-9-]+\.)*utexas\.edu$/i.test(email.trim());
 }
 
 function readJson<T>(key: string): T | null {
@@ -432,7 +432,7 @@ export function ProfileProvider({ children }: PropsWithChildren) {
 
   const signIn = async ({ email, password }: SignInInput) => {
     if (!isUtEmail(email)) {
-      return { error: "Use your @utexas.edu email for Hook accounts." };
+      return { error: "Use a UT email ending in utexas.edu, including subdomains like my.utexas.edu." };
     }
 
     const supabase = getSupabaseBrowserClient();
@@ -478,7 +478,7 @@ export function ProfileProvider({ children }: PropsWithChildren) {
 
   const signUp = async (input: AuthInput, nextProfile: StudentProfile) => {
     if (!isUtEmail(input.email)) {
-      return { error: "Use your @utexas.edu email for Hook accounts." };
+      return { error: "Use a UT email ending in utexas.edu, including subdomains like my.utexas.edu." };
     }
 
     const normalized = normalizeProfile({

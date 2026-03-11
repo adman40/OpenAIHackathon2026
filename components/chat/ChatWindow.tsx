@@ -22,17 +22,16 @@ interface ChatWindowProps {
 }
 
 const QUICK_PROMPTS = [
-  "Where should I go for tutoring and study support?",
-  "Draft a cold outreach email for a research professor.",
-  "I feel overwhelmed. What campus support should I use first?",
-  "Give me the demo sports snapshot.",
+  "You can ask where to get help with food insecurity, stress, or mental health at UT.",
+  "You can ask how many times Texas has beaten Texas A&M in football.",
+  "You can ask for a cold outreach email to a professor.",
 ];
 
 const INITIAL_MESSAGE: Message = {
   id: "hook-chat-intro",
   role: "assistant",
   content:
-    "I can help with campus resources, study strategy, mental-health support routing, sports snapshot questions, and cold outreach drafts. Ask one concrete question and I will turn it into a next step.",
+    "I can help with campus resources, live UT sports questions, and cold outreach drafts. Ask one concrete question and I will turn it into a next step.",
 };
 
 export default function ChatWindow({
@@ -149,6 +148,7 @@ export default function ChatWindow({
               citations={message.citations}
               suggestedActions={message.suggestedActions}
               isPending={message.isPending}
+              onSuggestedActionClick={isLoading ? undefined : sendMessage}
             />
           ))}
         </div>

@@ -77,9 +77,15 @@ function getReviewCount(course: EligibleCourse): number {
   return 24 + (courseNumber % 37);
 }
 
+function buildRateMyProfessorsUrl(professorName: string): string {
+  const query = `${professorName} University of Texas at Austin`;
+  return `https://www.ratemyprofessors.com/search/professors?q=${encodeURIComponent(query)}`;
+}
+
 function buildProfessorAggregate(course: EligibleCourse): CourseProfessorAggregate {
   return {
     professorName: course.professorName,
+    rateMyProfessorsUrl: buildRateMyProfessorsUrl(course.professorName),
     rateMyProfessorRating: getRateMyProfessorRating(course),
     reviewCount: getReviewCount(course),
     difficultySummary: `${course.professorDifficulty} workload signal`,

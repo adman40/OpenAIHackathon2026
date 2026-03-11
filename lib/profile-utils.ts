@@ -6,6 +6,7 @@ import type {
 
 export const MAJOR_OPTIONS = [
   "Computer Science",
+  "Honors Computer Science and Business",
   "Electrical and Computer Engineering",
   "Business Administration",
   "Biology",
@@ -19,10 +20,18 @@ export const MAJOR_OPTIONS = [
 
 const DEMO_COURSE_SEEDS: Record<string, CompletedCourse[]> = {
   "Computer Science": [
-    { courseId: "CS 312", grade: "A", semester: "Fall 2024", source: "demo_seed" },
-    { courseId: "CS 314", grade: "A-", semester: "Spring 2025", source: "demo_seed" },
-    { courseId: "CS 315", grade: "B+", semester: "Spring 2025", source: "demo_seed" },
-    { courseId: "M 408C", grade: "A", semester: "Fall 2024", source: "demo_seed" },
+    { courseId: "CS 101", grade: "A", semester: "Fall 2024", source: "demo_seed" },
+    { courseId: "CS 111", grade: "A-", semester: "Spring 2025", source: "demo_seed" },
+    { courseId: "MATH 221", grade: "A", semester: "Fall 2024", source: "demo_seed" },
+    { courseId: "ENGL 101", grade: "A", semester: "Spring 2025", source: "demo_seed" },
+  ],
+  "Honors Computer Science and Business": [
+    { courseId: "BIO 311C", grade: "A", semester: "Fall 2024", source: "demo_seed" },
+    { courseId: "M 408C", grade: "A-", semester: "Fall 2024", source: "demo_seed" },
+    { courseId: "BA 101H", grade: "A", semester: "Fall 2024", source: "demo_seed" },
+    { courseId: "CS 311H", grade: "A-", semester: "Spring 2025", source: "demo_seed" },
+    { courseId: "CS 314H", grade: "A", semester: "Spring 2025", source: "demo_seed" },
+    { courseId: "ECO 304K", grade: "B+", semester: "Spring 2025", source: "demo_seed" },
   ],
   "Electrical and Computer Engineering": [
     { courseId: "ECE 302", grade: "A-", semester: "Fall 2024", source: "demo_seed" },

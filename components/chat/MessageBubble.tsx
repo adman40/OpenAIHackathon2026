@@ -8,6 +8,7 @@ interface MessageBubbleProps {
   citations?: ChatCitation[];
   suggestedActions?: string[];
   isPending?: boolean;
+  onSuggestedActionClick?: (action: string) => void;
 }
 
 export default function MessageBubble({
@@ -16,6 +17,7 @@ export default function MessageBubble({
   citations = [],
   suggestedActions = [],
   isPending = false,
+  onSuggestedActionClick,
 }: MessageBubbleProps) {
   const isUser = role === "user";
 
@@ -40,12 +42,14 @@ export default function MessageBubble({
         {!isUser && suggestedActions.length > 0 ? (
           <div className="mt-4 flex flex-wrap gap-2">
             {suggestedActions.map((action) => (
-              <span
+              <button
                 key={action}
-                className="rounded-full bg-white px-3 py-1 text-xs font-medium text-stone-700"
+                type="button"
+                onClick={() => onSuggestedActionClick?.(action)}
+                className="rounded-full bg-white px-3 py-1 text-xs font-medium text-stone-700 transition hover:bg-orange-50 hover:text-orange-700"
               >
                 {action}
-              </span>
+              </button>
             ))}
           </div>
         ) : null}

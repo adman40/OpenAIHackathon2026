@@ -13,7 +13,7 @@ export function ScholarshipList({
   onSelectScholarship,
 }: ScholarshipListProps): JSX.Element {
   return (
-    <div style={{ display: "grid", gap: "10px" }}>
+    <div style={{ display: "grid", gap: "10px", alignContent: "start" }}>
       {matches.map((match) => (
         <ScholarshipCard
           key={match.scholarship.id}

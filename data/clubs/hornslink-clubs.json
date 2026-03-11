@@ -1,5 +1,32 @@
 [
   {
+    "id": "hook-pickleball-club",
+    "name": "Pickleball Club at UT Austin",
+    "category": "Sports/Recreation",
+    "description": "The Pickleball Club at UT Austin brings together students who want casual play, beginner-friendly clinics, social mixers, and competitive tournaments around one of campus's fastest-growing sports.",
+    "interestTags": [
+      "pickleball",
+      "sports",
+      "recreation",
+      "fitness",
+      "wellness",
+      "social",
+      "community"
+    ],
+    "majors": [],
+    "careers": [
+      "undecided",
+      "industry",
+      "research",
+      "grad_school"
+    ],
+    "timeCommitment": "2-4 hrs/week",
+    "meetingCadence": "Weekly",
+    "joinLink": "https://utexas.campuslabs.com/engage/",
+    "sourceUrl": "https://utexas.campuslabs.com/engage/",
+    "importTimestamp": "2026-03-11T12:40:00.000Z"
+  },
+  {
     "id": "hornslink-unjaded",
     "name": "(un)Jaded",
     "category": "Cultural/International",

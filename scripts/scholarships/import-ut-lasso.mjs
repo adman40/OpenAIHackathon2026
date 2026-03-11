@@ -162,7 +162,7 @@ function parseDeadline(text, importDate) {
     }
   }
 
-  return "2099-12-31";
+  return null;
 }
 
 function containsAny(text, patterns) {

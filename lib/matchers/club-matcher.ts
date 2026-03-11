@@ -5,6 +5,13 @@ function normalize(value: string): string {
   return value.trim().toLowerCase();
 }
 
+function tokenize(value: string): string[] {
+  return normalize(value)
+    .split(/[^a-z0-9+]+/i)
+    .map((token) => token.trim())
+    .filter(Boolean);
+}
+
 function parseTimeCommitmentHours(timeCommitment: string): number {
   const match = timeCommitment.match(/(\d+)(?:\s*-\s*(\d+))?/);
 
@@ -42,8 +49,13 @@ function unique(values: string[]): string[] {
 }
 
 export function matchClubs(profile: StudentProfile, clubs: Club[]): ClubMatch[] {
-  const clubInterests = new Set(profile.clubInterests.map(normalize));
-  const interests = new Set(profile.interests.map(normalize));
+  const clubInterestValues = profile.clubInterests.map(normalize);
+  const interestValues = profile.interests.map(normalize);
+  const clubInterests = new Set(clubInterestValues);
+  const interests = new Set(interestValues);
+  const keywordTokens = new Set(
+    unique([...clubInterestValues, ...interestValues].flatMap((value) => tokenize(value))),
+  );
   const major = normalize(profile.major);
   const careerGoalLabel = getProfileCareerGoal(profile);
   const careerGoal = normalize(careerGoalLabel);
@@ -52,9 +64,15 @@ export function matchClubs(profile: StudentProfile, clubs: Club[]): ClubMatch[] 
   return clubs
     .map((club) => {
       const interestTags = club.interestTags.map(normalize);
+      const clubTextTokens = new Set(
+        tokenize(
+          `${club.name} ${club.description} ${club.category} ${club.interestTags.join(" ")}`,
+        ),
+      );
       const interestOverlap = interestTags.filter(
         (tag) => clubInterests.has(tag) || interests.has(tag),
       );
+      const keywordOverlap = Array.from(keywordTokens).filter((token) => clubTextTokens.has(token));
       const majorOptions = club.majors.map(normalize);
       const majorMatch =
         majorOptions.length === 0 ||
@@ -63,16 +81,31 @@ export function matchClubs(profile: StudentProfile, clubs: Club[]): ClubMatch[] 
       const careerMatch = careerOptions.length === 0 || careerOptions.includes(careerGoal);
       const timeFitScore = getTimeFitScore(hoursPerWeek, club.timeCommitment);
 
-      let fitScore = 35;
-      fitScore += interestOverlap.length * 14;
-      fitScore += majorMatch ? 14 : 0;
-      fitScore += careerMatch ? 8 : 0;
+      let fitScore = 44;
+      fitScore += Math.min(interestOverlap.length, 2) * 12;
+      fitScore += Math.min(keywordOverlap.length, 3) * 10;
+      fitScore += majorMatch ? 10 : 0;
+      fitScore += careerMatch ? 6 : 0;
       fitScore += timeFitScore;
+
+      if (interestOverlap.length === 0 && keywordOverlap.length === 0) {
+        fitScore -= 10;
+      }
+
+      if (!majorMatch && majorOptions.length > 0) {
+        fitScore -= 5;
+      }
 
       const reasons: string[] = [];
 
       if (interestOverlap.length > 0) {
         reasons.push(`Matches your interests in ${unique(interestOverlap).slice(0, 2).join(" and ")}.`);
+      }
+
+      if (keywordOverlap.length > 0) {
+        reasons.push(
+          `Directly lines up with keywords like ${unique(keywordOverlap).slice(0, 2).join(" and ")}.`,
+        );
       }
 
       if (majorOptions.length > 0 && majorMatch) {
@@ -92,7 +125,7 @@ export function matchClubs(profile: StudentProfile, clubs: Club[]): ClubMatch[] 
       }
 
       return {
-        fitScore: Math.max(0, Math.min(100, fitScore)),
+        fitScore: Math.max(18, Math.min(98, Math.round(fitScore))),
         matchReasons: reasons.slice(0, 3),
         timeCommitment: club.timeCommitment,
         meetingCadence: club.meetingCadence,

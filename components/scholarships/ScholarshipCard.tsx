@@ -7,11 +7,32 @@ type ScholarshipCardProps = {
 };
 
 function formatAmount(amount: number): string {
+  if (amount <= 0) {
+    return "Amount varies";
+  }
+
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(amount);
+}
+
+function formatDeadline(deadline: string | null): string {
+  if (!deadline) {
+    return "Deadline not listed";
+  }
+
+  const parsed = new Date(`${deadline}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return deadline;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(parsed);
 }
 
 export function ScholarshipCard({
@@ -68,7 +89,7 @@ export function ScholarshipCard({
       </div>
 
       <div style={{ marginTop: "10px", color: "#374151", fontSize: "14px" }}>
-        Deadline: {match.deadline}
+        Deadline: {formatDeadline(match.deadline)}
       </div>
 
       <ul style={{ margin: "10px 0 0 18px", padding: 0, color: "#374151", fontSize: "14px" }}>

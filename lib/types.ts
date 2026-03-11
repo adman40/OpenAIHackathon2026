@@ -208,6 +208,7 @@ export interface EligibleCourse {
 
 export interface CourseProfessorAggregate {
   professorName: string;
+  rateMyProfessorsUrl: string;
   rateMyProfessorRating: number;
   reviewCount: number;
   difficultySummary: string;
@@ -234,8 +235,11 @@ export interface CourseCatalog {
 }
 
 export interface AcademicAnalysis {
+  courseCatalogId: string;
+  nextRegularTerm: string | null;
   percentComplete: number;
   estimatedGraduationSemester: string;
+  coreComplete: boolean;
   coreRecommendations: Recommendation[];
   majorRecommendations: Recommendation[];
   eligibleCourses: EligibleCourse[];
@@ -252,7 +256,7 @@ export interface Scholarship {
   eligibilitySignals: string[];
   eligibilityCriteria?: ScholarshipEligibilityCriteria;
   favoredQualities: string[];
-  deadline: string;
+  deadline: string | null;
   submissionDetails: string;
   link: string;
   importTimestamp: string;
@@ -273,7 +277,7 @@ export interface ScholarshipEligibilityCriteria {
 export interface ScholarshipMatch {
   fitScore: number;
   matchReasons: string[];
-  deadline: string;
+  deadline: string | null;
   isUrgent: boolean;
   scholarship: Scholarship;
 }

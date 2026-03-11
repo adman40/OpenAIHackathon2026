@@ -7,6 +7,7 @@ import { OpportunityDetailPanel } from "../../components/opportunities/Opportuni
 import { OpportunityFilters } from "../../components/opportunities/OpportunityFilters";
 import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { toRequestSafeProfile } from "../../lib/request-safe-profile";
 import {
   getOpportunityActionStateMap,
   getPendingApplicationPromptIds,
@@ -90,7 +91,7 @@ export default function InternshipsPage(): JSX.Element {
   const [payFilter, setPayFilter] = useState("all");
   const [sortBy, setSortBy] = useState("fit_desc");
   const [savedOnly, setSavedOnly] = useState(false);
-  const [appliedFilter, setAppliedFilter] = useState<"all" | "applied" | "not_applied" | "pending">("all");
+  const [appliedFilter, setAppliedFilter] = useState<"all" | "applied">("all");
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [actionStateMap, setActionStateMap] = useState(getOpportunityActionStateMap());
   const [promptOpportunityId, setPromptOpportunityId] = useState<string | null>(null);
@@ -106,7 +107,7 @@ export default function InternshipsPage(): JSX.Element {
       const response = await fetch("/api/internships/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile: activeProfile }),
+        body: JSON.stringify({ profile: toRequestSafeProfile(activeProfile) }),
       });
 
       if (!response.ok) {
@@ -376,10 +377,8 @@ export default function InternshipsPage(): JSX.Element {
 
       <div style={{ marginTop: "12px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
         {[
-          { value: "all", label: "All statuses" },
+          { value: "all", label: "All roles" },
           { value: "applied", label: "Applied" },
-          { value: "not_applied", label: "Not applied" },
-          { value: "pending", label: "Awaiting response" },
         ].map((option) => (
           <button
             key={option.value}

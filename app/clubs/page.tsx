@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ClubList } from "../../components/clubs/ClubList";
 import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { toRequestSafeProfile } from "../../lib/request-safe-profile";
 import type { ClubMatch } from "../../lib/types";
 
 export default function ClubsPage() {
@@ -32,7 +33,7 @@ export default function ClubsPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ profile: activeProfile }),
+        body: JSON.stringify({ profile: toRequestSafeProfile(activeProfile) }),
       });
 
       const body = (await response.json()) as ClubMatch[] | { error: string };

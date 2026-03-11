@@ -14,8 +14,6 @@ export default function OnboardingPage() {
     signUp,
     loadDemoProfile,
     isHydrated,
-    isSupabaseReady,
-    authStatus,
   } = useProfile();
 
   useEffect(() => {
@@ -75,7 +73,6 @@ export default function OnboardingPage() {
             <p className="mt-5 max-w-lg text-sm leading-7 text-white/85 md:text-base">
               Engineer A&apos;s branch now starts with account identity, UT EID, transcript,
               resume, profile photo, and GPA privacy before the student lands on the dashboard.
-              The shell still preserves a demo-safe fallback if Supabase is not configured yet.
             </p>
             <div className="mt-8 grid gap-3 text-sm text-white/90">
               <div className="rounded-2xl bg-white/10 px-4 py-3">
@@ -84,17 +81,6 @@ export default function OnboardingPage() {
               <div className="rounded-2xl bg-white/10 px-4 py-3">
                 Transcript and resume uploads seed completed courses, GPA, and skills
               </div>
-              <div className="rounded-2xl bg-white/10 px-4 py-3">
-                Demo-safe local persistence stays available when live auth is not ready
-              </div>
-            </div>
-            <div className="mt-8 flex flex-wrap gap-3 text-xs uppercase tracking-[0.18em] text-white/80">
-              <span className="rounded-full border border-white/20 px-3 py-1">
-                {isSupabaseReady ? "Supabase mode ready" : "Fallback mode active"}
-              </span>
-              <span className="rounded-full border border-white/20 px-3 py-1">
-                Auth status: {authStatus.replace("_", " ")}
-              </span>
             </div>
             <button
               type="button"

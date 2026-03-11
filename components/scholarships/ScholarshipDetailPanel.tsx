@@ -5,11 +5,32 @@ type ScholarshipDetailPanelProps = {
 };
 
 function formatAmount(amount: number): string {
+  if (amount <= 0) {
+    return "Amount varies";
+  }
+
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(amount);
+}
+
+function formatDeadline(deadline: string | null): string {
+  if (!deadline) {
+    return "Deadline not listed";
+  }
+
+  const parsed = new Date(`${deadline}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return deadline;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(parsed);
 }
 
 export function ScholarshipDetailPanel({
@@ -40,6 +61,7 @@ export function ScholarshipDetailPanel({
         borderRadius: "12px",
         padding: "16px",
         background: "#ffffff",
+        position: "relative",
       }}
     >
       <div style={{ fontWeight: 800, color: "#111827", fontSize: "20px" }}>{scholarship.name}</div>
@@ -49,11 +71,11 @@ export function ScholarshipDetailPanel({
 
       <div style={{ marginTop: "12px", display: "grid", gap: "6px", color: "#1f2937", fontSize: "14px" }}>
         <div>Fit Score: {match.fitScore}</div>
-        <div>Deadline: {match.deadline}</div>
+        <div>Deadline: {formatDeadline(match.deadline)}</div>
         <div>
           Status:{" "}
           <strong style={{ color: match.isUrgent ? "#b91c1c" : "#1f2937" }}>
-            {match.isUrgent ? "Urgent" : "Upcoming"}
+            {match.isUrgent ? "Urgent" : match.deadline ? "Upcoming" : "Open"}
           </strong>
         </div>
       </div>
@@ -69,12 +91,28 @@ export function ScholarshipDetailPanel({
 
       <section style={{ marginTop: "14px" }}>
         <h3 style={{ margin: 0, fontSize: "16px", color: "#111827" }}>Description</h3>
-        <p style={{ color: "#374151", fontSize: "14px", lineHeight: 1.5 }}>{scholarship.description}</p>
+        <p
+          style={{
+            color: "#374151",
+            fontSize: "14px",
+            lineHeight: 1.5,
+            overflowWrap: "anywhere",
+          }}
+        >
+          {scholarship.description}
+        </p>
       </section>
 
       <section style={{ marginTop: "14px" }}>
         <h3 style={{ margin: 0, fontSize: "16px", color: "#111827" }}>Submission Details</h3>
-        <p style={{ color: "#374151", fontSize: "14px", lineHeight: 1.5 }}>
+        <p
+          style={{
+            color: "#374151",
+            fontSize: "14px",
+            lineHeight: 1.5,
+            overflowWrap: "anywhere",
+          }}
+        >
           {scholarship.submissionDetails}
         </p>
       </section>
@@ -83,6 +121,7 @@ export function ScholarshipDetailPanel({
         href={scholarship.link}
         target="_blank"
         rel="noreferrer"
+        aria-label={`Open ${scholarship.name} in the UT LASSO scholarship portal`}
         style={{
           marginTop: "16px",
           display: "inline-block",
@@ -97,6 +136,11 @@ export function ScholarshipDetailPanel({
       >
         Apply Now
       </a>
+
+      <p style={{ marginTop: "10px", color: "#6b7280", fontSize: "12px", lineHeight: 1.5 }}>
+        LASSO opens to the UT scholarship search portal. Search support on that site is client-side,
+        so this app cannot reliably prefill a scholarship-specific query in the destination URL.
+      </p>
     </aside>
   );
 }

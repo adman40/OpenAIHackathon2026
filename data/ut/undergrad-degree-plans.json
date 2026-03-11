@@ -119,6 +119,140 @@
       ]
     },
     {
+      "planId": "honors-computer-science-and-business-bs",
+      "degreeId": "csb-honors-bscs-bba",
+      "majorId": "honors-computer-science-and-business",
+      "majorName": "Honors Computer Science and Business",
+      "aliases": [
+        "Honors Computer Science and Business",
+        "Computer Science and Business",
+        "CSB"
+      ],
+      "degreeName": "Honors Computer Science and Business",
+      "college": "College of Natural Sciences and McCombs School of Business",
+      "level": "undergraduate",
+      "totalCredits": 124,
+      "courseCatalogId": "csb-catalog",
+      "supportStatus": "supported",
+      "sourceMetadata": {
+        "sourceName": "UT Austin Catalog + Hook CSB demo mapping",
+        "sourceUrl": "https://catalog.utexas.edu/undergraduate/natural-sciences/degrees-and-programs/bs-computer-science/#text",
+        "importedAt": "2026-03-11T04:14:37.043Z",
+        "notes": [
+          "This plan is mapped to the Honors Computer Science and Business degree requirements for demo use.",
+          "Representative UT course IDs follow the provided CSB requirement list and the uploaded UT transcript codes so progress registers accurately in Hook.",
+          "Alternative official options such as variant science or experiential courses are normalized to a single demo-safe path in this plan."
+        ]
+      },
+      "requirementBuckets": [
+        {
+          "id": "csb-math-foundation",
+          "title": "Mathematics and Statistics Foundation",
+          "bucketType": "core",
+          "creditsRequired": 14,
+          "courses": [
+            "M 408C",
+            "M 408D",
+            "M 340L",
+            "SDS 321"
+          ],
+          "notes": "Representative CSB calculus, linear algebra, and statistics path."
+        },
+        {
+          "id": "csb-natural-science-sequence",
+          "title": "Natural Science Sequence",
+          "bucketType": "core",
+          "creditsRequired": 20,
+          "courses": [
+            "BIO 311C",
+            "BIO 311D",
+            "CH 301",
+            "CH 302",
+            "PHY 302K",
+            "PHY 102M",
+            "PHY 303L",
+            "PHY 105N"
+          ],
+          "notes": "Uses one UT-aligned biology, chemistry, and physics sequence for Hook's CSB demo path."
+        },
+        {
+          "id": "csb-economics-social-science",
+          "title": "Economics and Social Science Context",
+          "bucketType": "core",
+          "creditsRequired": 9,
+          "courses": [
+            "ECO 304K",
+            "ECO 304L",
+            "SOC 302"
+          ],
+          "notes": "SOC 302 is used as the representative approved social science course for the demo."
+        },
+        {
+          "id": "csb-cs-honors-core",
+          "title": "Computer Science Honors Core",
+          "bucketType": "major",
+          "creditsRequired": 16,
+          "courses": [
+            "CS 311H",
+            "CS 314H",
+            "CS 331H",
+            "CS 429H",
+            "CS 439H"
+          ],
+          "notes": "Theory, programming, and systems requirements for the CSB track."
+        },
+        {
+          "id": "csb-business-honors-core",
+          "title": "Business Honors Core",
+          "bucketType": "major",
+          "creditsRequired": 36,
+          "courses": [
+            "ACC 311H",
+            "ACC 312H",
+            "BA 101H",
+            "BAH 151H",
+            "BA 324H",
+            "DS 235H",
+            "FIN 357H",
+            "FIN 366P",
+            "LEB 323H",
+            "MAN 101H",
+            "MAN 327H",
+            "MAN 336H",
+            "MAN 374H",
+            "MIS 301H",
+            "MKT 337H",
+            "OM 235H",
+            "STA 235H"
+          ],
+          "notes": "Uses the honors-section business path plus one representative approved experiential course."
+        },
+        {
+          "id": "csb-cs-electives",
+          "title": "Upper-Division CS Electives",
+          "bucketType": "elective",
+          "creditsRequired": 12,
+          "courses": [
+            "CS 323E",
+            "CS 324E",
+            "CS 327E",
+            "CS 330E",
+            "CS 343",
+            "CS 347",
+            "CS 356",
+            "CS 363M",
+            "CS 371P",
+            "CS 373",
+            "CS 378",
+            "CS 378H",
+            "CS 375",
+            "CS 376"
+          ],
+          "notes": "Represents real upper-division CS electives surfaced in the Fall 2026 and Spring 2027 UT registrar snapshots used for the CSB demo."
+        }
+      ]
+    },
+    {
       "planId": "electrical-and-computer-engineering-bs",
       "degreeId": "ece-bsece",
       "majorId": "electrical-and-computer-engineering",

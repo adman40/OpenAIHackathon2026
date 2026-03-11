@@ -6,8 +6,11 @@ import type {
 } from "./types";
 
 export const academicDemoFallback: AcademicAnalysis = {
+  courseCatalogId: "cs-catalog",
+  nextRegularTerm: "Fall 2026",
   percentComplete: 42,
   estimatedGraduationSemester: "Spring 2027",
+  coreComplete: false,
   coreRecommendations: [
     {
       courseId: "GOV 312L",

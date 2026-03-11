@@ -45,6 +45,10 @@ function isIsoDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(value).getTime());
 }
 
+function isOptionalIsoDate(value) {
+  return value === null || isIsoDate(value);
+}
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
@@ -75,7 +79,7 @@ function validateScholarships(data) {
     assert(typeof row.amount === "number", `scholarships[${i}] amount must be number`);
     assert(Array.isArray(row.eligibilitySignals), `scholarships[${i}] eligibilitySignals must be array`);
     assert(Array.isArray(row.favoredQualities), `scholarships[${i}] favoredQualities must be array`);
-    assert(isIsoDate(row.deadline), `scholarships[${i}] deadline must be ISO date`);
+    assert(isOptionalIsoDate(row.deadline), `scholarships[${i}] deadline must be ISO date or null`);
     assert(isIsoDateTime(row.importTimestamp), `scholarships[${i}] importTimestamp must be ISO datetime`);
   });
 }

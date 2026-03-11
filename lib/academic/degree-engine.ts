@@ -10,12 +10,9 @@ import {
   StudentProfile,
 } from "../types";
 import { RankedEligibleCourse, rankEligibleCourses } from "./eligible-course-recommender";
+import { getCourseAttemptStatus, normalizeCourseId } from "./completed-course-progress";
 import { getNextRegularTerm } from "./course-schedule";
 import { buildPrereqAlerts } from "./prereq-alerts";
-
-function normalizeCourseId(courseId: string): string {
-  return courseId.trim().toUpperCase();
-}
 
 function isElectiveGroup(groupId: string, title: string): boolean {
   const label = `${groupId} ${title}`.toLowerCase();
@@ -25,12 +22,6 @@ function isElectiveGroup(groupId: string, title: string): boolean {
 function buildCourseMap(courses: EligibleCourse[]): Map<string, EligibleCourse> {
   return new Map(
     courses.map((course) => [normalizeCourseId(course.courseId), course]),
-  );
-}
-
-function getCompletedCourseIds(profile: StudentProfile): string[] {
-  return Array.from(
-    new Set(profile.completedCourses.map((course) => normalizeCourseId(course.courseId))),
   );
 }
 
@@ -148,6 +139,38 @@ function getMissingRequiredCourses(
   return missingCourses;
 }
 
+function getMissingElectiveCourses(
+  section: RequirementSection,
+  completedCourseIds: Set<string>,
+  courseMap: Map<string, EligibleCourse>,
+): EligibleCourse[] {
+  const missingCourses: EligibleCourse[] = [];
+  const seen = new Set<string>();
+
+  for (const group of section.groups) {
+    if (!isElectiveGroup(group.id, group.title)) {
+      continue;
+    }
+
+    for (const courseId of group.courses) {
+      const normalizedId = normalizeCourseId(courseId);
+
+      if (seen.has(normalizedId) || completedCourseIds.has(normalizedId)) {
+        continue;
+      }
+
+      const course = courseMap.get(normalizedId);
+
+      if (course) {
+        missingCourses.push(course);
+        seen.add(normalizedId);
+      }
+    }
+  }
+
+  return missingCourses;
+}
+
 function countDirectUnlocks(courseId: string, catalog: CourseCatalog, completedCourseIds: Set<string>): number {
   const normalizedId = normalizeCourseId(courseId);
 
@@ -207,36 +230,124 @@ function buildRecommendation(
   };
 }
 
+function getAllDegreeCourseIds(degree: DegreeRequirements): Set<string> {
+  const courseIds = new Set<string>();
+
+  for (const section of [degree.coreRequirements, degree.majorRequirements]) {
+    for (const group of section.groups) {
+      for (const courseId of group.courses) {
+        courseIds.add(normalizeCourseId(courseId));
+      }
+    }
+  }
+
+  return courseIds;
+}
+
+function compareCoursePriority(
+  left: EligibleCourse,
+  right: EligibleCourse,
+  rankedById: Map<string, { entry: RankedEligibleCourse; index: number }>,
+): number {
+  const leftRank = rankedById.get(normalizeCourseId(left.courseId));
+  const rightRank = rankedById.get(normalizeCourseId(right.courseId));
+
+  if (leftRank && rightRank) {
+    return leftRank.index - rightRank.index;
+  }
+
+  if (leftRank) {
+    return -1;
+  }
+
+  if (rightRank) {
+    return 1;
+  }
+
+  return left.courseId.localeCompare(right.courseId);
+}
+
+function buildRetakeRecommendations(
+  degree: DegreeRequirements,
+  catalog: CourseCatalog,
+  scheduleCatalog: ImportedCourseScheduleCatalog,
+  courseCatalogId: string,
+  currentSemester: string,
+  retakeCourseIds: Set<string>,
+): Recommendation[] {
+  if (retakeCourseIds.size === 0) {
+    return [];
+  }
+
+  const courseMap = buildCourseMap(catalog.courses);
+  const degreeCourseIds = getAllDegreeCourseIds(degree);
+  const nextRegularTerm = getNextRegularTerm(currentSemester);
+
+  const recommendations = Array.from(retakeCourseIds)
+    .filter((courseId) => degreeCourseIds.has(courseId))
+    .reduce<Recommendation[]>((accumulator, courseId) => {
+      const course = courseMap.get(courseId);
+
+      if (!course) {
+        return accumulator;
+      }
+
+      const nextScheduledTerm =
+        course.termsOffered.find((term) => term === nextRegularTerm) ??
+        scheduleCatalog.termSnapshots
+          .filter((snapshot) => snapshot.courseCatalogId === courseCatalogId)
+          .find((snapshot) =>
+            snapshot.offeredCourseIds.some(
+              (offeredCourseId) => normalizeCourseId(offeredCourseId) === courseId,
+            ),
+          )?.term ??
+        course.termsOffered[0] ??
+        null;
+
+      const termPhrase = nextScheduledTerm
+        ? `Plan the retake for ${nextScheduledTerm}.`
+        : "Plan the retake as soon as the course returns to the schedule.";
+
+      accumulator.push({
+        courseId: course.courseId,
+        courseName: course.courseName,
+        requirementBucket: course.requirementBucket,
+        urgency: nextScheduledTerm === nextRegularTerm ? "critical" : "recommended",
+        rationale: `A grade of D or lower does not count toward progress in Hook, so this stays incomplete until you retake it. ${termPhrase}`,
+      } satisfies Recommendation);
+
+      return accumulator;
+    }, []);
+
+  return recommendations.sort((left, right) => {
+      if (left.urgency !== right.urgency) {
+        return left.urgency === "critical" ? -1 : 1;
+      }
+
+      return left.courseId.localeCompare(right.courseId);
+    });
+}
+
 function selectRecommendations(
   missingCourses: EligibleCourse[],
   rankedEligibleCourses: RankedEligibleCourse[],
   completedCourseIds: Set<string>,
   catalog: CourseCatalog,
+  options?: {
+    excludedCourseIds?: Set<string>;
+    maxItems?: number;
+  },
 ): Recommendation[] {
   const rankedById = new Map(
     rankedEligibleCourses.map((entry, index) => [normalizeCourseId(entry.course.courseId), { entry, index }]),
   );
+  const excludedCourseIds = options?.excludedCourseIds ?? new Set<string>();
+  const maxItems = options?.maxItems ?? 3;
 
   return [...missingCourses]
-    .sort((left, right) => {
-      const leftRank = rankedById.get(normalizeCourseId(left.courseId));
-      const rightRank = rankedById.get(normalizeCourseId(right.courseId));
-
-      if (leftRank && rightRank) {
-        return leftRank.index - rightRank.index;
-      }
-
-      if (leftRank) {
-        return -1;
-      }
-
-      if (rightRank) {
-        return 1;
-      }
-
-      return left.courseId.localeCompare(right.courseId);
-    })
-    .slice(0, 3)
+    .filter((course) => !excludedCourseIds.has(normalizeCourseId(course.courseId)))
+    .sort((left, right) => compareCoursePriority(left, right, rankedById))
+    .slice(0, maxItems)
     .map((course) =>
       buildRecommendation(
         course,
@@ -254,7 +365,7 @@ export function analyzeDegree(
   scheduleCatalog: ImportedCourseScheduleCatalog,
   courseCatalogId: string,
 ): AcademicAnalysis {
-  const completedCourseIds = new Set(getCompletedCourseIds(profile));
+  const { completedCourseIds, retakeCourseIds } = getCourseAttemptStatus(profile);
   const courseMap = buildCourseMap(catalog.courses);
   const completedCoreCredits = getSectionProgress(
     degree.coreRequirements,
@@ -273,6 +384,7 @@ export function analyzeDegree(
   );
   const completedCredits = completedCoreCredits + completedMajorCredits + completedElectiveCredits;
   const remainingCredits = Math.max(degree.totalCredits - completedCredits, 0);
+  const coreComplete = completedCoreCredits >= degree.coreRequirements.creditsRequired;
   const rankedEligibleCourses = rankEligibleCourses(
     catalog,
     degree,
@@ -291,6 +403,11 @@ export function analyzeDegree(
     completedCourseIds,
     courseMap,
   );
+  const missingElectiveCourses = getMissingElectiveCourses(
+    degree.majorRequirements,
+    completedCourseIds,
+    courseMap,
+  );
   const prereqAlerts = buildPrereqAlerts(
     degree,
     catalog,
@@ -304,18 +421,56 @@ export function analyzeDegree(
     remainingCredits === 0
       ? profile.currentSemester
       : getNextSemester(profile.currentSemester, Math.ceil(remainingCredits / 15));
-  const coreRecommendations = selectRecommendations(
-    missingCoreCourses,
-    rankedEligibleCourses,
-    completedCourseIds,
+  const coreRecommendations = coreComplete
+    ? []
+    : selectRecommendations(
+        missingCoreCourses,
+        rankedEligibleCourses,
+        completedCourseIds,
+        catalog,
+      );
+  const retakeRecommendations = buildRetakeRecommendations(
+    degree,
     catalog,
+    scheduleCatalog,
+    courseCatalogId,
+    profile.currentSemester,
+    retakeCourseIds,
   );
-  const majorRecommendations = selectRecommendations(
+  const excludedRecommendationIds = new Set(
+    retakeRecommendations.map((recommendation) => normalizeCourseId(recommendation.courseId)),
+  );
+  const requiredMajorRecommendations = selectRecommendations(
     missingMajorCourses,
     rankedEligibleCourses,
     completedCourseIds,
     catalog,
+    {
+      excludedCourseIds: excludedRecommendationIds,
+      maxItems: Math.max(3 - retakeRecommendations.length, 0),
+    },
   );
+
+  for (const recommendation of requiredMajorRecommendations) {
+    excludedRecommendationIds.add(normalizeCourseId(recommendation.courseId));
+  }
+
+  const electiveRecommendations = selectRecommendations(
+    missingElectiveCourses,
+    rankedEligibleCourses,
+    completedCourseIds,
+    catalog,
+    {
+      excludedCourseIds: excludedRecommendationIds,
+      maxItems: Math.max(3 - retakeRecommendations.length - requiredMajorRecommendations.length, 0),
+    },
+  );
+
+  const majorRecommendations = [
+    ...retakeRecommendations,
+    ...requiredMajorRecommendations,
+    ...electiveRecommendations,
+  ].slice(0, 3);
   const nextRegularTerm = getNextRegularTerm(profile.currentSemester);
 
   // The summary is short on purpose so a UI card can show it without extra trimming.
@@ -326,8 +481,11 @@ export function analyzeDegree(
       : `${profile.name} is ${percentComplete}% through the ${degree.degreeName}, and Hook does not see any remaining courses that are both next-term scheduled and fully unlocked yet.`;
 
   return {
+    courseCatalogId,
+    nextRegularTerm,
     percentComplete,
     estimatedGraduationSemester,
+    coreComplete,
     coreRecommendations,
     majorRecommendations,
     eligibleCourses: rankedEligibleCourses.slice(0, 8).map((entry) => entry.course),

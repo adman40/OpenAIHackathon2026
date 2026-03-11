@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+import { AcademicCourseBrowser } from "../../components/academic/AcademicCourseBrowser";
 import { DegreeProgressCard } from "../../components/academic/DegreeProgressCard";
-import { EligibleCoursesTable } from "../../components/academic/EligibleCoursesTable";
 import { PrereqAlertBanner } from "../../components/academic/PrereqAlertBanner";
 import { PublicAcademicSummaryCard } from "../../components/academic/PublicAcademicSummaryCard";
-import { RecommendationSection } from "../../components/academic/RecommendationSection";
 import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { toRequestSafeProfile } from "../../lib/request-safe-profile";
 import type { AcademicAnalysis, StudentProfile } from "../../lib/types";
 
 export default function AcademicPage() {
@@ -31,10 +31,18 @@ export default function AcademicPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ profile: profileToAnalyze }),
+        body: JSON.stringify({ profile: toRequestSafeProfile(profileToAnalyze) }),
       });
+      const rawBody = await response.text();
+      let body: AcademicAnalysis | { error: string };
 
-      const body = (await response.json()) as AcademicAnalysis | { error: string };
+      try {
+        body = rawBody
+          ? (JSON.parse(rawBody) as AcademicAnalysis | { error: string })
+          : ({ error: "Academic analysis request failed." } as const);
+      } catch {
+        throw new Error(rawBody || "Academic analysis request failed.");
+      }
 
       if (!response.ok) {
         throw new Error("error" in body ? body.error : "Academic analysis request failed.");
@@ -136,25 +144,13 @@ export default function AcademicPage() {
               <DegreeProgressCard
                 percentComplete={analysis.percentComplete}
                 estimatedGraduationSemester={analysis.estimatedGraduationSemester}
+                coreComplete={analysis.coreComplete}
               />
             </div>
 
             <PrereqAlertBanner alerts={analysis.prereqAlerts} />
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <RecommendationSection
-                title="Core recommendations"
-                recommendations={analysis.coreRecommendations}
-                emptyMessage="Core requirements are in a good place right now."
-              />
-              <RecommendationSection
-                title="Major recommendations"
-                recommendations={analysis.majorRecommendations}
-                emptyMessage="Major requirements are already covered for this snapshot."
-              />
-            </div>
-
-            <EligibleCoursesTable courses={analysis.eligibleCourses} />
+            <AcademicCourseBrowser analysis={analysis} />
           </div>
         ) : null}
       </div>

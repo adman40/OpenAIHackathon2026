@@ -41,9 +41,40 @@ type ParsedModelResponse = {
   suggestedActions?: string[];
 };
 
+type LiveSportsAnswer = {
+  answer: string;
+  suggestedActions: string[];
+  citations: ChatCitation[];
+};
+
 type ResourceSection = {
   title: string;
   body: string;
+};
+
+type EspnTeamSchedule = {
+  events?: Array<{
+    name?: string;
+    shortName?: string;
+    date?: string;
+    competitions?: Array<{
+      status?: {
+        type?: {
+          completed?: boolean;
+          description?: string;
+        };
+      };
+      competitors?: Array<{
+        homeAway?: "home" | "away";
+        winner?: boolean;
+        score?: string | { value?: number; displayValue?: string };
+        team?: {
+          displayName?: string;
+          shortDisplayName?: string;
+        };
+      }>;
+    }>;
+  }>;
 };
 
 function normalize(text: string): string {
@@ -163,6 +194,208 @@ function buildOutreachDraft(profile: StudentProfile, question: string): string {
     "Thanks for your time,",
     profile.name,
   ].join("\n");
+}
+
+function buildResourceCitations(topic: string, sections: ResourceSection[]): ChatCitation[] {
+  return sections
+    .filter((section) => sectionMatchesTopic(section, topic))
+    .slice(0, 2)
+    .map((section) => ({
+      label: section.title,
+      sourceType: "resource" as const,
+      note: "Curated local campus-support guidance",
+    }));
+}
+
+function formatEventDate(date: string | undefined): string {
+  if (!date) {
+    return "the latest completed game";
+  }
+
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) {
+    return date;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(parsed);
+}
+
+function getLatestCompletedEvent(schedule: EspnTeamSchedule) {
+  const completedEvents = (schedule.events ?? []).filter((event) =>
+    event.competitions?.[0]?.status?.type?.completed,
+  );
+
+  return completedEvents.at(-1) ?? null;
+}
+
+function getCompetitorScore(
+  competitor: NonNullable<
+    NonNullable<NonNullable<EspnTeamSchedule["events"]>[number]["competitions"]>[number]["competitors"]
+  >[number],
+): string {
+  if (typeof competitor.score === "string") {
+    return competitor.score;
+  }
+
+  if (
+    competitor.score &&
+    typeof competitor.score === "object" &&
+    "displayValue" in competitor.score &&
+    typeof competitor.score.displayValue === "string"
+  ) {
+    return competitor.score.displayValue;
+  }
+
+  return "?";
+}
+
+function summarizeLatestEvent(event: NonNullable<ReturnType<typeof getLatestCompletedEvent>>) {
+  const competition = event.competitions?.[0];
+  const competitors = competition?.competitors ?? [];
+  const texas = competitors.find((entry) => entry.team?.displayName?.includes("Texas Longhorns"));
+  const opponent = competitors.find((entry) => entry !== texas);
+
+  if (!texas || !opponent) {
+    return null;
+  }
+
+  const texasScore = getCompetitorScore(texas);
+  const opponentScore = getCompetitorScore(opponent);
+  const outcome = texas.winner ? "beat" : "lost to";
+  const opponentName = opponent.team?.displayName ?? "the opponent";
+
+  return {
+    line: `Texas ${outcome} ${opponentName} ${texasScore}-${opponentScore} on ${formatEventDate(event.date)}.`,
+    opponentName,
+  };
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "hook-chat/1.0",
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed fetch ${response.status} for ${url}`);
+  }
+
+  return (await response.json()) as T;
+}
+
+async function fetchText(url: string): Promise<string> {
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "hook-chat/1.0",
+      Accept: "text/html",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed fetch ${response.status} for ${url}`);
+  }
+
+  return response.text();
+}
+
+function getCurrentCollegeBasketballSeasonYear(now = new Date()): number {
+  const month = now.getUTCMonth() + 1;
+  const year = now.getUTCFullYear();
+  return month >= 7 ? year : year - 1;
+}
+
+async function getLatestTexasBasketballResult(): Promise<LiveSportsAnswer | null> {
+  const seasonYear = getCurrentCollegeBasketballSeasonYear();
+  const schedule = await fetchJson<EspnTeamSchedule>(
+    `https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/teams/251/schedule?season=${seasonYear}&seasontype=2`,
+  );
+  const latestEvent = getLatestCompletedEvent(schedule);
+
+  if (!latestEvent) {
+    return null;
+  }
+
+  const summary = summarizeLatestEvent(latestEvent);
+  if (!summary) {
+    return null;
+  }
+
+  return {
+    answer: `Live result: ${summary.line}`,
+    suggestedActions: [
+      "Ask for Texas football rivalry stats",
+      "Ask for the next Texas game",
+      "Switch back to campus or career help",
+    ],
+    citations: [
+      {
+        label: "ESPN Texas men's basketball schedule",
+        sourceType: "sports",
+        note: "Live public schedule data",
+      },
+    ],
+  };
+}
+
+async function getTexasVsTexasAMFootballRecord(): Promise<LiveSportsAnswer | null> {
+  const officialUrl =
+    "https://texaslonghorns.com/sports/2025/7/29/texas-football-vs-texas-am-football-all-time.aspx";
+  const html = await fetchText(officialUrl);
+  const normalizedHtml = html.replace(/\s+/g, " ");
+  const recordMatch = normalizedHtml.match(/Texas leads\s+(\d+-\d+-\d+)/i);
+
+  if (!recordMatch) {
+    return null;
+  }
+
+  const [wins, losses, ties] = recordMatch[1].split("-").map((value) => Number(value));
+  if (![wins, losses, ties].every(Number.isFinite)) {
+    return null;
+  }
+
+  return {
+    answer:
+      ties > 0
+        ? `According to Texas Athletics' all-time series page, Texas leads Texas A&M ${wins}-${losses}-${ties} in football. That means Texas has beaten Texas A&M ${wins} times.`
+        : `According to Texas Athletics' all-time series page, Texas leads Texas A&M ${wins}-${losses} in football. That means Texas has beaten Texas A&M ${wins} times.`,
+    suggestedActions: [
+      "Ask who won Texas's last basketball game",
+      "Ask for another UT rivalry stat",
+      "Switch back to campus or career help",
+    ],
+    citations: [
+      {
+        label: "Texas Football vs. Texas A&M Football All Time",
+        sourceType: "sports",
+        note: "Official Texas Athletics series record",
+      },
+    ],
+  };
+}
+
+async function buildLiveSportsResponse(question: string): Promise<LiveSportsAnswer | null> {
+  const lower = normalize(question);
+
+  if (
+    /texas a&m|a&m|aggies/.test(lower) &&
+    /football|beat|won|wins|record|w-l|series|matchup/.test(lower)
+  ) {
+    return getTexasVsTexasAMFootballRecord();
+  }
+
+  if (/basketball|hoops/.test(lower) && /(last|latest|recent|won|who won)/.test(lower)) {
+    return getLatestTexasBasketballResult();
+  }
+
+  return null;
 }
 
 function buildFallbackResponse(
@@ -337,7 +570,7 @@ async function generateModelAnswer(
           "Use only the provided student profile and the local resource files below.",
           "Never invent offices, schedules, or policies beyond the local files.",
           "For mental-health or crisis questions: do not diagnose; route to urgent support and emergency help when appropriate.",
-          "For sports questions: clearly state that the sports file is curated demo data, not a live feed.",
+          "For sports questions: do not claim to have live data unless the route explicitly provides it outside this prompt.",
           "For outreach requests: write concise practical drafts.",
           "Return strict JSON with keys: answer (string), suggestedActions (array of 2-3 short strings).",
           "",
@@ -399,7 +632,28 @@ export default async function handler(
     const sections = parseCampusSections(campusResources);
     const latestQuestion = messages[messages.length - 1]?.content ?? "";
     const topic = inferTopic(latestQuestion);
+
+    if (topic === "sports") {
+      try {
+        const liveSports = await buildLiveSportsResponse(latestQuestion);
+        if (liveSports) {
+          res.status(200).json(liveSports);
+          return;
+        }
+      } catch (error) {
+        console.error("Live sports lookup failed, using fallback snapshot:", error);
+      }
+    }
+
     const fallback = buildFallbackResponse(topic, latestQuestion, profile, sections, sportsSnapshot);
+
+    if (topic === "mental-health" || topic === "basic-needs") {
+      res.status(200).json({
+        ...fallback,
+        citations: buildResourceCitations(topic, sections),
+      });
+      return;
+    }
 
     if (!process.env.OPENAI_API_KEY) {
       res.status(200).json(fallback);

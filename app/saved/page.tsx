@@ -6,6 +6,7 @@ import { OpportunityCard } from "../../components/opportunities/OpportunityCard"
 import { OpportunityDetailPanel } from "../../components/opportunities/OpportunityDetailPanel";
 import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
+import { toRequestSafeProfile } from "../../lib/request-safe-profile";
 import {
   clearSavedOpportunityIds,
   getOpportunityActionStateMap,
@@ -83,12 +84,12 @@ export default function SavedPage(): JSX.Element {
         fetch("/api/research/match", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profile: activeProfile }),
+          body: JSON.stringify({ profile: toRequestSafeProfile(activeProfile) }),
         }),
         fetch("/api/internships/match", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profile: activeProfile }),
+          body: JSON.stringify({ profile: toRequestSafeProfile(activeProfile) }),
         }),
       ]);
 
