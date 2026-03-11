@@ -17,6 +17,7 @@ Explain that college stress is not just coursework. It is planning, money, oppor
 ### 0:10-0:20 - Dashboard
 
 Show that one student profile powers every surface in Hook.
+Reveal the dashboard shell: greeting, five summary cards, chat action panel, and the floating Demo Mode button so judges immediately see the product breadth before diving into detail pages.
 
 ### 0:20-0:35 - Academic
 
@@ -37,4 +38,3 @@ Show that Hook also recommends communities, not just work.
 ### 1:10-1:30 - Chat
 
 Ask for a campus resource or outreach draft and show suggested actions.
-
