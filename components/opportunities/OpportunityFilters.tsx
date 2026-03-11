@@ -13,6 +13,9 @@ type OpportunityFiltersProps = {
   onSkillChange?: (value: string) => void;
   keyword?: string;
   onKeywordChange?: (value: string) => void;
+  sortOptions?: Array<{ label: string; value: string }>;
+  selectedSort?: string;
+  onSortChange?: (value: string) => void;
   savedOnly?: boolean;
   onSavedOnlyChange?: (value: boolean) => void;
   savedCount?: number;
@@ -34,6 +37,9 @@ export function OpportunityFilters({
   onSkillChange,
   keyword = "",
   onKeywordChange,
+  sortOptions = [],
+  selectedSort = "fit_desc",
+  onSortChange,
   savedOnly = false,
   onSavedOnlyChange,
   savedCount = 0,
@@ -103,6 +109,19 @@ export function OpportunityFilters({
               {skillOptions.map((skill) => (
                 <option key={skill} value={skill}>
                   {skill}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+
+        {sortOptions.length > 0 && onSortChange ? (
+          <label style={{ display: "grid", gap: "4px", color: "#374151", fontSize: "14px" }}>
+            Sort
+            <select value={selectedSort} onChange={(event) => onSortChange(event.target.value)}>
+              {sortOptions.map((sortOption) => (
+                <option key={sortOption.value} value={sortOption.value}>
+                  {sortOption.label}
                 </option>
               ))}
             </select>

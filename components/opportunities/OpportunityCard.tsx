@@ -1,4 +1,5 @@
 import type { OpportunityMatch } from "../../lib/types";
+import { daysUntilDate, isUrgentDate } from "../../lib/opportunities/deadline";
 
 type OpportunityCardProps = {
   match: OpportunityMatch;
@@ -16,6 +17,8 @@ export function OpportunityCard({
   onToggleSaved,
 }: OpportunityCardProps): JSX.Element {
   const { opportunity } = match;
+  const daysLeft = daysUntilDate(opportunity.applyBy);
+  const urgent = isUrgentDate(opportunity.applyBy);
 
   return (
     <div
@@ -59,6 +62,20 @@ export function OpportunityCard({
 
           <div style={{ marginTop: "10px", color: "#374151", fontSize: "14px" }}>
             {opportunity.location} | {opportunity.term} | Apply by {opportunity.applyBy}
+          </div>
+          <div style={{ marginTop: "6px", display: "flex", gap: "8px", alignItems: "center" }}>
+            <span
+              style={{
+                fontSize: "12px",
+                fontWeight: 700,
+                color: urgent ? "#b91c1c" : "#334155",
+                background: urgent ? "#fee2e2" : "#f1f5f9",
+                borderRadius: "999px",
+                padding: "2px 8px",
+              }}
+            >
+              {daysLeft >= 0 ? `${daysLeft} days left` : "Deadline passed"}
+            </span>
           </div>
 
           <ul style={{ margin: "10px 0 0 18px", padding: 0, color: "#374151", fontSize: "14px" }}>

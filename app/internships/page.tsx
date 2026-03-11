@@ -9,6 +9,7 @@ import {
   getSavedOpportunityIds,
   toggleSavedOpportunityId,
 } from "../../lib/opportunities/saved-opportunities";
+import { isUrgentDate } from "../../lib/opportunities/deadline";
 import type { OpportunityMatch, StudentProfile } from "../../lib/types";
 
 type MatchApiResponse = {
@@ -20,6 +21,12 @@ const PAY_OPTIONS = [
   { value: "30_plus", label: "$30+/hour" },
   { value: "20_29", label: "$20-$29/hour" },
   { value: "below_20", label: "Below $20/hour" },
+];
+
+const SORT_OPTIONS = [
+  { value: "fit_desc", label: "Best fit" },
+  { value: "deadline_soon", label: "Deadline soonest" },
+  { value: "pay_high", label: "Highest pay" },
 ];
 
 const DEMO_PROFILE: StudentProfile = {
@@ -90,6 +97,7 @@ export default function InternshipsPage(): JSX.Element {
   const [termFilter, setTermFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("all");
   const [payFilter, setPayFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("fit_desc");
   const [savedOnly, setSavedOnly] = useState(false);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -138,7 +146,7 @@ export default function InternshipsPage(): JSX.Element {
   );
 
   const filtered = useMemo(() => {
-    return matches.filter((match) => {
+    const base = matches.filter((match) => {
       const opportunity = match.opportunity;
       if (termFilter !== "all" && opportunity.term !== termFilter) {
         return false;
@@ -154,7 +162,41 @@ export default function InternshipsPage(): JSX.Element {
       }
       return true;
     });
-  }, [matches, termFilter, locationFilter, payFilter, savedOnly, savedIds]);
+
+    if (sortBy === "deadline_soon") {
+      return [...base].sort((a, b) => a.opportunity.applyBy.localeCompare(b.opportunity.applyBy));
+    }
+
+    if (sortBy === "pay_high") {
+      return [...base].sort((a, b) => {
+        const left = extractHourlyPay(a.opportunity.pay) ?? 0;
+        const right = extractHourlyPay(b.opportunity.pay) ?? 0;
+        if (right !== left) {
+          return right - left;
+        }
+        return b.fitScore - a.fitScore;
+      });
+    }
+
+    return [...base].sort((a, b) => {
+      if (b.fitScore !== a.fitScore) {
+        return b.fitScore - a.fitScore;
+      }
+      return a.opportunity.applyBy.localeCompare(b.opportunity.applyBy);
+    });
+  }, [matches, termFilter, locationFilter, payFilter, savedOnly, savedIds, sortBy]);
+
+  const urgentCount = useMemo(
+    () => filtered.filter((match) => isUrgentDate(match.opportunity.applyBy)).length,
+    [filtered],
+  );
+  const averageFit = useMemo(() => {
+    if (filtered.length === 0) {
+      return 0;
+    }
+    const total = filtered.reduce((sum, match) => sum + match.fitScore, 0);
+    return Math.round(total / filtered.length);
+  }, [filtered]);
 
   useEffect(() => {
     if (filtered.length === 0) {
@@ -217,6 +259,11 @@ export default function InternshipsPage(): JSX.Element {
       <p style={{ color: "#4b5563", marginTop: "4px", fontSize: "14px" }}>
         Saved opportunities: {savedIds.length}
       </p>
+      <div style={{ marginTop: "6px", display: "flex", gap: "12px", color: "#334155", fontSize: "13px" }}>
+        <span>{filtered.length} visible</span>
+        <span>{urgentCount} urgent deadlines</span>
+        <span>Avg fit {averageFit}</span>
+      </div>
 
       <div style={{ marginTop: "16px" }}>
         <OpportunityFilters
@@ -229,6 +276,9 @@ export default function InternshipsPage(): JSX.Element {
           payOptions={PAY_OPTIONS}
           selectedPay={payFilter}
           onPayChange={setPayFilter}
+          sortOptions={SORT_OPTIONS}
+          selectedSort={sortBy}
+          onSortChange={setSortBy}
           savedOnly={savedOnly}
           onSavedOnlyChange={setSavedOnly}
           savedCount={savedIds.length}
@@ -236,6 +286,7 @@ export default function InternshipsPage(): JSX.Element {
             setTermFilter("all");
             setLocationFilter("all");
             setPayFilter("all");
+            setSortBy("fit_desc");
             setSavedOnly(false);
           }}
         />

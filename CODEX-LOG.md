@@ -14,3 +14,5 @@
 - `[T+3:40] [C] [docs/openai-story.md, docs/judge-qa.md, CODEX-LOG.md] Added final opportunity-facing technical summary and judge Q&A covering fit-score trust, curated data, and ranking rationale. Screenshot: codex-log-05c-opportunities-docs.png.`
 - `[T+3:42] [C] [CODEX-LOG.md] Finalized opportunity build documentation trail with screenshot references for API, UI, and docs checkpoints. Screenshot: codex-log-05c-opportunities-docs.png.`
 - `[T+3:55] [C] [app/research/page.tsx, app/internships/page.tsx, components/opportunities/*, lib/opportunities/saved-opportunities.ts] Added saved-opportunities persistence, saved-only filtering, and retry actions for opportunity pages to improve day-to-day usability.`
+- `[T+4:10] [C] [app/research/page.tsx, app/internships/page.tsx, components/opportunities/*, lib/opportunities/deadline.ts] Added deadline urgency UX (days-left badges), filter sort controls, and top-level fit/deadline stats on opportunity pages.`
+- `[T+4:14] [C] [scripts/validate-data-integrity.mjs] Added and ran data integrity checks for scholarships, research, and internships (schema, ids, kinds, dates).`

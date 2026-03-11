@@ -9,6 +9,7 @@ import {
   getSavedOpportunityIds,
   toggleSavedOpportunityId,
 } from "../../lib/opportunities/saved-opportunities";
+import { isUrgentDate } from "../../lib/opportunities/deadline";
 import type { OpportunityMatch, StudentProfile } from "../../lib/types";
 
 type MatchApiResponse = {
@@ -40,6 +41,11 @@ const DEMO_PROFILE: StudentProfile = {
   clubInterests: ["ai", "entrepreneurship"],
 };
 
+const SORT_OPTIONS = [
+  { value: "fit_desc", label: "Best fit" },
+  { value: "deadline_soon", label: "Deadline soonest" },
+];
+
 function rank(matches: OpportunityMatch[]): OpportunityMatch[] {
   return [...matches].sort((a, b) => {
     if (b.fitScore !== a.fitScore) {
@@ -56,6 +62,7 @@ export default function ResearchPage(): JSX.Element {
   const [skillFilter, setSkillFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("all");
   const [keywordFilter, setKeywordFilter] = useState("");
+  const [sortBy, setSortBy] = useState("fit_desc");
   const [savedOnly, setSavedOnly] = useState(false);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,7 +116,7 @@ export default function ResearchPage(): JSX.Element {
 
   const filtered = useMemo(() => {
     const needle = keywordFilter.trim().toLowerCase();
-    return matches.filter((match) => {
+    const base = matches.filter((match) => {
       const opportunity = match.opportunity;
       if (termFilter !== "all" && opportunity.term !== termFilter) {
         return false;
@@ -131,7 +138,30 @@ export default function ResearchPage(): JSX.Element {
       }
       return true;
     });
-  }, [matches, termFilter, locationFilter, skillFilter, keywordFilter, savedOnly, savedIds]);
+
+    if (sortBy === "deadline_soon") {
+      return [...base].sort((a, b) => a.opportunity.applyBy.localeCompare(b.opportunity.applyBy));
+    }
+
+    return [...base].sort((a, b) => {
+      if (b.fitScore !== a.fitScore) {
+        return b.fitScore - a.fitScore;
+      }
+      return a.opportunity.applyBy.localeCompare(b.opportunity.applyBy);
+    });
+  }, [matches, termFilter, locationFilter, skillFilter, keywordFilter, savedOnly, savedIds, sortBy]);
+
+  const urgentCount = useMemo(
+    () => filtered.filter((match) => isUrgentDate(match.opportunity.applyBy)).length,
+    [filtered],
+  );
+  const averageFit = useMemo(() => {
+    if (filtered.length === 0) {
+      return 0;
+    }
+    const total = filtered.reduce((sum, match) => sum + match.fitScore, 0);
+    return Math.round(total / filtered.length);
+  }, [filtered]);
 
   useEffect(() => {
     if (filtered.length === 0) {
@@ -192,6 +222,11 @@ export default function ResearchPage(): JSX.Element {
       <p style={{ color: "#4b5563", marginTop: "4px", fontSize: "14px" }}>
         Saved opportunities: {savedIds.length}
       </p>
+      <div style={{ marginTop: "6px", display: "flex", gap: "12px", color: "#334155", fontSize: "13px" }}>
+        <span>{filtered.length} visible</span>
+        <span>{urgentCount} urgent deadlines</span>
+        <span>Avg fit {averageFit}</span>
+      </div>
 
       <div style={{ marginTop: "16px" }}>
         <OpportunityFilters
@@ -206,6 +241,9 @@ export default function ResearchPage(): JSX.Element {
           onSkillChange={setSkillFilter}
           keyword={keywordFilter}
           onKeywordChange={setKeywordFilter}
+          sortOptions={SORT_OPTIONS}
+          selectedSort={sortBy}
+          onSortChange={setSortBy}
           savedOnly={savedOnly}
           onSavedOnlyChange={setSavedOnly}
           savedCount={savedIds.length}
@@ -214,6 +252,7 @@ export default function ResearchPage(): JSX.Element {
             setLocationFilter("all");
             setSkillFilter("all");
             setKeywordFilter("");
+            setSortBy("fit_desc");
             setSavedOnly(false);
           }}
         />

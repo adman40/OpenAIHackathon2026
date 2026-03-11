@@ -1,4 +1,5 @@
 import type { OpportunityMatch } from "../../lib/types";
+import { daysUntilDate, isUrgentDate } from "../../lib/opportunities/deadline";
 
 type OpportunityDetailPanelProps = {
   match: OpportunityMatch | null;
@@ -28,6 +29,8 @@ export function OpportunityDetailPanel({
   }
 
   const { opportunity } = match;
+  const daysLeft = daysUntilDate(opportunity.applyBy);
+  const urgent = isUrgentDate(opportunity.applyBy);
 
   return (
     <aside
@@ -68,6 +71,12 @@ export function OpportunityDetailPanel({
         <div>Term: {opportunity.term}</div>
         <div>
           Apply By: <strong>{opportunity.applyBy}</strong>
+        </div>
+        <div>
+          Deadline Status:{" "}
+          <strong style={{ color: urgent ? "#b91c1c" : "#1f2937" }}>
+            {daysLeft >= 0 ? `${daysLeft} days left` : "Deadline passed"}
+          </strong>
         </div>
       </div>
 
