@@ -89,6 +89,10 @@ function validateOpportunities(data, expectedKind, label) {
     assert(Array.isArray(row.preferredCoursework), `${label}[${i}] preferredCoursework must be array`);
     assert(isIsoDate(row.datePosted), `${label}[${i}] datePosted must be ISO date`);
     assert(isIsoDate(row.applyBy), `${label}[${i}] applyBy must be ISO date`);
+    if (expectedKind === "research") {
+      assert(typeof row.sourceUrl === "string" && row.sourceUrl.length > 0, `${label}[${i}] sourceUrl must be non-empty string`);
+      assert(Array.isArray(row.contactLeads) && row.contactLeads.length > 0, `${label}[${i}] contactLeads must be non-empty array`);
+    }
     const posted = new Date(row.datePosted).getTime();
     const applyBy = new Date(row.applyBy).getTime();
     assert(applyBy >= posted, `${label}[${i}] applyBy must be on/after datePosted`);

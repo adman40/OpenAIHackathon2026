@@ -98,6 +98,38 @@ export function OpportunityDetailPanel({
         <h3 style={{ margin: 0, fontSize: "16px", color: "#111827" }}>Details</h3>
         <p style={{ color: "#374151", fontSize: "14px", lineHeight: 1.5 }}>{opportunity.details}</p>
       </section>
+
+      {opportunity.contactLeads && opportunity.contactLeads.length > 0 ? (
+        <section style={{ marginTop: "14px" }}>
+          <h3 style={{ margin: 0, fontSize: "16px", color: "#111827" }}>Likely Contacts</h3>
+          <ul style={{ margin: "8px 0 0 18px", padding: 0, color: "#374151", fontSize: "14px" }}>
+            {opportunity.contactLeads.map((lead) => (
+              <li key={`${opportunity.id}-${lead}`}>{lead}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {opportunity.sourceUrl ? (
+        <a
+          href={opportunity.sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            marginTop: "16px",
+            display: "inline-block",
+            background: "#1d4ed8",
+            color: "#ffffff",
+            borderRadius: "8px",
+            fontWeight: 600,
+            textDecoration: "none",
+            padding: "10px 14px",
+            fontSize: "14px",
+          }}
+        >
+          View Official Source
+        </a>
+      ) : null}
     </aside>
   );
 }

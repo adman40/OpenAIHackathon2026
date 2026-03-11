@@ -55,6 +55,17 @@ function profileCombinedText(profile: StudentProfile): string {
   ].join(" ");
 }
 
+function profileKeywordAffinity(profile: StudentProfile, opportunity: Opportunity): string[] {
+  const profileTerms = [
+    ...profile.skills,
+    ...profile.interests,
+    profile.major,
+    profile.careerGoal.replace("_", " "),
+  ];
+  const opportunityText = `${opportunity.title} ${opportunity.organization} ${opportunity.description} ${opportunity.details}`;
+  return listOverlap(profileTerms, opportunityText);
+}
+
 function locationMatches(profile: StudentProfile, opportunity: Opportunity): boolean {
   if (profile.preferredLocations.length === 0) {
     return true;
@@ -127,6 +138,12 @@ export function matchOpportunities(
         if (genericInterestMatches.length > 0) {
           score += 4;
         }
+      }
+
+      const affinityMatches = profileKeywordAffinity(profile, opportunity);
+      if (affinityMatches.length > 0) {
+        score += Math.min(10, 3 + affinityMatches.length * 2);
+        reasons.push(`Lab/program topic overlap: ${affinityMatches.slice(0, 2).join(", ")}.`);
       }
 
       if (locationMatches(profile, opportunity)) {

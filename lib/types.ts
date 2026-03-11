@@ -150,6 +150,9 @@ export interface Opportunity {
   preferredCoursework: string[];
   description: string;
   details: string;
+  contactLeads?: string[];
+  sourceUrl?: string;
+  importTimestamp?: string;
 }
 
 export interface OpportunityMatch {
