@@ -10,7 +10,7 @@ import { PublicAcademicSummaryCard } from "../../components/academic/PublicAcade
 import { RecommendationSection } from "../../components/academic/RecommendationSection";
 import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
-import { AcademicAnalysis } from "../../lib/types";
+import type { AcademicAnalysis, StudentProfile } from "../../lib/types";
 
 export default function AcademicPage() {
   const { profile, isHydrated, authStatus } = useProfile();
@@ -18,15 +18,10 @@ export default function AcademicPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const activeProfile = profile ?? (authStatus === "demo" ? DEMO_PROFILE : null);
+  const activeProfile: StudentProfile | null =
+    profile ?? (authStatus === "demo" ? DEMO_PROFILE : null);
 
-  const loadAnalysis = useCallback(async () => {
-    if (!activeProfile) {
-      setIsLoading(false);
-      setAnalysis(null);
-      return;
-    }
-
+  const loadAnalysis = useCallback(async (profileToAnalyze: StudentProfile) => {
     setIsLoading(true);
     setError(null);
 
@@ -36,7 +31,7 @@ export default function AcademicPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ profile: activeProfile }),
+        body: JSON.stringify({ profile: profileToAnalyze }),
       });
 
       const body = (await response.json()) as AcademicAnalysis | { error: string };
@@ -56,14 +51,17 @@ export default function AcademicPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeProfile]);
+  }, []);
 
   useEffect(() => {
-    if (!isHydrated) {
+    if (!isHydrated || !activeProfile) {
+      setAnalysis(null);
+      setIsLoading(false);
       return;
     }
-    void loadAnalysis();
-  }, [isHydrated, loadAnalysis]);
+
+    void loadAnalysis(activeProfile);
+  }, [activeProfile, isHydrated, loadAnalysis]);
 
   if (!isHydrated) {
     return null;
@@ -78,7 +76,8 @@ export default function AcademicPage() {
             <p className="text-sm font-medium text-orange-700">Academic Summary</p>
             <h1 className="mt-1 text-3xl font-semibold">Start with onboarding first</h1>
             <p className="mt-2 max-w-3xl text-sm text-slate-600">
-              Hook needs your saved student profile before it can calculate degree progress and recommended courses.
+              Hook needs your saved student profile before it can calculate degree progress
+              and recommended courses.
             </p>
             <Link
               href="/onboarding"
@@ -98,9 +97,10 @@ export default function AcademicPage() {
         <NavBar />
         <div>
           <p className="text-sm font-medium text-orange-700">Hook academic summary</p>
-          <h1 className="mt-1 text-3xl font-semibold">Stay on track without guesswork</h1>
+          <h1 className="mt-1 text-3xl font-semibold">Plan the next semester with context</h1>
           <p className="mt-2 max-w-3xl text-sm text-slate-600">
-            One academic snapshot highlights progress, blocker courses, and the best next-semester options.
+            One academic snapshot highlights progress, blocker courses, and the best
+            next-semester options.
           </p>
         </div>
 
@@ -115,11 +115,13 @@ export default function AcademicPage() {
 
         {!isLoading && error ? (
           <section className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
-            <p className="text-sm font-semibold text-red-800">Could not load academic analysis.</p>
+            <p className="text-sm font-semibold text-red-800">
+              Could not load academic analysis.
+            </p>
             <p className="mt-2 text-sm text-red-700">{error}</p>
             <button
               className="mt-4 rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white"
-              onClick={() => void loadAnalysis()}
+              onClick={() => void loadAnalysis(activeProfile)}
               type="button"
             >
               Try again

@@ -3,36 +3,23 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { analyzeDegree } from "../../../lib/academic/degree-engine";
-import { AcademicAnalysis, CourseCatalog, DegreeRequirements, StudentProfile } from "../../../lib/types";
+import {
+  findNormalizedDegreePlanForMajor,
+  toDegreeRequirements,
+} from "../../../lib/academic/normalized-degree-plans";
+import {
+  AcademicAnalysis,
+  CourseCatalog,
+  ImportedCourseScheduleCatalog,
+  NormalizedDegreePlanCatalog,
+  StudentProfile,
+} from "../../../lib/types";
 
 type AnalyzeResponse =
   | AcademicAnalysis
   | {
       error: string;
     };
-
-const MAJOR_FILE_MAP: Record<string, { degreeFile: string; catalogFile: string }> = {
-  "computer science": {
-    degreeFile: "cs-bscs.json",
-    catalogFile: "cs-catalog.json",
-  },
-  "electrical and computer engineering": {
-    degreeFile: "ece-bsece.json",
-    catalogFile: "ece-catalog.json",
-  },
-  "business administration": {
-    degreeFile: "business-bba.json",
-    catalogFile: "business-catalog.json",
-  },
-  biology: {
-    degreeFile: "biology-bsbi.json",
-    catalogFile: "biology-catalog.json",
-  },
-};
-
-function getMajorFiles(major: string) {
-  return MAJOR_FILE_MAP[major.trim().toLowerCase()];
-}
 
 async function loadJsonFile<T>(segments: string[]): Promise<T> {
   const filePath = path.join(process.cwd(), ...segments);
@@ -56,26 +43,34 @@ export default async function handler(
     return res.status(400).json({ error: "Request body must include a valid profile." });
   }
 
-  const majorFiles = getMajorFiles(profile.major);
-
-  if (!majorFiles) {
-    return res.status(400).json({ error: `Unsupported major: ${profile.major}` });
-  }
-
   try {
-    // We read from local JSON so the demo stays deterministic and offline-friendly.
-    const degree = await loadJsonFile<DegreeRequirements>([
+    // Normalized undergrad plans let us keep one UT-aligned source while reusing the existing engine.
+    const planCatalog = await loadJsonFile<NormalizedDegreePlanCatalog>([
       "data",
-      "degrees",
-      majorFiles.degreeFile,
+      "ut",
+      "undergrad-degree-plans.json",
     ]);
+    const plan = findNormalizedDegreePlanForMajor(profile.major, planCatalog);
+
+    if (!plan) {
+      return res.status(400).json({ error: `Unsupported major: ${profile.major}` });
+    }
+
     const catalog = await loadJsonFile<CourseCatalog>([
       "data",
       "courses",
-      majorFiles.catalogFile,
+      `${plan.courseCatalogId}.json`,
     ]);
+    const scheduleCatalog = await loadJsonFile<ImportedCourseScheduleCatalog>([
+      "data",
+      "ut",
+      "course-schedule.json",
+    ]);
+    const degree = toDegreeRequirements(plan);
 
-    return res.status(200).json(analyzeDegree(profile, degree, catalog));
+    return res.status(200).json(
+      analyzeDegree(profile, degree, catalog, scheduleCatalog, plan.courseCatalogId),
+    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown academic analysis error";

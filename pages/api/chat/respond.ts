@@ -11,6 +11,7 @@ import {
   getProfileResumeSummary,
 } from "../../../lib/profile-utils";
 import type { ChatCitation, ChatResponse, StudentProfile } from "../../../lib/types";
+import { formatNumericGpa } from "../../../lib/transcript/gpa";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -292,7 +293,7 @@ function profileSummary(profile: StudentProfile): string {
     `Major: ${profile.major}`,
     `Semester: ${profile.currentSemester}`,
     `Career goal: ${getProfileCareerGoal(profile)}`,
-    `GPA range: ${getProfileGpaRange(profile)}`,
+    `GPA: ${formatNumericGpa(profile.gpa)} (${getProfileGpaRange(profile)})`,
     `Financial need: ${profile.financialNeed}`,
     `Residency: ${profile.residency}`,
     `Skills: ${profile.skills.join(", ")}`,

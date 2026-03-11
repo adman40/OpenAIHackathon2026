@@ -3,12 +3,14 @@ import {
   CourseCatalog,
   DegreeRequirements,
   EligibleCourse,
+  ImportedCourseScheduleCatalog,
   Recommendation,
   RecommendationUrgency,
   RequirementSection,
   StudentProfile,
 } from "../types";
 import { RankedEligibleCourse, rankEligibleCourses } from "./eligible-course-recommender";
+import { getNextRegularTerm } from "./course-schedule";
 import { buildPrereqAlerts } from "./prereq-alerts";
 
 function normalizeCourseId(courseId: string): string {
@@ -185,9 +187,13 @@ function buildRecommendation(
   let rationale = "This is still on your remaining degree path.";
 
   if (missingPrereqs.length === 0 && unlockCount > 0) {
-    rationale = `You can take this now, and it opens ${unlockCount} later course option${unlockCount === 1 ? "" : "s"}.`;
+    rationale = rankedCourse
+      ? `You can take this in ${rankedCourse.scheduledTerm}, and it opens ${unlockCount} later course option${unlockCount === 1 ? "" : "s"}.`
+      : `You already have the prerequisites, and this opens ${unlockCount} later course option${unlockCount === 1 ? "" : "s"} once it appears in a future term.`;
   } else if (missingPrereqs.length === 0) {
-    rationale = "You are eligible for this now, so it is a clean way to keep degree momentum.";
+    rationale = rankedCourse
+      ? `You are eligible for this in ${rankedCourse.scheduledTerm}, so it is a clean way to keep degree momentum.`
+      : "You already have the prerequisites for this, so it becomes a clean way to keep degree momentum once it is scheduled.";
   } else {
     rationale = `You still need ${missingPrereqs.join(", ")} before this opens up.`;
   }
@@ -245,6 +251,8 @@ export function analyzeDegree(
   profile: StudentProfile,
   degree: DegreeRequirements,
   catalog: CourseCatalog,
+  scheduleCatalog: ImportedCourseScheduleCatalog,
+  courseCatalogId: string,
 ): AcademicAnalysis {
   const completedCourseIds = new Set(getCompletedCourseIds(profile));
   const courseMap = buildCourseMap(catalog.courses);
@@ -270,6 +278,8 @@ export function analyzeDegree(
     degree,
     Array.from(completedCourseIds),
     profile.currentSemester,
+    scheduleCatalog,
+    courseCatalogId,
   );
   const missingCoreCourses = getMissingRequiredCourses(
     degree.coreRequirements,
@@ -306,11 +316,14 @@ export function analyzeDegree(
     completedCourseIds,
     catalog,
   );
+  const nextRegularTerm = getNextRegularTerm(profile.currentSemester);
 
   // The summary is short on purpose so a UI card can show it without extra trimming.
   const summary = prereqAlerts.length > 0
     ? `${profile.name} is ${percentComplete}% through the ${degree.degreeName}. The biggest watch-out is the prereq chain around ${(prereqAlerts[0].match(/[A-Z]+\s\d+/) ?? ["your next blocker"])[0]}.`
-    : `${profile.name} is ${percentComplete}% through the ${degree.degreeName} and can stay on track by taking the highest-ranked eligible required courses next.`;
+    : rankedEligibleCourses.length > 0
+      ? `${profile.name} is ${percentComplete}% through the ${degree.degreeName} and should focus next on the highest-ranked eligible required courses in ${nextRegularTerm ?? "the next regular term"}.`
+      : `${profile.name} is ${percentComplete}% through the ${degree.degreeName}, and Hook does not see any remaining courses that are both next-term scheduled and fully unlocked yet.`;
 
   return {
     percentComplete,

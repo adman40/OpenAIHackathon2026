@@ -1,9 +1,18 @@
 import { getProfileGpaRange } from "../../lib/profile-utils";
-import { StudentProfile } from "../../lib/types";
+import { formatNumericGpa } from "../../lib/transcript/gpa";
+import type { StudentProfile } from "../../lib/types";
 
 interface PublicAcademicSummaryCardProps {
   profile: StudentProfile;
   summary: string;
+}
+
+function getVisibleGpa(profile: StudentProfile): string {
+  if (!profile.gpaPublic) {
+    return "Hidden";
+  }
+
+  return profile.gpa !== null ? formatNumericGpa(profile.gpa) : getProfileGpaRange(profile);
 }
 
 export function PublicAcademicSummaryCard({
@@ -13,9 +22,7 @@ export function PublicAcademicSummaryCard({
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <p className="text-sm font-medium text-slate-500">Profile snapshot</p>
-      <h1 className="mt-1 text-2xl font-semibold text-slate-900">
-        Academic Summary
-      </h1>
+      <h1 className="mt-1 text-2xl font-semibold text-slate-900">Academic Summary</h1>
       <p className="mt-2 text-sm text-slate-700">{summary}</p>
 
       <dl className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -32,17 +39,13 @@ export function PublicAcademicSummaryCard({
           <dd className="mt-1 font-medium text-slate-900">{profile.currentSemester}</dd>
         </div>
         <div className="rounded-lg bg-slate-50 p-3">
-          <dt className="text-xs uppercase tracking-wide text-slate-500">Recorded GPA</dt>
-          <dd className="mt-1 font-medium text-slate-900">
-            {profile.gpa?.toFixed(2) ?? getProfileGpaRange(profile)}
-          </dd>
+          <dt className="text-xs uppercase tracking-wide text-slate-500">GPA</dt>
+          <dd className="mt-1 font-medium text-slate-900">{getVisibleGpa(profile)}</dd>
         </div>
       </dl>
 
       <div className="mt-5">
-        <p className="text-xs uppercase tracking-wide text-slate-500">
-          Completed courses
-        </p>
+        <p className="text-xs uppercase tracking-wide text-slate-500">Completed courses</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {profile.completedCourses.map((course) => (
             <span

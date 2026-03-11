@@ -1,4 +1,14 @@
-import { CourseCatalog, DegreeRequirements, EligibleCourse } from "../types";
+import {
+  CourseCatalog,
+  DegreeRequirements,
+  EligibleCourse,
+  ImportedCourseScheduleCatalog,
+} from "../types";
+import {
+  getNextRegularTerm,
+  getScheduledCourseIds,
+  getScheduleSnapshotForTerm,
+} from "./course-schedule";
 
 export interface RankedEligibleCourse {
   course: EligibleCourse;
@@ -6,6 +16,7 @@ export interface RankedEligibleCourse {
   unlockCount: number;
   professorSignal: number;
   isRequired: boolean;
+  scheduledTerm: string;
 }
 
 function normalizeCourseId(courseId: string): string {
@@ -33,22 +44,6 @@ function getRequiredCourseIds(degree: DegreeRequirements): Set<string> {
   }
 
   return required;
-}
-
-function getNextRegularTerm(currentSemester: string): string | null {
-  const match = currentSemester.match(/(spring|summer|fall)\s+(\d{4})/i);
-
-  if (!match) {
-    return null;
-  }
-
-  const season = match[1].toLowerCase();
-
-  if (season === "spring" || season === "summer") {
-    return "Fall";
-  }
-
-  return "Spring";
 }
 
 function getGradeScore(gradeTendency: string): number {
@@ -95,6 +90,23 @@ function getProfessorSignalScore(course: EligibleCourse): number {
     getDifficultyScore(course.professorDifficulty) +
     getAttendanceScore(course.attendancePolicy)
   );
+}
+
+function buildEligibilityReason(
+  course: EligibleCourse,
+  nextTerm: string,
+  unlockCount: number,
+  isRequired: boolean,
+): string {
+  const requirementReason = isRequired
+    ? "it satisfies a required degree course"
+    : `it keeps progress moving in your ${course.requirementBucket} bucket`;
+  const unlockReason =
+    unlockCount > 0
+      ? `and unlocks ${unlockCount} later course option${unlockCount === 1 ? "" : "s"}`
+      : "and is ready to take without introducing a new prerequisite bottleneck";
+
+  return `Eligible for ${nextTerm} because all listed prerequisites are complete, ${requirementReason}, ${unlockReason}.`;
 }
 
 function buildDependentsMap(courses: EligibleCourse[]): Map<string, string[]> {
@@ -154,31 +166,47 @@ export function rankEligibleCourses(
   degree: DegreeRequirements,
   completedCourseIds: string[],
   currentSemester: string,
+  scheduleCatalog: ImportedCourseScheduleCatalog,
+  courseCatalogId: string,
 ): RankedEligibleCourse[] {
   const completed = new Set(completedCourseIds.map(normalizeCourseId));
   const requiredCourseIds = getRequiredCourseIds(degree);
   const dependentsMap = buildDependentsMap(catalog.courses);
   const nextTerm = getNextRegularTerm(currentSemester);
+  const nextTermSnapshot =
+    nextTerm ? getScheduleSnapshotForTerm(scheduleCatalog, courseCatalogId, nextTerm) : undefined;
+  const scheduledCourseIds = nextTermSnapshot ? getScheduledCourseIds(nextTermSnapshot) : new Set<string>();
+
+  if (!nextTerm || !nextTermSnapshot) {
+    return [];
+  }
 
   // The score is intentionally simple so the API can explain why a course bubbled up.
   return catalog.courses
     .filter((course) => !completed.has(normalizeCourseId(course.courseId)))
     .filter((course) => isEligibleNow(course, completed))
+    .filter((course) => scheduledCourseIds.has(normalizeCourseId(course.courseId)))
     .map((course) => {
       const normalizedId = normalizeCourseId(course.courseId);
       const unlockCount = countFutureUnlocks(course.courseId, dependentsMap, completed);
       const professorSignal = getProfessorSignalScore(course);
       const isRequired = requiredCourseIds.has(normalizedId);
       const requiredBonus = isRequired ? 80 : course.requirementBucket === "elective" ? 20 : 45;
-      const termBonus = nextTerm && course.termsOffered.includes(nextTerm) ? 8 : 0;
-      const score = requiredBonus + unlockCount * 10 + professorSignal + termBonus;
+      const score = requiredBonus + unlockCount * 10 + professorSignal;
+      const eligibilityReason = buildEligibilityReason(course, nextTerm, unlockCount, isRequired);
 
       return {
-        course,
+        course: {
+          ...course,
+          detailPagePath: `/academic/courses/${encodeURIComponent(courseCatalogId)}/${encodeURIComponent(course.courseId)}?term=${encodeURIComponent(nextTerm)}`,
+          termsOffered: [nextTerm],
+          eligibilityReason,
+        },
         score,
         unlockCount,
         professorSignal,
         isRequired,
+        scheduledTerm: nextTerm,
       };
     })
     .sort((left, right) => {

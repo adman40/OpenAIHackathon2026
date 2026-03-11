@@ -7,7 +7,12 @@ import {
   parseTranscriptFile,
 } from "../../lib/onboarding-parsers";
 import { MAJOR_OPTIONS } from "../../lib/profile-utils";
-import type { FinancialNeed, Residency, StudentProfile } from "../../lib/types";
+import type {
+  CareerGoal,
+  FinancialNeed,
+  Residency,
+  StudentProfile,
+} from "../../lib/types";
 
 interface CreateAccountPayload {
   email: string;
@@ -39,6 +44,9 @@ interface FormState {
   resumeSummary: string;
   skills: string[];
   interests: string[];
+  careerGoal: CareerGoal;
+  preferredLocations: string[];
+  preferredTerms: string[];
   clubInterests: string[];
   hoursPerWeek: number;
   transcriptFileName: string | null;
@@ -51,6 +59,9 @@ interface FormState {
 const TOTAL_STEPS = 4;
 const residencyOptions: Residency[] = ["texas", "out-of-state", "international"];
 const financialNeedOptions: FinancialNeed[] = ["low", "medium", "high"];
+const careerGoalOptions: CareerGoal[] = ["industry", "research", "grad_school", "undecided"];
+const locationOptions = ["Austin", "Remote", "Dallas", "Houston", "San Francisco", "New York"];
+const termOptions = ["spring", "summer", "fall"];
 
 const initialState: FormState = {
   email: "",
@@ -67,6 +78,9 @@ const initialState: FormState = {
   resumeSummary: "",
   skills: [],
   interests: [],
+  careerGoal: "undecided",
+  preferredLocations: ["Austin", "Remote"],
+  preferredTerms: ["summer", "fall"],
   clubInterests: [],
   hoursPerWeek: 5,
   transcriptFileName: null,
@@ -97,6 +111,17 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
 
   const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setFormState((current) => ({ ...current, [key]: value }));
+  };
+
+  const toggleListItem = (key: "preferredLocations" | "preferredTerms", value: string) => {
+    setFormState((current) => {
+      const currentValues = current[key];
+      const nextValues = currentValues.includes(value)
+        ? currentValues.filter((item) => item !== value)
+        : [...currentValues, value];
+
+      return { ...current, [key]: nextValues };
+    });
   };
 
   const addTextTag = (key: "skills" | "interests" | "clubInterests", rawValue: string) => {
@@ -178,6 +203,12 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
     }
 
     if (step === 4) {
+      if (formState.preferredLocations.length === 0) {
+        nextErrors.push("Choose at least one preferred location.");
+      }
+      if (formState.preferredTerms.length === 0) {
+        nextErrors.push("Choose at least one preferred term.");
+      }
       if (formState.skills.length === 0) nextErrors.push("Add at least one skill.");
       if (formState.interests.length === 0) nextErrors.push("Add at least one interest.");
       if (formState.clubInterests.length === 0) {
@@ -226,9 +257,9 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
       resumeSummary: formState.resumeSummary,
       skills: formState.skills,
       interests: formState.interests,
-      careerGoal: "undecided",
-      preferredLocations: [],
-      preferredTerms: [],
+      careerGoal: formState.careerGoal,
+      preferredLocations: formState.preferredLocations,
+      preferredTerms: formState.preferredTerms,
       clubInterests: formState.clubInterests,
       hoursPerWeek: formState.hoursPerWeek,
       profilePhotoUrl: formState.profilePhotoUrl,
@@ -342,11 +373,18 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
                   className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-orange-600"
                   value={formState.gpa}
                   onChange={(event) => updateField("gpa", event.target.value)}
+                  type="number"
+                  min="0"
+                  max="4"
+                  step="0.01"
+                  inputMode="decimal"
                   placeholder="Auto-filled after transcript upload"
                 />
               </div>
               <div>
-                <span className="mb-2 block text-sm font-medium text-stone-700">GPA Visibility</span>
+                <span className="mb-2 block text-sm font-medium text-stone-700">
+                  GPA Visibility
+                </span>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
@@ -415,7 +453,8 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
                   }}
                 />
                 <p className="mt-2 text-xs text-stone-500">
-                  Browser-safe fallback keeps PDF uploads demoable even before server-side parsing lands.
+                  Browser-safe fallback keeps PDF uploads demoable even before server-side parsing
+                  lands.
                 </p>
               </div>
               <div>
@@ -542,6 +581,61 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
       case 4:
         return (
           <div className="space-y-5">
+            <div>
+              <span className="mb-2 block text-sm font-medium text-stone-700">Career goal</span>
+              <div className="grid gap-3 md:grid-cols-2">
+                {careerGoalOptions.map((goal) => (
+                  <button
+                    key={goal}
+                    type="button"
+                    onClick={() => updateField("careerGoal", goal)}
+                    className={`rounded-xl border px-4 py-3 text-sm font-medium ${pillClasses(
+                      formState.careerGoal === goal,
+                    )}`}
+                  >
+                    {goal.replace("_", " ")}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <span className="mb-2 block text-sm font-medium text-stone-700">
+                Preferred locations
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {locationOptions.map((location) => (
+                  <button
+                    key={location}
+                    type="button"
+                    onClick={() => toggleListItem("preferredLocations", location)}
+                    className={`rounded-full border px-3 py-2 text-sm font-medium ${pillClasses(
+                      formState.preferredLocations.includes(location),
+                    )}`}
+                  >
+                    {location}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <span className="mb-2 block text-sm font-medium text-stone-700">
+                Preferred terms
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {termOptions.map((term) => (
+                  <button
+                    key={term}
+                    type="button"
+                    onClick={() => toggleListItem("preferredTerms", term)}
+                    className={`rounded-full border px-3 py-2 text-sm font-medium ${pillClasses(
+                      formState.preferredTerms.includes(term),
+                    )}`}
+                  >
+                    {term}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-stone-700">Skills</label>
               <input
@@ -735,7 +829,9 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
       <div className="mb-6">
         <h2 className="text-2xl font-semibold text-stone-900">Build your Hook account</h2>
         <p className="mt-2 text-sm text-stone-600">
-          Hook now captures a durable student account, UT undergraduate major, transcript, resume, profile photo, and GPA privacy before it builds the dashboard.
+          Hook now captures a durable student account, UT undergraduate major, transcript,
+          resume, profile photo, GPA privacy, and opportunity preferences before it builds the
+          dashboard.
         </p>
       </div>
 

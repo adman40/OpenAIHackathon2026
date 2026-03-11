@@ -17,6 +17,15 @@ export type RecommendationUrgency = "critical" | "recommended" | "optional";
 
 export type RequirementBucket = "core" | "major" | "elective";
 
+export type AcademicSupportStatus = "supported" | "planned";
+
+export interface SourceMetadata {
+  sourceName: string;
+  sourceUrl: string;
+  importedAt: string;
+  notes?: string[];
+}
+
 export interface DegreeRequirementGroup {
   id: string;
   title: string;
@@ -39,14 +48,105 @@ export interface DegreeRequirements {
   majorRequirements: RequirementSection;
 }
 
+export interface UTUndergraduateMajor {
+  majorId: string;
+  displayName: string;
+  college: string;
+  level: "undergraduate";
+  supportStatus: AcademicSupportStatus;
+  normalizedPlanId?: string;
+  degreeLabel?: string;
+  specializations?: string[];
+}
+
+export interface UTUndergraduateMajorsCatalog {
+  catalogId: string;
+  level: "undergraduate";
+  sourceMetadata: SourceMetadata;
+  majors: UTUndergraduateMajor[];
+}
+
+export interface NormalizedDegreePlanBucket {
+  id: string;
+  title: string;
+  bucketType: RequirementBucket;
+  creditsRequired: number;
+  courses: string[];
+  notes: string;
+}
+
+export interface NormalizedDegreePlan {
+  planId: string;
+  degreeId: string;
+  majorId: string;
+  majorName: string;
+  aliases: string[];
+  degreeName: string;
+  college: string;
+  level: "undergraduate";
+  totalCredits: number;
+  courseCatalogId: string;
+  supportStatus: AcademicSupportStatus;
+  sourceMetadata: SourceMetadata;
+  requirementBuckets: NormalizedDegreePlanBucket[];
+}
+
+export interface NormalizedDegreePlanCatalog {
+  catalogId: string;
+  level: "undergraduate";
+  sourceMetadata: SourceMetadata;
+  plans: NormalizedDegreePlan[];
+}
+
+export interface ImportedCourseScheduleTermSnapshot {
+  courseCatalogId: string;
+  term: string;
+  isRegularTerm: boolean;
+  offeredCourseIds: string[];
+}
+
+export interface ImportedCourseScheduleCatalog {
+  catalogId: string;
+  level: "undergraduate";
+  sourceMetadata: SourceMetadata;
+  termSnapshots: ImportedCourseScheduleTermSnapshot[];
+}
+
 // Student profile types power every Hook surface.
 export interface CompletedCourse {
   courseId: string;
   grade: string;
   semester?: string;
   source?: "transcript_upload" | "manual_entry" | "demo_seed";
+  credits?: number;
   creditHours?: number;
   gradePoints?: number | null;
+}
+
+export type TranscriptParseConfidence = "high" | "medium";
+
+export interface ParsedTranscriptCourse extends CompletedCourse {
+  rawLine: string;
+  lineNumber: number;
+  confidence: TranscriptParseConfidence;
+  parseWarnings: string[];
+}
+
+export interface TranscriptSkippedLine {
+  rawLine: string;
+  lineNumber: number;
+  reason: string;
+}
+
+export interface TranscriptParseResult {
+  parsedCourses: ParsedTranscriptCourse[];
+  skippedLines: TranscriptSkippedLine[];
+  reportedGpa: number | null;
+  computedGpa: number | null;
+  sourceMetadata: {
+    parserVersion: string;
+    parsedAt: string;
+  };
 }
 
 export interface StudentProfile {
@@ -82,7 +182,7 @@ export interface StudentProfile {
   updatedAt?: string;
 }
 
-// Academic types drive course planning and on-track analysis.
+// Academic types drive course planning and explainable analysis.
 export interface Recommendation {
   courseId: string;
   courseName: string;
@@ -98,10 +198,33 @@ export interface EligibleCourse {
   credits: number;
   prerequisites: string[];
   termsOffered: string[];
+  eligibilityReason?: string;
+  detailPagePath?: string;
   professorName: string;
   professorDifficulty: string;
   gradeTendency: string;
   attendancePolicy: string;
+}
+
+export interface CourseProfessorAggregate {
+  professorName: string;
+  rateMyProfessorRating: number;
+  reviewCount: number;
+  difficultySummary: string;
+  gradeTendencySummary: string;
+}
+
+export interface CourseDetail {
+  courseId: string;
+  courseName: string;
+  requirementBucket: RequirementBucket;
+  credits: number;
+  prerequisites: string[];
+  nextTerm: string | null;
+  description: string;
+  officialCourseListingUrl: string;
+  gradeTendencySummary: string;
+  availableProfessors: CourseProfessorAggregate[];
 }
 
 export interface CourseCatalog {

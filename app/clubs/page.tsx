@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ClubList } from "../../components/clubs/ClubList";
 import NavBar from "../../components/shared/NavBar";
 import { DEMO_PROFILE, useProfile } from "../../lib/profile-context";
-import { ClubMatch } from "../../lib/types";
+import type { ClubMatch } from "../../lib/types";
 
 export default function ClubsPage() {
   const { profile, isHydrated, authStatus } = useProfile();
@@ -72,7 +72,8 @@ export default function ClubsPage() {
             <p className="text-sm font-medium text-orange-700">Hook clubs matcher</p>
             <h1 className="mt-1 text-3xl font-semibold">Find communities that fit your week</h1>
             <p className="mt-2 max-w-3xl text-sm text-slate-600">
-              Finish onboarding first so Hook can rank clubs against your saved interests and weekly availability.
+              Finish onboarding first so Hook can rank clubs against your saved interests and
+              weekly availability.
             </p>
             <Link
               href="/onboarding"
@@ -94,11 +95,12 @@ export default function ClubsPage() {
           <p className="text-sm font-medium text-orange-700">Hook clubs matcher</p>
           <h1 className="mt-1 text-3xl font-semibold">Find communities that fit your week</h1>
           <p className="mt-2 max-w-3xl text-sm text-slate-600">
-            Hook ranks student organizations using interests, major fit, and time availability so the list stays useful instead of overwhelming.
+            Hook ranks student organizations using interests, major fit, and time availability
+            so the list stays useful instead of overwhelming.
           </p>
           <p className="mt-4 text-sm text-slate-700">
-            Profile: {activeProfile.major}, {activeProfile.hoursPerWeek ?? 5} hours/week available, interests in{" "}
-            {activeProfile.clubInterests.slice(0, 3).join(", ")}.
+            Profile: {activeProfile.major}, {activeProfile.hoursPerWeek ?? 5} hours/week
+            available, interests in {activeProfile.clubInterests.slice(0, 3).join(", ")}.
           </p>
         </div>
 

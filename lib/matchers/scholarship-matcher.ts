@@ -1,9 +1,10 @@
-import type { CareerGoal, Scholarship, ScholarshipMatch, StudentProfile } from "../types";
 import {
   getProfileCareerGoal,
   getProfileGpaRange,
   getProfileResumeSummary,
 } from "../profile-utils";
+import { formatNumericGpa } from "../transcript/gpa";
+import type { CareerGoal, Scholarship, ScholarshipMatch, StudentProfile } from "../types";
 
 type ParsedSignals = {
   residency: string[];
@@ -89,13 +90,27 @@ function parseSignals(scholarship: Scholarship): ParsedSignals {
   return parsed;
 }
 
-function parseProfileGpaHigh(gpaRange: string): number {
+function parseProfileGpaHigh(gpaRange: string): number | null {
   const numbers = gpaRange.match(/[0-4](?:\.\d+)?/g);
   if (!numbers || numbers.length === 0) {
-    return 0;
+    return null;
   }
 
   return Math.max(...numbers.map((value) => Number(value)));
+}
+
+function getProfileGpaValue(profile: StudentProfile): number | null {
+  if (typeof profile.gpa === "number") {
+    return profile.gpa;
+  }
+
+  return parseProfileGpaHigh(getProfileGpaRange(profile));
+}
+
+function describeProfileGpa(profile: StudentProfile, profileGpaRange: string): string {
+  return profile.gpa !== null
+    ? `GPA (${formatNumericGpa(profile.gpa)})`
+    : `GPA range (${profileGpaRange})`;
 }
 
 function inferYear(profile: StudentProfile): string {
@@ -159,7 +174,7 @@ export function matchScholarships(
 ): ScholarshipMatch[] {
   const year = inferYear(profile);
   const profileGpaRange = getProfileGpaRange(profile);
-  const gpaHigh = parseProfileGpaHigh(profileGpaRange);
+  const gpa = getProfileGpaValue(profile);
   const residency = normalize(profile.residency);
   const need = normalize(profile.financialNeed);
   const major = normalize(profile.major);
@@ -179,7 +194,7 @@ export function matchScholarships(
     if (!majorMatches(major, signals.majors)) {
       return;
     }
-    if (signals.minGpa !== null && gpaHigh + 0.2 < signals.minGpa) {
+    if (signals.minGpa !== null && gpa !== null && gpa + 0.2 < signals.minGpa) {
       return;
     }
 
@@ -226,14 +241,21 @@ export function matchScholarships(
 
     if (signals.minGpa !== null) {
       availableSpecific += 1;
-      if (gpaHigh >= signals.minGpa + 0.2) {
+      if (gpa !== null && gpa >= signals.minGpa + 0.2) {
         score += 15;
         matchedSpecific += 1;
-        reasons.push(`GPA range (${profileGpaRange}) is above the minimum ${signals.minGpa.toFixed(1)}.`);
-      } else if (gpaHigh >= signals.minGpa) {
+        reasons.push(
+          `${describeProfileGpa(profile, profileGpaRange)} is above the minimum ${signals.minGpa.toFixed(1)}.`,
+        );
+      } else if (gpa !== null && gpa >= signals.minGpa) {
         score += 11;
         matchedSpecific += 1;
-        reasons.push(`GPA range (${profileGpaRange}) meets the minimum ${signals.minGpa.toFixed(1)}.`);
+        reasons.push(
+          `${describeProfileGpa(profile, profileGpaRange)} meets the minimum ${signals.minGpa.toFixed(1)}.`,
+        );
+      } else if (gpa === null) {
+        score += 4;
+        reasons.push("GPA has not been fully reviewed yet, so Hook is keeping this scholarship in consideration.");
       } else {
         score += 5;
         reasons.push(`GPA is near the minimum ${signals.minGpa.toFixed(1)}.`);

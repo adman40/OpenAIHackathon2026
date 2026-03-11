@@ -65,7 +65,11 @@ function countRequiredDescendants(
 
     visited.add(nextId);
 
-    if (requiredMajorCourseIds.has(nextId) && !completedCourseIds.has(nextId)) {
+    if (completedCourseIds.has(nextId)) {
+      continue;
+    }
+
+    if (requiredMajorCourseIds.has(nextId)) {
       count += 1;
     }
 
@@ -75,6 +79,35 @@ function countRequiredDescendants(
   }
 
   return count;
+}
+
+function hasCompletedDownstreamProgress(
+  courseId: string,
+  dependentsMap: Map<string, string[]>,
+  completedCourseIds: Set<string>,
+): boolean {
+  const visited = new Set<string>();
+  const stack = [...(dependentsMap.get(normalizeCourseId(courseId)) ?? [])];
+
+  while (stack.length > 0) {
+    const nextId = stack.pop();
+
+    if (!nextId || visited.has(nextId)) {
+      continue;
+    }
+
+    visited.add(nextId);
+
+    if (completedCourseIds.has(nextId)) {
+      return true;
+    }
+
+    for (const dependent of dependentsMap.get(nextId) ?? []) {
+      stack.push(dependent);
+    }
+  }
+
+  return false;
 }
 
 function formatCourseList(courseIds: string[]): string {
@@ -109,6 +142,10 @@ export function buildPrereqAlerts(
       const course = courseMap.get(courseId);
 
       if (!course) {
+        return null;
+      }
+
+      if (hasCompletedDownstreamProgress(courseId, dependentsMap, completed)) {
         return null;
       }
 
@@ -148,6 +185,7 @@ export function buildPrereqAlerts(
         .slice(0, 4);
 
       return {
+        blockerId: normalizeCourseId(primaryBlocker.prereq),
         message:
           primaryBlocker.downstreamCount >= 2
             ? `${primaryBlocker.prereq} is a key blocker right now. Until you finish it, ${course.courseId} stays blocked and the later ${formatCourseList(directDependents)} path can keep slipping.`
@@ -155,9 +193,26 @@ export function buildPrereqAlerts(
         impactScore: primaryBlocker.downstreamCount,
       };
     })
-    .filter((alert): alert is { message: string; impactScore: number } => alert !== null)
+    .filter(
+      (alert): alert is { blockerId: string; message: string; impactScore: number } => alert !== null,
+    )
     .sort((left, right) => right.impactScore - left.impactScore);
 
+  const dedupedAlerts: { message: string; impactScore: number }[] = [];
+  const seenBlockers = new Set<string>();
+
+  for (const alert of blockerAlerts) {
+    if (seenBlockers.has(alert.blockerId)) {
+      continue;
+    }
+
+    seenBlockers.add(alert.blockerId);
+    dedupedAlerts.push({
+      message: alert.message,
+      impactScore: alert.impactScore,
+    });
+  }
+
   // We cap the list so the warnings stay scannable in the demo UI.
-  return blockerAlerts.slice(0, 3).map((alert) => alert.message);
+  return dedupedAlerts.slice(0, 3).map((alert) => alert.message);
 }
