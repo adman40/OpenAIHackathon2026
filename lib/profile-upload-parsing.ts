@@ -152,51 +152,15 @@ function inferInProgressCredits(lines: string[], startIndex: number) {
 }
 
 export async function extractPdfTextFromBuffer(buffer: Uint8Array) {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  const loadingTask = pdfjs.getDocument({
-    data: buffer,
-    useWorkerFetch: false,
-    isEvalSupported: false,
-  });
-  const pdf = await loadingTask.promise;
-  const pages: string[] = [];
+  const { PDFParse } = await import("pdf-parse");
+  const parser = new PDFParse({ data: Buffer.from(buffer) });
 
-  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-    const page = await pdf.getPage(pageNumber);
-    const textContent = await page.getTextContent();
-    const rows = new Map<number, Array<{ x: number; text: string }>>();
-
-    for (const item of textContent.items as Array<{ str?: string; transform?: number[] }>) {
-      const text = normalizeWhitespace(item.str ?? "");
-      const transform = item.transform ?? [];
-
-      if (!text || transform.length < 6) {
-        continue;
-      }
-
-      const x = transform[4] ?? 0;
-      const y = Math.round(transform[5] ?? 0);
-      const currentRow = rows.get(y) ?? [];
-      currentRow.push({ x, text });
-      rows.set(y, currentRow);
-    }
-
-    const pageLines = [...rows.entries()]
-      .sort((left, right) => right[0] - left[0])
-      .map(([, entries]) =>
-        entries
-          .sort((left, right) => left.x - right.x)
-          .map((entry) => entry.text)
-          .join(" ")
-          .replace(/\s+/g, " ")
-          .trim(),
-      )
-      .filter(Boolean);
-
-    pages.push(pageLines.join("\n"));
+  try {
+    const parsed = await parser.getText();
+    return parsed.text;
+  } finally {
+    await parser.destroy();
   }
-
-  return pages.join("\n");
 }
 
 export function parseTranscriptText(rawText: string, major: string) {
