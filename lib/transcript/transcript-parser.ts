@@ -5,8 +5,9 @@ import type {
   TranscriptSkippedLine,
 } from "../types";
 
-const COURSE_CODE_REGEX = /\b([A-Z]{1,4})\s*-?\s*(\d{3}[A-Z]?)\b/;
+const COURSE_CODE_REGEX = /\b((?:[A-Z]{1,4})|(?:[A-Z](?:\s+[A-Z]){1,3}))\s*-?\s*(\d{3}[A-Z]?)\b/;
 const GRADE_REGEX = /\b(A-|A|B\+|B-|B|C\+|C-|C|D\+|D-|D|F|CR|P|S|U|W|Q|I)\b/i;
+const GRADE_REGEX_GLOBAL = /\b(A-|A|B\+|B-|B|C\+|C-|C|D\+|D-|D|F|CR|P|S|U|W|Q|I)\b/gi;
 const FULL_TERM_REGEX = /\b(Spring|Summer|Fall|Winter)\s+(20\d{2})\b/i;
 const SHORT_TERM_REGEX = /\b(SP|SU|FA|WI)\s*'?(\d{2})\b/i;
 const REPORTED_GPA_REGEX = /\b(?:cumulative|cum|overall|current)?\s*gpa[:\s]+([0-4](?:\.\d{1,3})?)\b/i;
@@ -17,7 +18,37 @@ function normalizeWhitespace(value: string): string {
 }
 
 function normalizeCourseId(subject: string, number: string): string {
-  return `${subject.toUpperCase()} ${number.toUpperCase()}`;
+  return `${subject.replace(/\s+/g, "").toUpperCase()} ${number.toUpperCase()}`;
+}
+
+function extractCourseMatch(line: string) {
+  const match = line.match(COURSE_CODE_REGEX);
+
+  if (!match || match.index === undefined) {
+    return null;
+  }
+
+  return {
+    fullMatch: match[0],
+    subject: match[1],
+    number: match[2],
+    index: match.index,
+  };
+}
+
+function extractGradeAfterCourse(line: string, courseMatch: NonNullable<ReturnType<typeof extractCourseMatch>>) {
+  const afterCourseText = line.slice(courseMatch.index + courseMatch.fullMatch.length);
+  const afterCourseGrade = afterCourseText.match(GRADE_REGEX);
+
+  if (afterCourseGrade) {
+    return afterCourseGrade[1].toUpperCase();
+  }
+
+  const beforeCourseText = line.slice(0, courseMatch.index);
+  const beforeCourseGrades = Array.from(beforeCourseText.matchAll(GRADE_REGEX_GLOBAL));
+  const lastBeforeCourseGrade = beforeCourseGrades[beforeCourseGrades.length - 1];
+
+  return lastBeforeCourseGrade?.[1].toUpperCase() ?? null;
 }
 
 function extractTermFromLine(line: string): string | null {
@@ -68,7 +99,7 @@ function parseTranscriptCourseLine(
   lineNumber: number,
   inheritedTerm: string | null,
 ): ParsedTranscriptCourse | TranscriptSkippedLine {
-  const courseMatch = line.match(COURSE_CODE_REGEX);
+  const courseMatch = extractCourseMatch(line);
 
   if (!courseMatch) {
     return {
@@ -78,9 +109,9 @@ function parseTranscriptCourseLine(
     };
   }
 
-  const gradeMatch = line.match(GRADE_REGEX);
+  const grade = extractGradeAfterCourse(line, courseMatch);
 
-  if (!gradeMatch) {
+  if (!grade) {
     return {
       rawLine: line,
       lineNumber,
@@ -96,9 +127,10 @@ function parseTranscriptCourseLine(
   }
 
   return {
-    courseId: normalizeCourseId(courseMatch[1], courseMatch[2]),
-    grade: gradeMatch[1].toUpperCase(),
+    courseId: normalizeCourseId(courseMatch.subject, courseMatch.number),
+    grade,
     semester: inlineTerm ?? inheritedTerm ?? undefined,
+    source: "transcript_upload",
     credits: extractCredits(line),
     rawLine: line,
     lineNumber,
@@ -122,7 +154,7 @@ export function parseTranscriptSummaryText(summaryText: string): TranscriptParse
   lines.forEach((line, index) => {
     const lineNumber = index + 1;
     const termOnly = extractTermFromLine(line);
-    const hasCourseCode = COURSE_CODE_REGEX.test(line);
+    const hasCourseCode = extractCourseMatch(line) !== null;
     const gpaFromLine = extractReportedGpa(line);
 
     if (gpaFromLine !== null) {
@@ -159,7 +191,7 @@ export function parseTranscriptSummaryText(summaryText: string): TranscriptParse
     reportedGpa,
     computedGpa: computeNumericGpa(parsedCourses),
     sourceMetadata: {
-      parserVersion: "hook-transcript-parser-v1",
+      parserVersion: "hook-transcript-parser-v2",
       parsedAt: new Date().toISOString(),
     },
   };

@@ -20,13 +20,18 @@ interface CreateAccountPayload {
   fullName: string;
   utEid: string;
   profile: StudentProfile;
+  assets: {
+    profilePhoto?: File;
+    transcript?: File;
+    resume?: File;
+  };
 }
 
 interface ProfileFormProps {
   onCreateAccount: (
     payload: CreateAccountPayload,
-  ) => Promise<{ error?: string; requiresVerification?: boolean }>;
-  onSignIn: (payload: { email: string; password: string }) => Promise<{ error?: string }>;
+  ) => Promise<{ error?: string; warning?: string; requiresVerification?: boolean }>;
+  onSignIn: (payload: { identifier: string; password: string }) => Promise<{ error?: string }>;
 }
 
 interface FormState {
@@ -105,6 +110,9 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
   const [errors, setErrors] = useState<string[]>([]);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profilePhotoFile, setProfilePhotoFile] = useState<File | null>(null);
+  const [transcriptFile, setTranscriptFile] = useState<File | null>(null);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   const progress = (step / TOTAL_STEPS) * 100;
 
@@ -168,7 +176,7 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
     const nextErrors: string[] = [];
 
     if (mode === "sign_in") {
-      if (!formState.email.trim()) nextErrors.push("Add your UT email.");
+      if (!formState.email.trim()) nextErrors.push("Add your UT email or UT EID.");
       if (!formState.password.trim()) nextErrors.push("Add your password.");
       setErrors(nextErrors);
       return nextErrors.length === 0;
@@ -234,7 +242,7 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
 
     if (mode === "sign_in") {
       const result = await onSignIn({
-        email: formState.email.trim(),
+        identifier: formState.email.trim(),
         password: formState.password,
       });
       setIsSubmitting(false);
@@ -276,6 +284,11 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
       fullName: profile.name,
       utEid: profile.utEid,
       profile,
+      assets: {
+        profilePhoto: profilePhotoFile ?? undefined,
+        transcript: transcriptFile ?? undefined,
+        resume: resumeFile ?? undefined,
+      },
     });
 
     setIsSubmitting(false);
@@ -283,7 +296,7 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
     setInfoMessage(
       result.requiresVerification
         ? "Verification email sent. Hook will keep your draft profile ready while the account is pending verification."
-        : null,
+        : result.warning ?? null,
     );
   };
 
@@ -432,10 +445,11 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
                 <input
                   className="block w-full text-sm text-stone-700"
                   type="file"
-                  accept=".pdf,.txt,.md,.csv,.json"
+                  accept=".pdf,.docx,.txt,.md,.csv,.json"
                   onChange={async (event) => {
                     const file = event.target.files?.[0];
                     if (!file) return;
+                    setTranscriptFile(file);
                     const parsed = await parseTranscriptFile(file, formState.major);
                     updateField("completedCourses", parsed.courses);
                     updateField("gpa", parsed.gpa?.toFixed(2) ?? "");
@@ -445,15 +459,19 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
                       parsed.usedFallback ? "uploaded" : "reviewed",
                     );
                     setInfoMessage(
-                      parsed.usedFallback
-                        ? "Transcript uploaded. Hook used a major-based fallback because the browser-only parser could not extract structured text from that file yet."
-                        : "Transcript uploaded and parsed into completed courses for the demo profile.",
+                      parsed.courses.length === 0
+                        ? "Transcript uploaded, but Hook could not return any confident course rows after AI and deterministic parsing. Review the logs and use the dashboard override controls if needed."
+                        : parsed.parser === "deterministic"
+                          ? "Transcript uploaded. Hook normalized your course history with the deterministic transcript fallback after the AI parser could not return a confident result."
+                          : parsed.usedFallback
+                            ? "Transcript uploaded. Hook could not confidently normalize the extracted text, so it used the seeded fallback profile."
+                            : "Transcript uploaded. Hook extracted the file on the server and normalized your course history for the profile.",
                     );
                   }}
                 />
                 <p className="mt-2 text-xs text-stone-500">
-                  Browser-safe fallback keeps PDF uploads demoable even before server-side parsing
-                  lands.
+                  PDF and DOCX files are extracted on the server before Hook normalizes the
+                  transcript into course history.
                 </p>
               </div>
               <div>
@@ -467,6 +485,7 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
                   onChange={async (event) => {
                     const file = event.target.files?.[0];
                     if (!file) return;
+                    setResumeFile(file);
                     const parsed = await parseResumeFile(file, formState.major);
                     updateField("resumeFileName", file.name);
                     updateField("resumeSummary", parsed.summary);
@@ -477,15 +496,39 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
                     );
                     setInfoMessage(
                       parsed.usedFallback
-                        ? "Resume uploaded. Hook seeded editable skills because the selected file was not text-readable in the browser-only parser."
-                        : "Resume uploaded and converted into an editable skill draft.",
+                        ? "Resume uploaded. Hook extracted the file but fell back to seeded skills because the text could not be normalized confidently."
+                        : "Resume uploaded. Hook extracted the document on the server and converted it into an editable skill draft.",
                     );
                   }}
                 />
                 <p className="mt-2 text-xs text-stone-500">
-                  Skills remain editable after parsing so the demo can show human review.
+                  PDF and DOCX resumes are extracted server-side, and the stored source file can be
+                  replaced later from the dashboard.
                 </p>
               </div>
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-stone-700">
+                Profile photo
+              </label>
+              <input
+                className="block w-full text-sm text-stone-700"
+                type="file"
+                accept="image/*"
+                onChange={async (event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  setProfilePhotoFile(file);
+                  const previewUrl = await fileToDataUrl(file);
+                  updateField("profilePhotoUrl", previewUrl);
+                  setInfoMessage(
+                    "Profile photo staged. Hook will upload it to Supabase Storage when you save the account.",
+                  );
+                }}
+              />
+              <p className="mt-2 text-xs text-stone-500">
+                Choose a new image any time before save to replace the staged photo.
+              </p>
             </div>
             <div className="grid gap-5 md:grid-cols-2">
               <div>
@@ -740,12 +783,14 @@ export default function ProfileForm({ onCreateAccount, onSignIn }: ProfileFormPr
         </div>
         <div className="space-y-5">
           <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700">UT email</label>
+            <label className="mb-2 block text-sm font-medium text-stone-700">
+              UT email or EID
+            </label>
             <input
               className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-orange-600"
               value={formState.email}
               onChange={(event) => updateField("email", event.target.value)}
-              placeholder="you@utexas.edu"
+              placeholder="you@utexas.edu or fl1234"
             />
           </div>
           <div>

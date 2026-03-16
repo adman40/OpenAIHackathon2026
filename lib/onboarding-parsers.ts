@@ -1,18 +1,4 @@
-import { buildSeedCourses } from "./profile-utils";
 import type { CompletedCourse } from "./types";
-
-const GRADE_POINTS: Record<string, number> = {
-  A: 4,
-  "A-": 3.67,
-  "B+": 3.33,
-  B: 3,
-  "B-": 2.67,
-  "C+": 2.33,
-  C: 2,
-  "C-": 1.67,
-  D: 1,
-  F: 0,
-};
 
 const SKILL_KEYWORDS = [
   "python",
@@ -35,70 +21,115 @@ function normalizeWhitespace(text: string) {
   return text.replace(/\s+/g, " ").trim();
 }
 
-function computeGpa(courses: CompletedCourse[]): number | null {
-  const graded = courses
-    .map((course) => GRADE_POINTS[course.grade])
-    .filter((value): value is number => typeof value === "number");
-
-  if (graded.length === 0) {
-    return null;
-  }
-
-  const total = graded.reduce((sum, value) => sum + value, 0);
-  return Number((total / graded.length).toFixed(2));
-}
-
 export async function parseTranscriptFile(file: File, major: string) {
-  const isTextReadable = file.type.startsWith("text/") || /\.(txt|md|csv|json)$/i.test(file.name);
-  const rawText = isTextReadable ? await file.text() : "";
-  const text = normalizeWhitespace(rawText);
-  const matches = Array.from(
-    text.matchAll(/([A-Z]{2,4}\s?\d{3}[A-Z]?)\s+(A-|A|B\+|B-|B|C\+|C-|C|D|F)/g),
-  );
+  const formData = new FormData();
+  formData.set("file", file);
+  formData.set("documentType", "transcript");
+  formData.set("major", major);
 
-  const parsedCourses =
-    matches.length > 0
-      ? matches.slice(0, 12).map((match, index) => ({
-          courseId: match[1].replace(/\s+/, " ").toUpperCase(),
-          grade: match[2].toUpperCase(),
-          semester: `Imported ${index + 1}`,
-          source: "transcript_upload" as const,
-        }))
-      : buildSeedCourses(major).map((course) => ({
-          ...course,
-          source: "transcript_upload" as const,
-        }));
+  try {
+    const response = await fetch("/api/profile/parse-document", {
+      method: "POST",
+      body: formData,
+    });
 
-  return {
-    courses: parsedCourses,
-    gpa: computeGpa(parsedCourses),
-    usedFallback: matches.length === 0,
-  };
+    if (!response.ok) {
+      throw new Error(`Transcript parse failed with status ${response.status}`);
+    }
+
+    const payload = (await response.json()) as {
+      courses: CompletedCourse[];
+      gpa: number | null;
+      usedFallback: boolean;
+      extractedTextLength: number;
+      parser: "ai" | "deterministic";
+    };
+
+    console.log("[hook] parseTranscriptFile server payload", {
+      fileName: file.name,
+      parser: payload.parser,
+      usedFallback: payload.usedFallback,
+      extractedTextLength: payload.extractedTextLength,
+      courseCount: payload.courses.length,
+      courses: payload.courses.map((course) => course.courseId),
+      gpa: payload.gpa,
+    });
+
+    return payload;
+  } catch (error) {
+    console.warn("[hook] parseTranscriptFile failed", {
+      fileName: file.name,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    throw error instanceof Error ? error : new Error("Transcript parse failed.");
+  }
 }
 
 export async function parseResumeFile(file: File, major: string) {
-  const isTextReadable = file.type.startsWith("text/") || /\.(txt|md|json)$/i.test(file.name);
-  const rawText = isTextReadable ? await file.text() : "";
-  const text = normalizeWhitespace(rawText);
-  const lower = text.toLowerCase();
-  const skills = SKILL_KEYWORDS.filter((skill) => lower.includes(skill)).slice(0, 8);
+  const formData = new FormData();
+  formData.set("file", file);
+  formData.set("documentType", "resume");
+  formData.set("major", major);
 
-  const seededSkills =
-    skills.length > 0
-      ? skills
-      : major === "Business Administration"
-        ? ["leadership", "data analysis", "public speaking"]
-        : major === "Biology"
-          ? ["research", "data analysis", "public speaking"]
-          : ["python", "typescript", "sql"];
+  try {
+    const response = await fetch("/api/profile/parse-document", {
+      method: "POST",
+      body: formData,
+    });
 
-  return {
-    skills: seededSkills,
-    summary:
-      text.slice(0, 220) ||
-      `${major} student with a browser-safe resume fallback. Skills were seeded so the demo stays coherent when the uploaded file is not text-readable yet.`,
-    usedFallback: text.length === 0,
-  };
+    if (!response.ok) {
+      throw new Error(`Resume parse failed with status ${response.status}`);
+    }
+
+    const payload = (await response.json()) as {
+      skills: string[];
+      summary: string;
+      usedFallback: boolean;
+      extractedTextLength: number;
+      parser: "ai" | "deterministic" | "fallback";
+    };
+
+    console.log("[hook] parseResumeFile server payload", {
+      fileName: file.name,
+      parser: payload.parser,
+      usedFallback: payload.usedFallback,
+      extractedTextLength: payload.extractedTextLength,
+      skills: payload.skills,
+      summaryPreview: payload.summary.slice(0, 160),
+    });
+
+    return payload;
+  } catch (error) {
+    console.warn("[hook] parseResumeFile fell back to browser parsing", {
+      fileName: file.name,
+      error: error instanceof Error ? error.message : String(error),
+    });
+
+    const isTextReadable = file.type.startsWith("text/") || /\.(txt|md|json)$/i.test(file.name);
+    const rawText = isTextReadable ? await file.text() : "";
+    const text = normalizeWhitespace(rawText);
+    const lower = text.toLowerCase();
+    const skills = SKILL_KEYWORDS.filter((skill) => lower.includes(skill)).slice(0, 8);
+
+    const seededSkills =
+      skills.length > 0
+        ? skills
+        : major === "Business Administration"
+          ? ["leadership", "data analysis", "public speaking"]
+          : major === "Biology"
+            ? ["research", "data analysis", "public speaking"]
+            : ["python", "typescript", "sql"];
+
+    return {
+      skills: seededSkills,
+      summary:
+        text.slice(0, 220) ||
+        `${major} student with a browser-safe resume fallback. Skills were seeded so the demo stays coherent when the uploaded file is not text-readable yet.`,
+      usedFallback: text.length === 0,
+      extractedTextLength: text.length,
+      parser: skills.length > 0 || text.length > 0 ? "deterministic" : "fallback",
+    };
+  }
 }
 
 export async function fileToDataUrl(file: File) {
