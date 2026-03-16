@@ -6,12 +6,22 @@ import type {
 } from "../types";
 
 const COURSE_CODE_REGEX = /\b((?:[A-Z]{1,4})|(?:[A-Z](?:\s+[A-Z]){1,3}))\s*-?\s*(\d{3}[A-Z]?)\b/;
+const COURSE_NUMBER_ONLY_REGEX = /^\d{3}[A-Z]?$/;
+const SUBJECT_ONLY_REGEX = /^(?:[A-Z]{1,4}|(?:[A-Z](?:\s+[A-Z]){1,3}))$/;
 const GRADE_REGEX = /\b(A-|A|B\+|B-|B|C\+|C-|C|D\+|D-|D|F|CR|P|S|U|W|Q|I)\b/i;
 const GRADE_REGEX_GLOBAL = /\b(A-|A|B\+|B-|B|C\+|C-|C|D\+|D-|D|F|CR|P|S|U|W|Q|I)\b/gi;
+const GRADE_WITH_UNIQUE_REGEX =
+  /\b(A-|A|B\+|B-|B|C\+|C-|C|D\+|D-|D|F|CR|P|S|U|W|Q|I)\b(?=\s+\d{5}\b)/i;
 const FULL_TERM_REGEX = /\b(Spring|Summer|Fall|Winter)\s+(20\d{2})\b/i;
 const SHORT_TERM_REGEX = /\b(SP|SU|FA|WI)\s*'?(\d{2})\b/i;
-const REPORTED_GPA_REGEX = /\b(?:cumulative|cum|overall|current)?\s*gpa[:\s]+([0-4](?:\.\d{1,3})?)\b/i;
+const REPORTED_GPA_REGEX = /\b(?:cumulative|cum|overall|current)?\s*gpa[:\s]+([0-4](?:\.\d{1,4})?)\b/i;
 const EXPLICIT_CREDITS_REGEX = /\b([1-6](?:\.\d)?)\s*(?:credits?|credit hours|hrs?|hours)\b/i;
+const TRANSCRIPT_ROW_TERMINATOR_REGEX = /^\d+(?:\.\d+)?\s+\d+(?:\.\d+)?$/;
+
+interface TranscriptLine {
+  text: string;
+  lineNumber: number;
+}
 
 function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
@@ -36,9 +46,101 @@ function extractCourseMatch(line: string) {
   };
 }
 
+function extractCourseMatchAtStart(line: string) {
+  const match = extractCourseMatch(line);
+  return match && match.index <= 1 ? match : null;
+}
+
+function isSubjectOnlyLine(line: string): boolean {
+  return SUBJECT_ONLY_REGEX.test(line);
+}
+
+function isCourseNumberOnlyLine(line: string): boolean {
+  return COURSE_NUMBER_ONLY_REGEX.test(line);
+}
+
+function isCourseStart(lines: TranscriptLine[], index: number): boolean {
+  const currentLine = lines[index];
+
+  if (!currentLine) {
+    return false;
+  }
+
+  if (extractCourseMatchAtStart(currentLine.text)) {
+    return true;
+  }
+
+  const nextLine = lines[index + 1];
+  return !!(
+    nextLine &&
+    isSubjectOnlyLine(currentLine.text) &&
+    isCourseNumberOnlyLine(nextLine.text)
+  );
+}
+
+function buildLogicalTranscriptLines(lines: TranscriptLine[]): TranscriptLine[] {
+  const logicalLines: TranscriptLine[] = [];
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const currentLine = lines[index];
+
+    if (!currentLine) {
+      continue;
+    }
+
+    if (!isCourseStart(lines, index)) {
+      logicalLines.push(currentLine);
+      continue;
+    }
+
+    let mergedText = currentLine.text;
+    const startLineNumber = currentLine.lineNumber;
+
+    if (
+      isSubjectOnlyLine(currentLine.text) &&
+      lines[index + 1] &&
+      isCourseNumberOnlyLine(lines[index + 1].text)
+    ) {
+      mergedText = `${currentLine.text} ${lines[index + 1].text}`;
+      index += 1;
+    }
+
+    while (index + 1 < lines.length) {
+      const nextLine = lines[index + 1];
+
+      if (!nextLine) {
+        break;
+      }
+
+      const nextStartsCourse = isCourseStart(lines, index + 1);
+      const nextStartsNewTerm =
+        extractTermFromLine(nextLine.text) !== null && !extractCourseMatch(nextLine.text);
+
+      if (nextStartsCourse || nextStartsNewTerm) {
+        break;
+      }
+
+      mergedText = `${mergedText} ${nextLine.text}`;
+      index += 1;
+
+      if (TRANSCRIPT_ROW_TERMINATOR_REGEX.test(nextLine.text)) {
+        break;
+      }
+    }
+
+    logicalLines.push({
+      text: normalizeWhitespace(mergedText),
+      lineNumber: startLineNumber,
+    });
+  }
+
+  return logicalLines;
+}
+
 function extractGradeAfterCourse(line: string, courseMatch: NonNullable<ReturnType<typeof extractCourseMatch>>) {
   const afterCourseText = line.slice(courseMatch.index + courseMatch.fullMatch.length);
-  const afterCourseGrade = afterCourseText.match(GRADE_REGEX);
+  const afterCourseGrade =
+    afterCourseText.match(GRADE_WITH_UNIQUE_REGEX) ?? afterCourseText.match(GRADE_REGEX);
 
   if (afterCourseGrade) {
     return afterCourseGrade[1].toUpperCase();
@@ -99,7 +201,7 @@ function parseTranscriptCourseLine(
   lineNumber: number,
   inheritedTerm: string | null,
 ): ParsedTranscriptCourse | TranscriptSkippedLine {
-  const courseMatch = extractCourseMatch(line);
+  const courseMatch = extractCourseMatchAtStart(line);
 
   if (!courseMatch) {
     return {
@@ -142,8 +244,12 @@ function parseTranscriptCourseLine(
 export function parseTranscriptSummaryText(summaryText: string): TranscriptParseResult {
   const lines = summaryText
     .split(/\r?\n/)
-    .map((line) => normalizeWhitespace(line))
-    .filter(Boolean);
+    .map((line, index) => ({
+      text: normalizeWhitespace(line),
+      lineNumber: index + 1,
+    }))
+    .filter((line) => Boolean(line.text));
+  const logicalLines = buildLogicalTranscriptLines(lines);
 
   const parsedCourses: ParsedTranscriptCourse[] = [];
   const skippedLines: TranscriptSkippedLine[] = [];
@@ -151,11 +257,10 @@ export function parseTranscriptSummaryText(summaryText: string): TranscriptParse
   let reportedGpa: number | null = null;
 
   // The parser stays line-based and regex-driven so it is deterministic and easy to review.
-  lines.forEach((line, index) => {
-    const lineNumber = index + 1;
-    const termOnly = extractTermFromLine(line);
-    const hasCourseCode = extractCourseMatch(line) !== null;
-    const gpaFromLine = extractReportedGpa(line);
+  logicalLines.forEach((line) => {
+    const termOnly = extractTermFromLine(line.text);
+    const hasCourseCode = extractCourseMatchAtStart(line.text) !== null;
+    const gpaFromLine = extractReportedGpa(line.text);
 
     if (gpaFromLine !== null) {
       reportedGpa = gpaFromLine;
@@ -168,14 +273,14 @@ export function parseTranscriptSummaryText(summaryText: string): TranscriptParse
 
     if (!hasCourseCode) {
       skippedLines.push({
-        rawLine: line,
-        lineNumber,
+        rawLine: line.text,
+        lineNumber: line.lineNumber,
         reason: gpaFromLine !== null ? "Contains GPA metadata, not a course row." : "No course code found.",
       });
       return;
     }
 
-    const parsedLine = parseTranscriptCourseLine(line, lineNumber, currentTerm);
+    const parsedLine = parseTranscriptCourseLine(line.text, line.lineNumber, currentTerm);
 
     if ("courseId" in parsedLine) {
       parsedCourses.push(parsedLine);

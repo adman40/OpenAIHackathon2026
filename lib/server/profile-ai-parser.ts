@@ -162,6 +162,39 @@ function normalizeGrade(grade: string) {
   return normalizeLetterGrade(grade);
 }
 
+function normalizeCompletedCourseId(courseId: string) {
+  return courseId.trim().toUpperCase().replace(/\s+/g, " ");
+}
+
+function dedupeCompletedCourses(courses: CompletedCourse[]): CompletedCourse[] {
+  const deduped = new Map<string, CompletedCourse>();
+
+  for (const course of courses) {
+    const normalizedCourseId = normalizeCompletedCourseId(course.courseId);
+    const existingCourse = deduped.get(normalizedCourseId);
+
+    if (!existingCourse) {
+      deduped.set(normalizedCourseId, {
+        ...course,
+        courseId: normalizedCourseId,
+      });
+      continue;
+    }
+
+    const existingMetadataScore = Number(Boolean(existingCourse.semester)) + Number(Boolean(existingCourse.credits));
+    const nextMetadataScore = Number(Boolean(course.semester)) + Number(Boolean(course.credits));
+
+    if (nextMetadataScore > existingMetadataScore) {
+      deduped.set(normalizedCourseId, {
+        ...course,
+        courseId: normalizedCourseId,
+      });
+    }
+  }
+
+  return Array.from(deduped.values());
+}
+
 function normalizeTranscriptCourses(courses: TranscriptAiCourse[]): CompletedCourse[] {
   return courses
     .filter((course) => course.courseId && course.grade)
@@ -255,8 +288,9 @@ export async function parseTranscriptWithAi(text: string, major: string) {
 
 export async function parseTranscriptWithHybridFallback(text: string, major: string) {
   const aiResult = text ? await parseTranscriptWithAi(text, major).catch(() => null) : null;
+  const deterministicResult = text ? buildAcademicStateFromTranscript(text) : null;
 
-  if (aiResult) {
+  if (aiResult && (!deterministicResult || aiResult.courses.length > deterministicResult.completedCourses.length)) {
     return {
       courses: aiResult.courses,
       gpa: aiResult.gpa,
@@ -265,20 +299,25 @@ export async function parseTranscriptWithHybridFallback(text: string, major: str
     };
   }
 
-  const deterministicResult = text ? buildAcademicStateFromTranscript(text) : null;
-
   if (deterministicResult && deterministicResult.completedCourses.length > 0) {
+    const mergedCourses = dedupeCompletedCourses([
+      ...deterministicResult.completedCourses,
+      ...(aiResult?.courses ?? []),
+    ]);
+
     console.log("[hook] transcript deterministic fallback normalization", {
       parserVersion: deterministicResult.parserResult.sourceMetadata.parserVersion,
-      courseCount: deterministicResult.completedCourses.length,
-      courses: deterministicResult.completedCourses.map((course) => course.courseId),
-      gpa: deterministicResult.gpa,
+      deterministicCourseCount: deterministicResult.completedCourses.length,
+      aiCourseCount: aiResult?.courses.length ?? 0,
+      mergedCourseCount: mergedCourses.length,
+      courses: mergedCourses.map((course) => course.courseId),
+      gpa: deterministicResult.parserResult.reportedGpa ?? aiResult?.gpa ?? deterministicResult.gpa,
       skippedLineCount: deterministicResult.parserResult.skippedLines.length,
     });
 
     return {
-      courses: deterministicResult.completedCourses,
-      gpa: deterministicResult.gpa,
+      courses: mergedCourses,
+      gpa: deterministicResult.parserResult.reportedGpa ?? aiResult?.gpa ?? deterministicResult.gpa,
       parser: "deterministic" as const,
       usedFallback: false,
     };

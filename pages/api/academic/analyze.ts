@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { analyzeDegree } from "../../../lib/academic/degree-engine";
+import { expandCompletedCoursesForAcademicAnalysis } from "../../../lib/academic/course-equivalencies";
 import {
   findNormalizedDegreePlanForMajor,
   toDegreeRequirements,
@@ -44,6 +45,14 @@ export default async function handler(
   }
 
   try {
+    console.log("[hook] academic analyze request", {
+      major: profile.major,
+      currentSemester: profile.currentSemester,
+      completedCourseCount: profile.completedCourses.length,
+      completedCourses: profile.completedCourses.map((course) => course.courseId),
+      gpa: profile.gpa,
+    });
+
     // Normalized undergrad plans let us keep one UT-aligned source while reusing the existing engine.
     const planCatalog = await loadJsonFile<NormalizedDegreePlanCatalog>([
       "data",
@@ -67,10 +76,30 @@ export default async function handler(
       "course-schedule.json",
     ]);
     const degree = toDegreeRequirements(plan);
+    const analysisProfile = expandCompletedCoursesForAcademicAnalysis(profile, plan.courseCatalogId);
 
-    return res.status(200).json(
-      analyzeDegree(profile, degree, catalog, scheduleCatalog, plan.courseCatalogId),
+    console.log("[hook] academic analyze normalized courses", {
+      rawCompletedCourses: profile.completedCourses.map((course) => course.courseId),
+      expandedCompletedCourses: analysisProfile.completedCourses.map((course) => course.courseId),
+    });
+
+    const analysis = analyzeDegree(
+      analysisProfile,
+      degree,
+      catalog,
+      scheduleCatalog,
+      plan.courseCatalogId,
     );
+
+    console.log("[hook] academic analyze result", {
+      percentComplete: analysis.percentComplete,
+      estimatedGraduationSemester: analysis.estimatedGraduationSemester,
+      coreRecommendations: analysis.coreRecommendations.map((course) => course.courseId),
+      majorRecommendations: analysis.majorRecommendations.map((course) => course.courseId),
+      eligibleCourses: analysis.eligibleCourses.map((course) => course.courseId),
+    });
+
+    return res.status(200).json(analysis);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown academic analysis error";
