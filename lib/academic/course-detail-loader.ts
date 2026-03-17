@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import type {
   CourseCatalog,
   CourseDetail,
@@ -8,25 +5,22 @@ import type {
   EligibleCourse,
   ImportedCourseScheduleCatalog,
 } from "../types";
+import {
+  loadCourseCatalogFromSource,
+  loadImportedScheduleCatalogFromSource,
+} from "./catalog-repository";
 import { getScheduleSnapshotForTerm, getScheduledTermsForCourse } from "./course-schedule";
 
 function normalizeCourseId(courseId: string): string {
   return courseId.trim().toUpperCase();
 }
 
-async function loadJsonFile<T>(segments: string[]): Promise<T> {
-  const filePath = path.join(process.cwd(), ...segments);
-  const fileContents = await readFile(filePath, "utf8");
-
-  return JSON.parse(fileContents) as T;
-}
-
 export async function loadCourseCatalog(courseCatalogId: string): Promise<CourseCatalog> {
-  return loadJsonFile<CourseCatalog>(["data", "courses", `${courseCatalogId}.json`]);
+  return loadCourseCatalogFromSource(courseCatalogId);
 }
 
 export async function loadImportedScheduleCatalog(): Promise<ImportedCourseScheduleCatalog> {
-  return loadJsonFile<ImportedCourseScheduleCatalog>(["data", "ut", "course-schedule.json"]);
+  return loadImportedScheduleCatalogFromSource();
 }
 
 function buildCourseDescription(course: EligibleCourse): string {

@@ -3,6 +3,7 @@ import type {
   CompletedCourse,
   StudentProfile,
 } from "./types";
+import { computeNumericGpa } from "./transcript/gpa";
 
 export const MAJOR_OPTIONS = [
   "Computer Science",
@@ -61,6 +62,10 @@ export function getProfileGpaRange(profile: StudentProfile): string {
   return profile.gpaRange ?? deriveGpaRange(profile.gpa);
 }
 
+export function getAcademicSummaryGpa(profile: StudentProfile): number | null {
+  return computeNumericGpa(profile.completedCourses) ?? profile.gpa ?? null;
+}
+
 export function getProfileFirstName(profile: StudentProfile): string {
   const [firstName] = profile.name.trim().split(/\s+/);
   return firstName || profile.name;
@@ -102,8 +107,11 @@ export function normalizeProfile(profile: StudentProfile): StudentProfile {
     clubInterests: profile.clubInterests ?? [],
     completedCourses: profile.completedCourses ?? [],
     profilePhotoUrl: profile.profilePhotoUrl ?? null,
+    profilePhotoStoragePath: profile.profilePhotoStoragePath ?? null,
     transcriptFileName: profile.transcriptFileName ?? null,
+    transcriptStoragePath: profile.transcriptStoragePath ?? null,
     resumeFileName: profile.resumeFileName ?? null,
+    resumeStoragePath: profile.resumeStoragePath ?? null,
     transcriptUploadStatus: profile.transcriptUploadStatus ?? "missing",
     resumeUploadStatus: profile.resumeUploadStatus ?? "missing",
     accountMode: profile.accountMode ?? "fallback",

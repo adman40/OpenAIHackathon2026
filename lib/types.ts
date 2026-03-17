@@ -11,6 +11,8 @@ export type AuthStatus = "signed_out" | "pending_verification" | "authenticated"
 
 export type ProfilePersistenceMode = "supabase" | "fallback";
 
+export type ProfileAssetKind = "profilePhoto" | "transcript" | "resume";
+
 export type OpportunityKind = "research" | "internship" | "new_grad";
 
 export type RecommendationUrgency = "critical" | "recommended" | "optional";
@@ -112,6 +114,14 @@ export interface ImportedCourseScheduleCatalog {
   termSnapshots: ImportedCourseScheduleTermSnapshot[];
 }
 
+export type CourseEquivalencyCatalog = Record<string, Record<string, string[]>>;
+
+export interface ImportedCourseEquivalencyCatalog {
+  catalogId: string;
+  sourceMetadata: SourceMetadata;
+  equivalencies: CourseEquivalencyCatalog;
+}
+
 // Student profile types power every Hook surface.
 export interface CompletedCourse {
   courseId: string;
@@ -172,8 +182,11 @@ export interface StudentProfile {
   clubInterests: string[];
   hoursPerWeek?: number;
   profilePhotoUrl?: string | null;
+  profilePhotoStoragePath?: string | null;
   transcriptFileName?: string | null;
+  transcriptStoragePath?: string | null;
   resumeFileName?: string | null;
+  resumeStoragePath?: string | null;
   transcriptUploadStatus?: "missing" | "uploaded" | "reviewed";
   resumeUploadStatus?: "missing" | "uploaded" | "reviewed";
   authStatus?: AuthStatus;

@@ -1,4 +1,4 @@
-import { getProfileGpaRange } from "../../lib/profile-utils";
+import { getAcademicSummaryGpa } from "../../lib/profile-utils";
 import { formatNumericGpa } from "../../lib/transcript/gpa";
 import type { StudentProfile } from "../../lib/types";
 
@@ -8,11 +8,7 @@ interface PublicAcademicSummaryCardProps {
 }
 
 function getVisibleGpa(profile: StudentProfile): string {
-  if (!profile.gpaPublic) {
-    return "Hidden";
-  }
-
-  return profile.gpa !== null ? formatNumericGpa(profile.gpa) : getProfileGpaRange(profile);
+  return formatNumericGpa(getAcademicSummaryGpa(profile));
 }
 
 export function PublicAcademicSummaryCard({

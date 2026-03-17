@@ -1,20 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 
 import { analyzeDegree } from "../../../lib/academic/degree-engine";
+import {
+  loadCourseCatalogFromSource,
+  loadCourseEquivalencyCatalogFromSource,
+  loadImportedScheduleCatalogFromSource,
+  loadNormalizedDegreePlanCatalogFromSource,
+} from "../../../lib/academic/catalog-repository";
 import { expandCompletedCoursesForAcademicAnalysis } from "../../../lib/academic/course-equivalencies";
 import {
   findNormalizedDegreePlanForMajor,
   toDegreeRequirements,
 } from "../../../lib/academic/normalized-degree-plans";
-import {
-  AcademicAnalysis,
-  CourseCatalog,
-  ImportedCourseScheduleCatalog,
-  NormalizedDegreePlanCatalog,
-  StudentProfile,
-} from "../../../lib/types";
+import { AcademicAnalysis, StudentProfile } from "../../../lib/types";
 
 type AnalyzeResponse =
   | AcademicAnalysis
@@ -22,11 +20,25 @@ type AnalyzeResponse =
       error: string;
     };
 
-async function loadJsonFile<T>(segments: string[]): Promise<T> {
-  const filePath = path.join(process.cwd(), ...segments);
-  const fileContents = await readFile(filePath, "utf8");
+function getAcademicAnalyzeErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
 
-  return JSON.parse(fileContents) as T;
+  if (error && typeof error === "object") {
+    const record = error as Record<string, unknown>;
+    const parts = [
+      typeof record.message === "string" ? record.message : null,
+      typeof record.hint === "string" ? `Hint: ${record.hint}` : null,
+      typeof record.code === "string" ? `Code: ${record.code}` : null,
+    ].filter((value): value is string => Boolean(value));
+
+    if (parts.length > 0) {
+      return parts.join(" ");
+    }
+  }
+
+  return "Unknown academic analysis error";
 }
 
 export default async function handler(
@@ -54,10 +66,9 @@ export default async function handler(
     });
 
     // Normalized undergrad plans let us keep one UT-aligned source while reusing the existing engine.
-    const planCatalog = await loadJsonFile<NormalizedDegreePlanCatalog>([
-      "data",
-      "ut",
-      "undergrad-degree-plans.json",
+    const [planCatalog, courseEquivalencies] = await Promise.all([
+      loadNormalizedDegreePlanCatalogFromSource(),
+      loadCourseEquivalencyCatalogFromSource(),
     ]);
     const plan = findNormalizedDegreePlanForMajor(profile.major, planCatalog);
 
@@ -65,18 +76,16 @@ export default async function handler(
       return res.status(400).json({ error: `Unsupported major: ${profile.major}` });
     }
 
-    const catalog = await loadJsonFile<CourseCatalog>([
-      "data",
-      "courses",
-      `${plan.courseCatalogId}.json`,
-    ]);
-    const scheduleCatalog = await loadJsonFile<ImportedCourseScheduleCatalog>([
-      "data",
-      "ut",
-      "course-schedule.json",
+    const [catalog, scheduleCatalog] = await Promise.all([
+      loadCourseCatalogFromSource(plan.courseCatalogId),
+      loadImportedScheduleCatalogFromSource(),
     ]);
     const degree = toDegreeRequirements(plan);
-    const analysisProfile = expandCompletedCoursesForAcademicAnalysis(profile, plan.courseCatalogId);
+    const analysisProfile = expandCompletedCoursesForAcademicAnalysis(
+      profile,
+      plan.courseCatalogId,
+      courseEquivalencies,
+    );
 
     console.log("[hook] academic analyze normalized courses", {
       rawCompletedCourses: profile.completedCourses.map((course) => course.courseId),
@@ -101,8 +110,8 @@ export default async function handler(
 
     return res.status(200).json(analysis);
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Unknown academic analysis error";
+    const message = getAcademicAnalyzeErrorMessage(error);
+    console.error("[hook] academic analyze failed", error);
 
     return res.status(500).json({ error: message });
   }
